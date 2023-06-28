@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "sdl.h": "c",
+        "sdl_mixer.h": "c",
+        "sdl_version.h": "c"
+    }
+}

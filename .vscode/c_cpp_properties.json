@@ -1,0 +1,26 @@
+{
+    "env": {
+        "Default_include_path": ["${workspaceFolder}/include/"],
+        "Default_gcc_path": "C:/Qt/Tools/mingw1120_64/bin/gcc.exe"
+      },
+    "configurations": [
+        {
+            "name": "GCC",
+            "includePath": [
+                "${Default_include_path}"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.22000.0",
+            "compilerPath": "${Default_gcc_path}",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x64",
+            "configurationProvider": "ms-vscode.cpptools"
+        }
+    ],
+    "version": 4
+}
