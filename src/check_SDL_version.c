@@ -1,11 +1,11 @@
 #include<stdio.h>
-#include "version_check.h"
+#include "check_SDL_version.h"
 #include "SDL2\SDL_version.h"
 #include "SDL2\SDL_mixer.h"
 #include "SDL2\SDL_image.h"
 
 
-void CheckVersion(){
+void Check_SDL_Version(){
 
     SDL_version main_version;
     SDL_version image_version;
