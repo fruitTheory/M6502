@@ -3,7 +3,6 @@
         "sdl.h": "c",
         "sdl_mixer.h": "c",
         "sdl_version.h": "c",
-        "6502.h": "c",
         "MOS_6502.h": "c"
     }
 }

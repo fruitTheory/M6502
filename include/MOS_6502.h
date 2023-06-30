@@ -6,6 +6,7 @@
 struct MOS_6502{
 
     struct MOS_6502_registers registers;
+    struct MOS_6502_stack stack;
     
 };
 
