@@ -15,6 +15,6 @@ int main(int argc, char* argv[]){
     MOS_6502_stack_push(&MOS_6502);
     MOS_6502_stack_pop(&MOS_6502);
 
-    
+    return EXIT_SUCCESS;
 
 }

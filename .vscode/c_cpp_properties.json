@@ -1,4 +1,5 @@
-{
+{   
+    // File intellisense config 
     "env": {
         "Default_include_path": ["${workspaceFolder}/include/"],
         "Default_gcc_path": "C:/Qt/Tools/mingw1120_64/bin/gcc.exe"

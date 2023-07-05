@@ -1,4 +1,5 @@
 {
+    // build task calling make from shell
     "tasks": [
 
         {

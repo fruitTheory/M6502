@@ -1,7 +1,8 @@
 #pragma once
 
-//#include "MOS_6502.h"
-//#include <stdio.h>
+#include "config.h"
+
+struct MOS_6502;
 
 // 256 byte stack located between $0100 and $01FF
 struct MOS_6502_stack
