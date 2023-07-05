@@ -12,8 +12,8 @@ int main(int argc, char* argv[]){
     printf("total mem: %i\n", max_memory);
 
     struct MOS_6502 MOS_6502;
-    MOS_6502_stack_push(&MOS_6502);
-    MOS_6502_stack_pop(&MOS_6502);
+    MOS_6502_stack_push(&MOS_6502, 0x02);
+    MOS_6502_stack_pop(&MOS_6502, 0x08);
 
     return EXIT_SUCCESS;
 
