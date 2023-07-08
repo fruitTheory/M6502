@@ -18,10 +18,11 @@ int main(int argc, char* argv[]){
 
     printf("%i\n", MOS_6502.registers.SP);
 
+    0x0F, 0x8F;
+
     MOS_6502.registers.SP = 5;
 
     printf("%i\n", MOS_6502.registers.SP);
-
 
     //printf("addy: %p\n", (void*)&MOS_6502);
     MOS_6502_stack_push(&MOS_6502, 0x100);
