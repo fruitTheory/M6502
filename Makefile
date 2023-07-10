@@ -9,6 +9,7 @@ OBJECTS =   ${BUILD}check_SDL_version.o \
 			${BUILD}MOS_6502_stack.o \
 			${BUILD}MOS_6502_memory.o \
 			${BUILD}MOS_6502_registers.o \
+			${BUILD}load_binary.o \
 
 LIBRARY_DIR =	 -L C:\Programs\SDL\SDL2_image-2.6.3\x86_64-w64-mingw32\lib \
 				 -L C:\Programs\SDL\SDL2_mixer-2.6.3\x86_64-w64-mingw32\lib \

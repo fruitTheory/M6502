@@ -1,0 +1,1 @@
+int load_binary(int argc, char* argv[]);

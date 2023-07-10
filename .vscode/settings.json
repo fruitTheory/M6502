@@ -7,6 +7,8 @@
         "cstdlib": "c",
         "mos_6502_stack.h": "c",
         "mos_6502_registers.h": "c",
-        "check_sdl_version.h": "c"
+        "check_sdl_version.h": "c",
+        "load_binary.h": "c",
+        "config.h": "c"
     }
 }

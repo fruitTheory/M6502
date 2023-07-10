@@ -3,13 +3,16 @@
 #include "check_SDL_version.h"
 #include "MOS_6502.h"
 #include "MOS_6502_stack.h"
+#include "load_binary.h"
 
 int main(int argc, char* argv[]){
+
+    load_binary(argc, argv);
 
     printf("Hello World!\n");
     Check_SDL_Version();
 
-    printf("total mem: %i\n", max_memory);
+    printf("total memory: %i\n", max_memory);
 
     struct MOS_6502 MOS_6502;
 
@@ -18,11 +21,13 @@ int main(int argc, char* argv[]){
 
     printf("%i\n", MOS_6502.registers.SP);
 
-    0x0F, 0x8F;
+    //0x0F, 0x8F;
 
     MOS_6502.registers.SP = 5;
 
     printf("%i\n", MOS_6502.registers.SP);
+
+    MOS_6502_init(&MOS_6502);
 
     //printf("addy: %p\n", (void*)&MOS_6502);
     MOS_6502_stack_push(&MOS_6502, 0x100);
