@@ -5,6 +5,7 @@
 #include "SDL2\SDL_image.h"
 
 
+// function to check SDL versions - takes no input currently
 void Check_SDL_Version(){
 
     SDL_version main_version;

@@ -2,6 +2,7 @@
     #include <config.h>
     #include "load_binary.h"
     
+    // function to load a program file - meant to run in main function with argc/argv
     int load_binary(int argc, char* argv[]){
 
         if(argc < 2){
@@ -26,7 +27,7 @@
 
         fseek(binary_file, 0, SEEK_SET);
         
-        // setting the memory needed - temporary storage
+        // setting the memory needed - temporary storage buffer
         char file_buffer[file_size];
 
         printf("file size: %i bytes\n", file_size);
