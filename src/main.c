@@ -15,6 +15,7 @@ int main(int argc, char* argv[]){
     // initialized MOS_6502 variable
     struct MOS_6502 MOS_6502;
 
+    printf("%lli", sizeof(MOS_6502));
     // TO FIX TMRW -- CAPPED AT unsigned char(255) cant init to 511(0x1FF)
     MOS_6502_stack_init(&MOS_6502);
 
@@ -26,9 +27,6 @@ int main(int argc, char* argv[]){
 
     MOS_6502_init(&MOS_6502);
 
-    sizeof(MOS_6502.registers.SP);
-
-    printf("%lli", sizeof(MOS_6502));
     //printf("addy: %p\n", (void*)&MOS_6502);
 
     MOS_6502_stack_push(&MOS_6502, 0x100);
