@@ -4,7 +4,7 @@
 
 typedef struct
 {
-    unsigned short memory[max_memory];
+    unsigned char memory[max_memory];
 }MOS_6502_memory;
 
 void set_memory(int index);
