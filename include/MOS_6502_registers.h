@@ -25,6 +25,40 @@ enum SR_Flags{
     Negative // Set if the result is negative, clear if positive
 };
 
+
+// The program counter is incremented when an instruction is read for execution
+// the program counter needs to be incremented by 
+
+// check bit 7
+#define flag_negative_bit 0x80
+// check bit 6
+#define flag_overflow_bit 0x40
+// check bit 5
+#define flag_ignored_bit 0x20
+// check bit 4
+#define flag_break_bit 0x10 
+// check bit 3
+#define flag_decimal_bit 0x08 
+// check bit 2
+#define flag_interrupt_bit 0x04 
+// check bit 1
+#define flag_zero_bit 0x02 
+// check bit 0
+#define flag_carry_bit 0x01
+
+
+/*
+if(flag & flag_carry_bit)
+0x80 // check bit 7
+0x40 // check bit 6
+0x20 // check bit 5
+0x10 // check bit 4
+0x08 // check bit 3
+0x04 // check bit 2
+0x02 // check bit 1
+0x01 // check bit 0
+*/
+
 /*
 The zero flag (Z) indicates a value of all zero bits and the negative flag (N) indicates the presence of a set sign bit
 in bit-position 7. These flags are always updated, whenever a value is transferred to a CPU register (A,X,Y)
