@@ -27,3 +27,6 @@ ${BUILD}%.o:${SOURCES}%.c
 # Clean build folder if needed
 clean:
 	del ${BUILD}
+
+test:
+	gcc  ${FLAGS} ${INCLUDES} ./testing/main_test.c -o ${BINARIES}main_test

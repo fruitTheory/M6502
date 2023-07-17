@@ -4,12 +4,12 @@
 
 typedef struct 
 {
-    unsigned short PC;  // program counter - 16 bit - points to the next instruction to be executed
-    unsigned char AC;   // accumulator - 8 bit - used for all arithmetic and logical operations (with the exception of increments and decrements)
-    unsigned char X;    // X register - 8 bit - most commonly used to hold counters or offsets for accessing memory
-    unsigned char Y;    // Y register - 8 bit - available for holding counter or offsets memory access and supports the same set of memory load, save and compare operations as wells as increments and decrements
-    unsigned char SR;   // status register - 8 bit - stores status flags
-    unsigned char SP;   // stack pointer - 8 bit - holds the low 8 bits of the next free location on the stack
+    ushort16_t PC;  // program counter - 16 bit - points to the next instruction to be executed
+    uchar8_t AC;   // accumulator - 8 bit - used for all arithmetic and logical operations (with the exception of increments and decrements)
+    uchar8_t X;    // X register - 8 bit - most commonly used to hold counters or offsets for accessing memory
+    uchar8_t Y;    // Y register - 8 bit - available for holding counter or offsets memory access and supports the same set of memory load, save and compare operations as wells as increments and decrements
+    uchar8_t SR;   // status register - 8 bit - stores status flags
+    uchar8_t SP;   // stack pointer - 8 bit - holds the low 8 bits of the next free location on the stack
 
 }MOS_6502_registers;
 
@@ -27,23 +27,24 @@ enum SR_Flags{
 
 
 // The program counter is incremented when an instruction is read for execution
-// the program counter needs to be incremented by 
+// the program counter needs to be incremented by amount of data needed by instruction
 
-// check bit 7
+
+// check bit 7 - 1000 0000
 #define flag_negative_bit 0x80
-// check bit 6
+// check bit 6 - 0100 0000
 #define flag_overflow_bit 0x40
-// check bit 5
+// check bit 5 - 0010 0000
 #define flag_ignored_bit 0x20
-// check bit 4
+// check bit 4 - 0001 0000
 #define flag_break_bit 0x10 
-// check bit 3
+// check bit 3 - 0000 1000
 #define flag_decimal_bit 0x08 
-// check bit 2
+// check bit 2 - 0000 0100
 #define flag_interrupt_bit 0x04 
-// check bit 1
+// check bit 1 - 0000 0010
 #define flag_zero_bit 0x02 
-// check bit 0
+// check bit 0 - 0000 0001
 #define flag_carry_bit 0x01
 
 

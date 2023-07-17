@@ -11,6 +11,6 @@ void set_memory(int index){
     int temp_index = 1;
     MOS_6502_memory_inbounds(temp_index);
 }
-unsigned short get_memory(int index){
+ushort16_t get_memory(int index){
     return 0;
 }

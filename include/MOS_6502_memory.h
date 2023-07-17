@@ -4,11 +4,11 @@
 
 typedef struct
 {
-    unsigned char memory[max_memory];
+    ushort16_t memory[max_memory];
 }MOS_6502_memory;
 
 void set_memory(int index);
-unsigned short get_memory(int index);
+ushort16_t get_memory(int index);
 
 
 // memory map (reservered)

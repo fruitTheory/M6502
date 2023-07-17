@@ -12,3 +12,6 @@
 #define program_initial_load 0x0200 // decimal(byte) 512 - Programs first byte
 
 // will need 16 at some point to represent data transfer amount and such
+
+typedef unsigned char uchar8_t;
+typedef unsigned short ushort16_t;

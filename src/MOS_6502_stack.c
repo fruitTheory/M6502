@@ -9,10 +9,10 @@ static void MOS_6502_stack_inbounds(struct MOS_6502* MOS_6502){
 }
 
 void MOS_6502_stack_init(struct MOS_6502* MOS_6502){
-    MOS_6502->registers.SP = 0x1FF;
+    //MOS_6502->registers.SP = 0x1FF;
 }
 
-void MOS_6502_stack_push(struct MOS_6502* MOS_6502, unsigned short val){
+void MOS_6502_stack_push(struct MOS_6502* MOS_6502, ushort16_t val){
     
     MOS_6502_stack_inbounds(MOS_6502);
     MOS_6502->stack.stack[MOS_6502->registers.SP] = val;
@@ -23,7 +23,7 @@ void MOS_6502_stack_push(struct MOS_6502* MOS_6502, unsigned short val){
     printf("%i\n", MOS_6502->registers.SP);
 }
 
-void MOS_6502_stack_pop(struct MOS_6502* MOS_6502, unsigned short val){
+void MOS_6502_stack_pop(struct MOS_6502* MOS_6502, ushort16_t val){
 
     MOS_6502_stack_inbounds(MOS_6502); 
     MOS_6502->stack.stack[MOS_6502->registers.SP] = val;

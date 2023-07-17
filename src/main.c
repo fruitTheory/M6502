@@ -16,7 +16,7 @@ int main(int argc, char* argv[]){
     struct MOS_6502 MOS_6502;
 
     printf("%lli", sizeof(MOS_6502));
-    // TO FIX TMRW -- CAPPED AT unsigned char(255) cant init to 511(0x1FF)
+    // TO FIX TMRW -- CAPPED AT uchar8_t(255) cant init to 511(0x1FF)
     MOS_6502_stack_init(&MOS_6502);
 
     printf("%i\n", MOS_6502.registers.SP);
