@@ -1,53 +1,12 @@
 #include <stdio.h>
+#include "MOS_6502.h"
 #include "config.h"
 #include "MOS_6502_registers.h"
-#include "MOS_6502.h"
+
 
 // Progams should start at 0x0200
 $ORG = program_initial_load;
 
-/*
-0xFFFC - 0xFFFD
-These two bytes are reserved for critical system interrupts
-
-What triggers an NMI?
-
-External Hardware Events: For example, the vertical refresh of video display. Which gives system a chance to update graphics
-
-Critical Errors: Hardware malfunctions or other critical events might trigger an NMI to ensure the system responds immediately
-
-- This is a very low level process to where raw hardware takes over, transisters, gates, etc.
-*/
-void non_maskable_interrupt()
-{
-    // These hi-low address contain the address where CPU should start executing the NMI handler routine
-    0xFFFA; // 65530
-    0xFFFB; // 65531
-    // If address is 0952 due to little-endian it would be stored FFFA = 52, FFFB = 09
-    
-    if (system_intterupt())
-        do_NMI_handler_routine(); //routine generally ends with RTI (Return from Interrupt) instruction
-        return_from_interrupt();{
-            restore_PC();
-            restore_status_flags();};
-            
-};
-
-// 0xFFFC - 0xFFFD
-// These two bytes are the reset vector and point to an initial address on startup
-// This is normally determined by a bootloader, for ours we'll use $0000 as the origin
-void reset_vector()
-{
-    0xFFFC; // 65532
-    0xFFFD; // 65533
-};
-
-// 0xFFFE - 0xFFFF
-// These two bytes are referred to as the break/interrupt request handler
-void interrupt_request(){
-    0xFFFE; // 65534
-    0xFFFF; // 65535
-}
 
 void set_flag();
 void CMP(struct MOS_6502* MOS_6502, uchar8_t user_value);
@@ -58,11 +17,15 @@ int main(int argc, char* argv[]){
     struct MOS_6502 MOS_6502;
 
     MOS_6502.registers.AC = 0xFF;
-    uchar8_t user_value = 0xF;
 
+    MOS_6502_init(&MOS_6502);
+    
+    uchar8_t user_value = 0xF;
+    MOS_6502.registers.PC = 0x00FA;
+    printf("%04x\n", MOS_6502.memory.address[MOS_6502.registers.PC]);
 
     CMP(&MOS_6502, user_value);
-
+    execute_instruction(&MOS_6502, 0x00);
 
     if(0xC0 & flag_negative_bit){
         printf("this is true");
@@ -73,7 +36,6 @@ int main(int argc, char* argv[]){
     return EXIT_SUCCESS;
 
 }
-
 
 //Note: not quite as addressing modes yet, first get - opcodes - program counter - memory architecture 
 /*

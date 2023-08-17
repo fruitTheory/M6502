@@ -42,3 +42,10 @@
 
         return EXIT_SUCCESS;
     }
+
+    // For instrution set:
+    // Define all opcodes 
+    // Set a case for each opcode that points to a function
+    // Organize functions modularly somehow (structs?)
+    // reference instruction functions for each specific case
+

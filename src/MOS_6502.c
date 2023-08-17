@@ -5,9 +5,9 @@
 
 void MOS_6502_init(struct MOS_6502* MOS_6502){
     memset(MOS_6502, 0, sizeof(struct MOS_6502));
-    
+    MOS_6502_stack_init(MOS_6502);
     //copy something into memory
-    //memcpy(MOS_6502->memory.memory, something, sizeof(something));
+    //memcpy(MOS_6502->memory.address, something, sizeof(something));
 }
 
 
@@ -18,8 +18,24 @@ void M0S_6502_program_load(struct MOS_6502* MOS_6502, const char* buffer, size_t
     // program is less than max memory or throw assertion
     assert(stack_end+program_size < max_memory);
     // copy 
-    memcpy(MOS_6502->memory.memory[program_initial_load], buffer, program_size);
+    memcpy(&MOS_6502->memory.address[program_initial_load], buffer, program_size);
 
     // initialize the program counter to
     MOS_6502->registers.PC = program_initial_load;
+}
+
+
+void execute_instruction(struct MOS_6502* MOS_6502, int opcode){
+
+    switch (opcode)
+    {
+    // BRK - Force break
+    case 0x00:
+        MOS_6502_stack_push(MOS_6502, MOS_6502->registers.PC+2);
+        printf("From OP BRK\n");
+        break;
+
+    default:
+        break;
+    }
 }

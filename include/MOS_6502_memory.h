@@ -5,7 +5,7 @@
 typedef struct
 {
     // including RAM, ROM, and memory-mapped I/O.
-    ushort16_t RAM[max_memory];
+    ushort16_t address[max_memory];
 }MOS_6502_memory;
 
 void set_memory(int index);

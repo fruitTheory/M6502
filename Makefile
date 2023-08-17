@@ -17,6 +17,10 @@ LIBRARY_DIR =	 -L C:\Programs\SDL\SDL2_image-2.6.3\x86_64-w64-mingw32\lib \
 
 LINKED_LIBRARIES = -lSDL2  -lSDL2main -lSDL2_mixer -lSDL2_image
 
+TEST_OBJS = ${BUILD}MOS_6502.o \
+			${BUILD}MOS_6502_stack.o \
+
+
 all: ${OBJECTS} # Include objects program relies on
 	gcc  ${FLAGS} ${INCLUDES} ${SOURCES}main.c ${OBJECTS} ${LIBRARY_DIR} ${LINKED_LIBRARIES} -o ${BINARIES}main
 
@@ -28,5 +32,5 @@ ${BUILD}%.o:${SOURCES}%.c
 clean:
 	del ${BUILD}
 
-test:
-	gcc  ${FLAGS} ${INCLUDES} ./testing/main_test.c -o ${BINARIES}main_test
+test: ${TEST_OBJS}
+	gcc  ${FLAGS} ${INCLUDES} ${TEST_OBJS} ./testing/main_test.c -o ${BINARIES}main_test

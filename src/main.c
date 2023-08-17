@@ -34,3 +34,21 @@ int main(int argc, char* argv[]){
 
     return EXIT_SUCCESS;
 }
+
+/*
+LDA(mos6502, int user_value){
+    if immeadiate
+    mos6502.registers.AC = user_value(19);
+
+    if LDA zeropage(0xA5)
+    mos6502.registers.AC = user_value(0x00FF);
+    Example: LDA $50 loads the value at memory address 0x0050.
+
+    if LDA absolute(0xAD)
+    mos6502.registers.AC = user_value(0xFFFF);
+
+    
+
+
+}
+*/
