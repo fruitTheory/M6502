@@ -64,3 +64,12 @@ instruction, the break flag will be ignored.
 The interrupt disable flag is not set automatically.
 */
 
+/*
+As an interrupt occurs, any instruction currently processed is completed first.
+Only then, the value of the program counter (PC) is put in high-low order onto
+the stack, followed by the value currently in the status register, and control
+will be transferred to the address location found in the respective interrupt
+vector. The registers stored on the stack are recovered at the end of an
+interrupt routine, as control is transferred back to the interrupted code by
+the RTI instruction.
+*/

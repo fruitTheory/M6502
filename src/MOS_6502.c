@@ -29,13 +29,17 @@ void execute_instruction(struct MOS_6502* MOS_6502, int opcode){
 
     switch (opcode)
     {
-    // BRK - Force break
-    case 0x00:
-        MOS_6502_stack_push(MOS_6502, MOS_6502->registers.PC+2);
-        printf("From OP BRK\n");
+
+    case 0x00: // BRK - Force break
+        BRK();
+        break;
+
+    case 0x02: // CMP_ABSOLUTE_X
+        LDA_Immeadiate(&MOS_6502);
         break;
 
     default:
         break;
     }
 }
+

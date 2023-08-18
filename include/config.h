@@ -15,7 +15,7 @@ typedef unsigned short ushort16_t;
 #define program_initial_load 0x0200 // decimal(byte) 512 - Programs first byte
 
 // Instructions 
-
+/*
 #define ADC_IMMEDIATE 0x69 // Add with Carry, Immediate mode
 #define ADC_ZERO_PAGE 0x65 // Add with Carry, Zero Page mode
 #define ADC_ZERO_PAGE_X 0x75 // Add with Carry, Zero Page,X mode
@@ -159,7 +159,7 @@ typedef unsigned short ushort16_t;
 #define RTI 0x40 // Return from Interrupt - Implied
 #define RTS 0x60 // Return from Subroutine - Implied
 
-#define SBC_IMMEDIATE 0xE9 // Subtract with Carry - Immediate
+#define SBC 0xE9 // Subtract with Carry - Immediate
 #define SBC_ZERO_PAGE 0xE5 // Subtract with Carry - Zero Page
 #define SBC_ZERO_PAGE_X 0xF5 // Subtract with Carry - Zero Page, X
 #define SBC_ABSOLUTE 0xED // Subtract with Carry - Absolute
@@ -192,12 +192,18 @@ typedef unsigned short ushort16_t;
 #define TXA 0x8A // Transfer X to Accumulator - Implied
 #define TXS 0x9A // Transfer X to Stack Pointer - Implied
 #define TYA 0x98 // Transfer Y to Accumulator - Implied
+*/
 
-
-
+/*
+Concering zero page think of the memory addresses as pages, theres 256 pages
+probably from page 0-255, and 256 locations on each page so 256x256 is 65536
+Zero page is just addresses without a highbyte ranging from 0x0000-0x00FF
+*/
 
 
 /*
+Rewrite these with masswerk examples
+
 Addressing Modes:
 
 Accumulator - A -- specified using a special operand value 'A'
@@ -232,4 +238,29 @@ Zero Page X-indexed - $00, X -- ""  Add supplied address with whats in X registe
 Zero Page Y-indexed - $00, Y -- ""  This mode can only be used with the LDX and STX instructions
 
 
+*/
+
+/*
+    implicit - is just as is
+
+    accumulator =  act directly on the accumulator, uses A
+
+    immeadiate - is specifying a literal number like #10 - ($0A)
+
+    zero page - any relation to page 0, always low byte 0xFF
+    zero page x - same but offset by x, LDA ($70,X)- 70 + x -- get value at $0075
+    zero page y - same as x but only used with LDX and STX
+
+    absolute - same as zero page but word $7085
+    absolute X - ""
+    absolute Y - ""
+
+    indirect - only used by JMP
+    indirect X - like zero page, X, but 2 more cycles to fetch a pointer address to another address where it gets value
+    indirect Y - same as x but with y register
+
+    relative - only used for Branching - option to branch from a location of PC
+
+    anything X or Y is mainly for iterating through data sets
+    
 */
