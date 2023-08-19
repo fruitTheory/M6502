@@ -3,6 +3,7 @@ BUILD = ./build/
 SOURCES = ./src/
 BINARIES = ./bin/
 FLAGS = -g -Wall -fdiagnostics-color=always #-fsanitize=address
+ASM = ./asm/
 
 OBJECTS =   ${BUILD}check_SDL_version.o \
 			${BUILD}MOS_6502.o \
@@ -34,3 +35,12 @@ clean:
 
 test: ${TEST_OBJS}
 	gcc  ${FLAGS} ${INCLUDES} ${TEST_OBJS} ./testing/main_test.c -o ${BINARIES}main_test
+
+asm_build:
+	@echo "Running asm"
+	nasm -f win64 ${ASM}test.asm -o ${ASM}test.obj
+	gcc ${ASM}test.obj -o ${ASM}test.bin
+
+as65:
+	as65 ${ASM}test_mos.asm
+#as65 ${ASM}6502_decimal_test.a65 ${ASM}test_mos.asm

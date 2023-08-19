@@ -1,6 +1,7 @@
 #include "config.h"
 #include "MOS_6502_memory.h"
 #include <assert.h>
+#include "MOS_6502.h"
 
 
 static void MOS_6502_memory_inbounds(int index){
@@ -11,27 +12,26 @@ void set_memory(int index){
     int temp_index = 1;
     MOS_6502_memory_inbounds(temp_index);
 }
-ushort16_t get_memory(int index){
-    return 0;
+
+// One way to get the opcodes from file
+
+uchar8_t MOS_6502_memory_get(MOS_6502_memory* memory, int location){
+    
+    MOS_6502_memory_inbounds(location);
+    return memory->address[location];
+
 }
 
-
-/*
-One way to get the opcodes from file
-
-unsigned short opcode = chip8_memory_get_short(&chip8.memory, chip8.registers.PC);
-
-unsigned short chip8_memory_get_short(struct chip8_memory* memory, int index){
-    unsigned char byte1 = chip8_memory_get(memory, index);
-    unsigned char byte2 = chip8_memory_get(memory, index+1);
+ushort16_t MOS_6502_memory_get_short(MOS_6502_memory* memory, int location){
+    uchar8_t byte1 = MOS_6502_memory_get(memory, location);
+    uchar8_t byte2 = MOS_6502_memory_get(memory, location+1);
     return byte1 << 8 | byte2;
 }
 
-unsigned char chip8_memory_get(struct chip8_memory* memory, int index){
-    
-    chip8_is_memory_in_bounds(index);
-    return memory->memory[index];
-
+int temp(){
+    struct MOS_6502 MOS_6502;
+    ushort16_t opcode = MOS_6502_memory_get_short(&MOS_6502.memory, MOS_6502.registers.PC);
 }
 
-*/
+
+

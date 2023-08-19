@@ -9,8 +9,9 @@ typedef struct
 }MOS_6502_memory;
 
 void set_memory(int index);
-ushort16_t get_memory(int index);
 
+uchar8_t MOS_6502_memory_get(MOS_6502_memory* memory, int location);
+ushort16_t MOS_6502_memory_get_short(MOS_6502_memory* memory, int location);
 
 // memory map (reservered)
 

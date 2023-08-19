@@ -17,7 +17,7 @@ void MOS_6502_init(struct MOS_6502* MOS_6502){
 void M0S_6502_program_load(struct MOS_6502* MOS_6502, const char* buffer, size_t program_size){
     // program is less than max memory or throw assertion
     assert(stack_end+program_size < max_memory);
-    // copy 
+    // copy buffer[size] into the program load location
     memcpy(&MOS_6502->memory.address[program_initial_load], buffer, program_size);
 
     // initialize the program counter to

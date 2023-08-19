@@ -1,0 +1,8 @@
+AS65 Assembler for R6502 [1.42].                                     Page    1
+-------------------------------- test_mos.asm --------------------------------
+
+36 lines read, no errors in pass 1.
+No errors in pass 2.
+Wrote binary from address $0100 through $010a.
+Total size 11 bytes.
+
