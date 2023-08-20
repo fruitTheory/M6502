@@ -48,7 +48,7 @@ asm_build:
 	gcc ${ASM}test.obj -o ${ASM}test.bin
 
 as65:
-	as65 ${ASM}test_mos.asm
+	as65 -z ${ASM}test_mos.asm
 #as65 ${ASM}6502_decimal_test.a65
 
 
@@ -56,11 +56,10 @@ as65:
 ${BUILD}MOS_6502_memory.o:${SOURCES}MOS_6502_memory.c
 	gcc ${FLAGS} ${INCLUDES} -c $< -o $@  
 
-load_bin:
-	./load_bin ${ASM}test_mos.bin
-
 make_bin:
 #mingw32-make ${BUILD}MOS_6502_memory.o
 	gcc ${INCLUDES} ${SOURCES}load_binary.c -o load_bin
+	./load_bin ${ASM}test_mos.bin
+#./load_bin ${ASM}6502_decimal_test.bin
 
 		 
