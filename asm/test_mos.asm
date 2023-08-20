@@ -17,20 +17,3 @@
     ;sta $04     ; Store at address $0004
 
     brk         ; Break (end of program)
-
-
-;*=$e000
-
-; start:
-; 	lda #$81
-; 	sta $21
-; 	rol $21
-; 	rol $21
-; 	rol $21
-; 	rol $21
-; 	rol $21
-; 	rol $21
-; 	rol $21
-; 	rol $21
-; 	rol $21
-; 	brk
