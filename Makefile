@@ -5,6 +5,7 @@ BINARIES = ./bin/
 FLAGS = -g -Wall -fdiagnostics-color=always #-fsanitize=address
 ASM = ./asm/
 TESTING = ./testing/
+CC = gcc
 
 OBJECTS =   ${BUILD}check_SDL_version.o \
 			${BUILD}MOS_6502.o \
@@ -26,11 +27,11 @@ LOAD_BIN_OBJS = ${BUILD}MOS_6502_memory.o \
 
 
 all: ${OBJECTS} # Include objects program relies on
-	gcc  ${FLAGS} ${INCLUDES} ${SOURCES}main.c ${OBJECTS} ${LIBRARY_DIR} ${LINKED_LIBRARIES} -o ${BINARIES}main
+	${CC} ${FLAGS} ${INCLUDES} ${SOURCES}main.c ${OBJECTS} ${LIBRARY_DIR} ${LINKED_LIBRARIES} -o ${BINARIES}main
 
 # Build all - wildcards
 ${BUILD}%.o:${SOURCES}%.c
-	gcc ${FLAGS} ${INCLUDES} -c $< -o $@  
+	${CC} ${FLAGS} ${INCLUDES} -c $< -o $@  
 
 # Clean build folder if needed
 clean:
@@ -38,14 +39,14 @@ clean:
 
 # Test section
 test: ${TEST_OBJS}
-	gcc  ${FLAGS} ${INCLUDES} ${TEST_OBJS} ${TESTING}main_test.c -o ${BINARIES}main_test
+	${CC} ${FLAGS} ${INCLUDES} ${TEST_OBJS} ${TESTING}main_test.c -o ${BINARIES}main_test
 
 
 # ASM section
 asm_build:
 	@echo "Running asm"
 	nasm -f win64 ${ASM}test.asm -o ${ASM}test.obj
-	gcc ${ASM}test.obj -o ${ASM}test.bin
+	${CC} ${ASM}test.obj -o ${ASM}test.bin
 
 as65:
 	as65 -z ${ASM}test_mos.asm
@@ -54,11 +55,11 @@ as65:
 
 # Binary file test section
 ${BUILD}MOS_6502_memory.o:${SOURCES}MOS_6502_memory.c
-	gcc ${FLAGS} ${INCLUDES} -c $< -o $@  
+	${CC} ${FLAGS} ${INCLUDES} -c $< -o $@  
 
 make_bin:
 #mingw32-make ${BUILD}MOS_6502_memory.o
-	gcc ${INCLUDES} ${SOURCES}load_binary.c -o load_bin
+	${CC} ${INCLUDES} ${SOURCES}load_binary.c -o load_bin
 	./load_bin ${ASM}test_mos.bin
 #./load_bin ${ASM}6502_decimal_test.bin
 

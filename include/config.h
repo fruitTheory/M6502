@@ -2,7 +2,6 @@
 
 typedef unsigned char uchar8_t;
 typedef unsigned short ushort16_t;
-typedef unsigned long long ulong64_t;
 
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE -1
