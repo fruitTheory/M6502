@@ -4,51 +4,37 @@
 #include "MOS_6502.h"
 #include "MOS_6502_stack.h"
 #include "load_binary.h"
+#include <stdlib.h>
 
 
 int main(int argc, char* argv[]){
 
-    load_binary(argc, argv);
+    // first thing
     Check_SDL_Version();
     printf("total memory: %i\n", max_memory);
 
     // initialized MOS_6502 variable
     struct MOS_6502 MOS_6502;
-
-    printf("%lli", sizeof(MOS_6502));
-    // TO FIX TMRW -- CAPPED AT uchar8_t(255) cant init to 511(0x1FF)
-    MOS_6502_stack_init(&MOS_6502);
-
-    printf("%i\n", MOS_6502.registers.SP);
-
-    MOS_6502.registers.SP = 5;
-
-    printf("%i\n", MOS_6502.registers.SP);
-
     MOS_6502_init(&MOS_6502);
+    
+    // attempt load program into memory
+    uchar8_t* program = load_program(argc, argv);
+    print_file_info(argc, argv);
+    ushort16_t program_size = get_file_size(argv);
+    printf("program size: %i\n", program_size);
+    program_file_store(&MOS_6502, program, program_size);
+    free(program);
 
-    //printf("addy: %p\n", (void*)&MOS_6502);
+    // print stuff belore
+    printf("size of MOS_6502: %lli\n", sizeof(MOS_6502));
+    MOS_6502_stack_init(&MOS_6502);
+    printf("stack unitialized: %i\n", MOS_6502.registers.SP);
+    MOS_6502.registers.SP = 5;
+    printf("stack initialized: %i\n", MOS_6502.registers.SP);
 
+    // push and pop to stack
     MOS_6502_stack_push(&MOS_6502, 0x100);
     MOS_6502_stack_pop(&MOS_6502, 0x100);
 
     return EXIT_SUCCESS;
 }
-
-/*
-LDA(mos6502, int user_value){
-    if immeadiate
-    mos6502.registers.AC = user_value(19);
-
-    if LDA zeropage(0xA5)
-    mos6502.registers.AC = user_value(0x00FF);
-    Example: LDA $50 loads the value at memory address 0x0050.
-
-    if LDA absolute(0xAD)
-    mos6502.registers.AC = user_value(0xFFFF);
-
-    
-
-
-}
-*/

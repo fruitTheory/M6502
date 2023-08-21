@@ -12,6 +12,5 @@ typedef struct
 }MOS_6502_stack;
 
 void MOS_6502_stack_init(struct MOS_6502* MOS_6502);
-
 void MOS_6502_stack_push(struct MOS_6502* MOS_6502, ushort16_t val);
 void MOS_6502_stack_pop(struct MOS_6502* MOS_6502, ushort16_t val);

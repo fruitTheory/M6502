@@ -2,6 +2,7 @@
 
 typedef unsigned char uchar8_t;
 typedef unsigned short ushort16_t;
+typedef const char* cString;
 
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE -1

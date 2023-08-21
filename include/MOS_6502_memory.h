@@ -8,11 +8,11 @@ typedef struct
     ushort16_t address[max_memory];
 }MOS_6502_memory;
 
-void set_memory(int index);
-void MOS_6502_memory_inbounds(int index);
+void set_memory(MOS_6502_memory* memory, ushort16_t location, ushort16_t value);
+void MOS_6502_memory_inbounds(ushort16_t index);
 
-// uchar8_t MOS_6502_memory_get(MOS_6502_memory* memory, int location);
-// ushort16_t MOS_6502_memory_get_short(MOS_6502_memory* memory, int location);
+uchar8_t MOS_6502_memory_get(MOS_6502_memory* memory, ushort16_t location);
+ushort16_t MOS_6502_memory_get_short(MOS_6502_memory* memory, ushort16_t location);
 
 // memory map (reservered)
 

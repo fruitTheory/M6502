@@ -37,6 +37,10 @@ ${BUILD}%.o:${SOURCES}%.c
 clean:
 	del ${BUILD}
 
+run:
+#${BINARIES}main ${ASM}test_mos.bin
+	${BINARIES}main ${ASM}6502_decimal_test.bin
+
 # Test section
 test: ${TEST_OBJS}
 	${CC} ${FLAGS} ${INCLUDES} ${TEST_OBJS} ${TESTING}main_test.c -o ${BINARIES}main_test
@@ -61,6 +65,6 @@ make_bin:
 #mingw32-make ${BUILD}MOS_6502_memory.o
 	${CC} ${INCLUDES} ${SOURCES}load_binary.c -o ${BINARIES}load_bin
 	${BINARIES}load_bin ${ASM}test_mos.bin
-#./load_bin ${ASM}6502_decimal_test.bin
+#${BINARIES}load_bin ${ASM}6502_decimal_test.bin
 
 		 
