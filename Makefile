@@ -59,8 +59,8 @@ ${BUILD}MOS_6502_memory.o:${SOURCES}MOS_6502_memory.c
 
 make_bin:
 #mingw32-make ${BUILD}MOS_6502_memory.o
-	${CC} ${INCLUDES} ${SOURCES}load_binary.c -o load_bin
-	./load_bin ${ASM}test_mos.bin
+	${CC} ${INCLUDES} ${SOURCES}load_binary.c -o ${BINARIES}load_bin
+	${BINARIES}load_bin ${ASM}test_mos.bin
 #./load_bin ${ASM}6502_decimal_test.bin
 
 		 

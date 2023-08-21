@@ -14,7 +14,7 @@ void MOS_6502_init(struct MOS_6502* MOS_6502){
 // think this needs to be put in load_binary can rename to mos_6502_load_program/binary
 // OR WE NEED a function that outputs the size of the file inputted
 
-void M0S_6502_program_load(struct MOS_6502* MOS_6502, const char* buffer, size_t program_size){
+void M0S_6502_program_store(struct MOS_6502* MOS_6502, const char* buffer, size_t program_size){
     // program is less than max memory or throw assertion
     assert(stack_end+program_size < max_memory);
     // copy buffer[size] into the program load location
