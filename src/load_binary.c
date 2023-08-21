@@ -8,11 +8,32 @@
 int main(int argc, char* argv[]){
 
     print_file_info(argc, argv);
-    uchar8_t* file_buffer = load_program(argc, argv);
+    // uchar8_t* file_buffer = load_program(argc, argv);
 
+    ushort16_t address[2]={0x05, 0x06};
+
+    MOS_6502_memory_get_short(address, 0x00);
+    
     return EXIT_SUCCESS;
 
 }
+
+uchar8_t MOS_6502_memory_get(ushort16_t* memory, int location){
+    
+    //MOS_6502_memory_inbounds(location);
+    return memory[location];
+
+}
+
+ushort16_t MOS_6502_memory_get_short(ushort16_t* memory, int location){
+    uchar8_t byte1 = MOS_6502_memory_get(memory, location);
+    uchar8_t byte2 = MOS_6502_memory_get(memory, location+1);
+    printf("byte1 = %02X byte2 = %02X\n", byte1, byte2);
+
+    // A char is 8 bits wide, shifting 8 bits left leaves all 0
+    return byte1 << 8 | byte2;
+}
+
 
 // prints file name, and bytes contained
 void print_file_info(int argc, char* argv[]){

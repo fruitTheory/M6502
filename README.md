@@ -1,20 +1,20 @@
 # MOS 6502 Emulator
 
-Emulator for the MOS 6502 microprocessor, written in C.
+Emulator for the MOS 6502 microprocessor, written in C
 
 ## Features
 
-- Full emulation of the MOS 6502 CPU.
-- Support for basic input/output operations.
+- Full emulation of the MOS 6502 CPU
+- Support for basic input/output
 
 ### Prerequisites
 
-- A C compiler (ex. GCC, Clang, MSVC).
-- Any other dependencies or prerequisites.
+- A C 64-bit compiler (ex. GCC, Clang, MSVC)
+- Other dependencies or prerequisites
 
 ### Building
 
-```mingw32-make ``` ```make```
+```mingw32-make``` ```make```
 
 ### Running
 
@@ -26,11 +26,10 @@ Emulator for the MOS 6502 microprocessor, written in C.
 
 - Implement additional 6502 features such as
 - Improve performance and accuracy
-- (etc)
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change
 
 ## License
 
