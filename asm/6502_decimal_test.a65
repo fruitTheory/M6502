@@ -1,6 +1,6 @@
 ; Verify decimal mode behavior
 ; Written by Bruce Clark.  This code is public domain.
-; see http://www.6502.org/tutorials/decimal_mode.html
+; see http://www.M6502.org/tutorials/decimal_mode.html
 ;
 ; Returns:
 ;   ERROR = 0 if the test passed
@@ -21,11 +21,11 @@
 ;     flag results, calculated using binary arithmetic
 ;
 ; This program takes approximately 1 minute at 1 MHz (a few seconds more on
-; a 65C02 than a 6502 or 65816)
+; a 65C02 than a M6502 or 65816)
 ;
 
 ; Configuration:
-cputype = 0         ; 0 = 6502, 1 = 65C02, 2 = 65C816
+cputype = 0         ; 0 = M6502, 1 = 65C02, 2 = 65C816
 vld_bcd = 0         ; 0 = allow invalid bcd, 1 = valid bcd only
 chk_a   = 1         ; check accumulator
 chk_n   = 0         ; check sign (negative) flag
@@ -102,11 +102,11 @@ LOOP2   lda N1    ; N1L = N1 & $0F
         endif
         sta N1H
         jsr ADD
-        jsr A6502
+        jsr AM6502
         jsr COMPARE
         bne DONE
         jsr SUB
-        jsr S6502
+        jsr SM6502
         jsr COMPARE
         bne DONE
 NEXT1   inc N1    ; [5] see text
@@ -199,7 +199,7 @@ SUB     sed       ; decimal mode
         rts
            
         if cputype != 1
-; Calculate the predicted SBC accumulator result for the 6502 and 65816
+; Calculate the predicted SBC accumulator result for the M6502 and 65816
 ;          
 SUB1        cpy #1    ; set carry if Y = 1, clear carry if Y = 0
             lda N1L
@@ -223,7 +223,7 @@ S12         sta AR
         endif
            
         if cputype = 1
-; Calculate the predicted SBC accumulator result for the 6502 and 65C02
+; Calculate the predicted SBC accumulator result for the M6502 and 65C02
 ;
 SUB2        cpy #1    ; set carry if Y = 1, clear carry if Y = 0
             lda N1L
@@ -285,12 +285,12 @@ COMPARE
         endif
 C1      rts
            
-; These routines store the predicted values for ADC and SBC for the 6502,
+; These routines store the predicted values for ADC and SBC for the M6502,
 ; 65C02, and 65816 in AR, CF, NF, VF, and ZF
 
         if cputype = 0
 
-A6502       lda VF      ; 6502
+AM6502       lda VF      ; M6502
 ;          
 ; since all 8 bits of the P register were stored in VF, bit 7 of VF contains
 ; the N flag for NF
@@ -300,7 +300,7 @@ A6502       lda VF      ; 6502
             sta ZF
             rts
            
-S6502       jsr SUB1
+SM6502       jsr SUB1
             lda HNVZC
             sta NF
             sta VF
@@ -311,14 +311,14 @@ S6502       jsr SUB1
         endif
         if  cputype = 1
 
-A6502       lda AR      ; 65C02
+AM6502       lda AR      ; 65C02
             php
             pla
             sta NF
             sta ZF
             rts
            
-S6502       jsr SUB2
+SM6502       jsr SUB2
             lda AR
             php
             pla
@@ -332,14 +332,14 @@ S6502       jsr SUB2
         endif
         if  cputype = 2   
 
-A6502       lda AR      ; 65C816
+AM6502       lda AR      ; 65C816
             php
             pla
             sta NF
             sta ZF
             rts
            
-S6502       jsr SUB1
+SM6502       jsr SUB1
             lda AR
             php
             pla

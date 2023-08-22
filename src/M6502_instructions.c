@@ -1,6 +1,6 @@
-#include "MOS_6502_instructions.h"
+#include "M6502_instructions.h"
 #include "config.h"
-
+#include <stdio.h>
 
 
 void BRK(){
@@ -8,7 +8,7 @@ void BRK(){
     puts("Do a thing");
 } // address the define issue
 
-void ADC(struct MOS_6502* MOS_6502, ushort16_t user_value, uchar8_t mode)
+void ADC(struct M6502* M6502, ushort16_t user_value, uchar8_t mode)
 {
     switch(mode)
     {
@@ -53,36 +53,36 @@ void ADC(struct MOS_6502* MOS_6502, ushort16_t user_value, uchar8_t mode)
             break;
     }
     // Cmd example
-    MOS_6502->registers.AC += MOS_6502->memory.address[user_value];
+    M6502->registers.AC += M6502->memory.address[user_value];
 }
 
 
 /*
-LDA(mos6502, int user_value){
+LDA(mosM6502, int user_value){
     if immeadiate
-    mos6502.registers.AC = user_value(19);
+    mosM6502.registers.AC = user_value(19);
 
     if LDA zeropage(0xA5)
-    mos6502.registers.AC = user_value(0x00FF);
+    mosM6502.registers.AC = user_value(0x00FF);
     Example: LDA $50 loads the value at memory address 0x0050.
 
     if LDA absolute(0xAD)
-    mos6502.registers.AC = user_value(0xFFFF);
+    mosM6502.registers.AC = user_value(0xFFFF);
 }
 ASL - shifts one bit left effectively doubling a number
 */
 
 // Old way:
-// void LDA_Immeadiate(struct MOS_6502* MOS_6502, uchar8_t user_value){
-//     MOS_6502->registers.AC = user_value;
+// void LDA_Immeadiate(struct M6502* M6502, uchar8_t user_value){
+//     M6502->registers.AC = user_value;
 // }
 
-// void LDX_Zero_Page(struct MOS_6502* MOS_6502, uchar8_t user_value){
-//     MOS_6502->registers.AC = user_value;
+// void LDX_Zero_Page(struct M6502* M6502, uchar8_t user_value){
+//     M6502->registers.AC = user_value;
 // }
 
-// void LDX_Zero_Page_X(struct MOS_6502* MOS_6502, uchar8_t user_value){
-//     MOS_6502->registers.AC = user_value + MOS_6502->registers.X;
+// void LDX_Zero_Page_X(struct M6502* M6502, uchar8_t user_value){
+//     M6502->registers.AC = user_value + M6502->registers.X;
 // }
 
-// void LDA_Absolute(struct MOS_6502* MOS_6502, ushort16_t user_value);
+// void LDA_Absolute(struct M6502* M6502, ushort16_t user_value);

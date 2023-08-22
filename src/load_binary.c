@@ -76,16 +76,16 @@ uchar8_t* load_program(int argc, char* argv[]){
 // Extra: Testing memory get functions
     // uchar8_t* file_buffer = load_program(argc, argv);
     // ushort16_t address[2]={0x05, 0x06};
-    // MOS_6502_memory_get_short(address, 0x00);
+    // M6502_memory_get_short(address, 0x00);
 
-// uchar8_t MOS_6502_memory_get(ushort16_t* memory, ushort16_t location){
-//     //MOS_6502_memory_inbounds(location);
+// uchar8_t M6502_memory_get(ushort16_t* memory, ushort16_t location){
+//     //M6502_memory_inbounds(location);
 //     return memory[location];
 // }
 
-// ushort16_t MOS_6502_memory_get_short(ushort16_t* memory, ushort16_t location){
-//     uchar8_t byte1 = MOS_6502_memory_get(memory, location);
-//     uchar8_t byte2 = MOS_6502_memory_get(memory, location+1);
+// ushort16_t M6502_memory_get_short(ushort16_t* memory, ushort16_t location){
+//     uchar8_t byte1 = M6502_memory_get(memory, location);
+//     uchar8_t byte2 = M6502_memory_get(memory, location+1);
 //     /*// testing
 //         printf("byte1 = %02X byte2 = %02X\n", byte1, byte2);
 //         ushort16_t test = byte1 << 8 | byte2;

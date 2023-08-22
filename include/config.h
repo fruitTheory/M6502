@@ -7,7 +7,7 @@ typedef const char* cString;
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE -1
 
-#define max_memory 65535 // 6502's 16-bit address bus can only handle this much
+#define max_memory 65535 // M6502's 16-bit address bus can only handle this much
 #define stack_max_size 256
 
 #define zero_page_start 0x0000

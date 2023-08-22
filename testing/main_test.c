@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include "MOS_6502.h"
+#include "M6502.h"
 #include "config.h"
-#include "MOS_6502_registers.h"
+#include "M6502_registers.h"
 
 
 // Progams should start at 0x0200
@@ -9,23 +9,23 @@ $ORG = program_initial_load;
 
 
 void set_flag();
-void CMP(struct MOS_6502* MOS_6502, uchar8_t user_value);
+void CMP(struct M6502* M6502, uchar8_t user_value);
 
 int main(int argc, char* argv[]){
 
 
-    struct MOS_6502 MOS_6502;
+    struct M6502 M6502;
 
-    MOS_6502.registers.AC = 0xFF;
+    M6502.registers.AC = 0xFF;
 
-    MOS_6502_init(&MOS_6502);
+    M6502_init(&M6502);
     
     uchar8_t user_value = 0xF;
-    MOS_6502.registers.PC = 0x00FA;
-    printf("%04x\n", MOS_6502.memory.address[MOS_6502.registers.PC]);
+    M6502.registers.PC = 0x00FA;
+    printf("%04x\n", M6502.memory.address[M6502.registers.PC]);
 
-    CMP(&MOS_6502, user_value);
-    execute_instruction(&MOS_6502, 0x00);
+    CMP(&M6502, user_value);
+    execute_instruction(&M6502, 0x00);
 
     if(0xC0 & flag_negative_bit){
         printf("this is true");
@@ -51,18 +51,18 @@ void LDA()
 /*
 * Note on flags, examples set zero flag if == 0, set negative flag if negative << 7
 */
-void LDA(struct MOS_6502* MOS_6502, uchar8_t user_byte){
+void LDA(struct M6502* M6502, uchar8_t user_byte){
     
 }
 
 
-void CMP(struct MOS_6502* MOS_6502, uchar8_t user_value){
+void CMP(struct M6502* M6502, uchar8_t user_value){
 
-    if(MOS_6502->registers.AC >= user_value){
+    if(M6502->registers.AC >= user_value){
         //set_carry_flag();
         printf("Carry flag is set\n");
     }
-    if(MOS_6502->registers.AC == user_value){
+    if(M6502->registers.AC == user_value){
         //set_zero_flag();
         printf("Zero flag is set\n");
     }
@@ -86,7 +86,7 @@ GREATER:
 */
 
 /*
-void set_flag(struct MOS_6502 accumulator, uchar8_t user_value){
+void set_flag(struct M6502 accumulator, uchar8_t user_value){
 
     // C	Carry Flag	Set if A >= M
     // Z	Zero Flag	Set if A = M

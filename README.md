@@ -1,10 +1,10 @@
-# MOS 6502 Emulator
+# MOS M6502 Emulator
 
-Emulator for the MOS 6502 microprocessor, written in C
+Emulator for the MOS M6502 microprocessor, written in C
 
 ## Features
 
-- Full emulation of the MOS 6502 CPU
+- Full emulation of the MOS M6502 CPU
 - Support for basic input/output
 
 ### Prerequisites
@@ -24,7 +24,7 @@ Emulator for the MOS 6502 microprocessor, written in C
 
 ## Roadmap
 
-- Implement additional 6502 features such as
+- Implement additional M6502 features such as
 - Improve performance and accuracy
 
 ## Contributing

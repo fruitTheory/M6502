@@ -11,14 +11,14 @@ typedef struct
     uchar8_t SR;   // status register - 8 bit - stores status flags
     uchar8_t SP;   // stack pointer - 8 bit - holds the low 8 bits of the next free location on the stack
 
-}MOS_6502_registers;
+}M6502_registers;
 
 // 8 bits of processor status flags stored in status register
 enum SR_Flags{
     Carry, // Set if the last operation carried (addition) or borrowed (subtraction)
     Zero, //  Set if the result of the operation is zero, otherwise clear
     Interrupt, // If set, disables all maskable interrupts
-    Decimal, // Used to enable Binary Coded Decimal (BCD) mode in the processor, ignored in 8-bit 6502s
+    Decimal, // Used to enable Binary Coded Decimal (BCD) mode in the processor, ignored in 8-bit M6502s
     Break, // Only appears when a BRK instruction has been executed and an interrupt has been generated
     Ignored, // Ignored
     Overflow, //  Set if the signed result overflows, otherwise clear

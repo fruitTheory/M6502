@@ -7,14 +7,14 @@ typedef struct
     // including RAM, ROM, and memory-mapped I/O.
     uchar8_t address[max_memory];
     // please look into this making it ushort instead uchar doubles size of computer
-}MOS_6502_memory;
+}M6502_memory;
 
 
-void set_memory(MOS_6502_memory* memory, ushort16_t location, ushort16_t value);
-void MOS_6502_memory_inbounds(ushort16_t index);
+void set_memory(M6502_memory* memory, ushort16_t location, ushort16_t value);
+void M6502_memory_inbounds(ushort16_t index);
 
-uchar8_t MOS_6502_memory_get(MOS_6502_memory* memory, ushort16_t location);
-ushort16_t MOS_6502_memory_get_short(MOS_6502_memory* memory, ushort16_t location);
+uchar8_t M6502_memory_get(M6502_memory* memory, ushort16_t location);
+ushort16_t M6502_memory_get_short(M6502_memory* memory, ushort16_t location);
 
 // memory map (reservered)
 
