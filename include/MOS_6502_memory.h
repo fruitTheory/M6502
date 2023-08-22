@@ -5,8 +5,10 @@
 typedef struct
 {
     // including RAM, ROM, and memory-mapped I/O.
-    ushort16_t address[max_memory];
+    uchar8_t address[max_memory];
+    // please look into this making it ushort instead uchar doubles size of computer
 }MOS_6502_memory;
+
 
 void set_memory(MOS_6502_memory* memory, ushort16_t location, ushort16_t value);
 void MOS_6502_memory_inbounds(ushort16_t index);

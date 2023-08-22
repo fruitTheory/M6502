@@ -5,7 +5,7 @@
 
 // initialize the processor
 void MOS_6502_init(struct MOS_6502* MOS_6502){
-    memset(MOS_6502, 0, sizeof(struct MOS_6502));
+    memset(MOS_6502, 0, sizeof(&MOS_6502));
     MOS_6502_stack_init(MOS_6502);
 }
 
@@ -15,10 +15,10 @@ void program_file_store(struct MOS_6502* MOS_6502, uchar8_t* file, size_t progra
     assert(stack_end+program_size < max_memory);
     // copy buffer[size] into the program load location
     memcpy(&MOS_6502->memory.address[program_initial_load], file, program_size);
-    // initialize the program counter to
     MOS_6502->registers.PC = program_initial_load;
 
-    for(int i = 0; i < (program_size/2)+1; i++){
+    // print all bytes of file
+    for(int i = 0; i < (program_size); i++){
         printf("value at memory address: %02X\n", MOS_6502->memory.address[program_initial_load+i]);
     }
 }
