@@ -15,5 +15,5 @@ struct MOS_6502{
 };
 
 void MOS_6502_init(struct MOS_6502* MOS_6502);
-void program_file_store(struct MOS_6502* MOS_6502, uchar8_t* buffer, size_t program_size);
-void execute_instruction(struct MOS_6502* MOS_6502, ushort16_t opcode);
+void store_program(struct MOS_6502* MOS_6502, uchar8_t* buffer, size_t program_size);
+void execute_instruction(struct MOS_6502* MOS_6502, uchar8_t opcode);

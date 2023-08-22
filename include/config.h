@@ -15,11 +15,41 @@ typedef const char* cString;
 #define stack_end 0x01FF // decimal(byte) 511 - Use as offset for programs
 #define program_initial_load 0x0200 // decimal(byte) 512 - Programs first byte
 
+// enumeration to represent addressing modes
+typedef enum{
+    ACCUMULATOR,
+    IMMEDIATE,
+    ZERO_PAGE,
+    ZERO_PAGE_X,
+    ZERO_PAGE_Y,
+    ABSOLUTE,
+    ABSOLUTE_X,
+    ABSOLUTE_Y,
+    INDIRECT,
+    INDIRECT_X,
+    INDIRECT_Y,
+    RELATIVE
+}address_mode;
+
+// address_mode Accumulator = ACCUMULATOR;
+// address_mode Immediate = IMMEDIATE;
+// address_mode ZeroPage = ZERO_PAGE;
+// address_mode ZeroPageX = ZERO_PAGE_X;
+// address_mode ZeroPageY = ZERO_PAGE_Y;
+// address_mode Absolute = ABSOLUTE;
+// address_mode AbsoluteX = ABSOLUTE_X;
+// address_mode AbsoluteY = ABSOLUTE_Y;
+// address_mode Indirect = INDIRECT;
+// address_mode IndirectX = INDIRECT_X;
+// address_mode IndirectY = INDIRECT_Y;
+// address_mode Relative = RELATIVE;
+
+
 // Instructions 
-/*
-#define ADC_IMMEDIATE 0x69 // Add with Carry, Immediate mode
-#define ADC_ZERO_PAGE 0x65 // Add with Carry, Zero Page mode
-#define ADC_ZERO_PAGE_X 0x75 // Add with Carry, Zero Page,X mode
+
+#define ADC_IMMEDIATE_D 0x69 // Add with Carry, Immediate mode
+#define ADC_ZERO_PAGE_D 0x65 // Add with Carry, Zero Page mode
+#define ADC_ZERO_PAGE_X_D 0x75 // Add with Carry, Zero Page,X mode
 #define ADC_ABSOLUTE 0x6D // Add with Carry, Absolute mode
 #define ADC_ABSOLUTE_X 0x7D // Add with Carry, Absolute,X mode
 #define ADC_ABSOLUTE_Y 0x79 // Add with Carry, Absolute,Y mode
@@ -52,7 +82,7 @@ typedef const char* cString;
 #define BIT_ZERO_PAGE 0x24 // Bit Test - Zero Page
 #define BIT_ABSOLUTE 0x2C // Bit Test - Absolute
 
-#define BRK 0x00 // Force Interrupt - Implied
+#define BRK_D 0x00 // Force Interrupt - Implied
 
 #define CLC 0x18 // Clear Carry Flag - Implied
 #define CLD 0xD8 // Clear Decimal Mode - Implied
@@ -193,7 +223,7 @@ typedef const char* cString;
 #define TXA 0x8A // Transfer X to Accumulator - Implied
 #define TXS 0x9A // Transfer X to Stack Pointer - Implied
 #define TYA 0x98 // Transfer Y to Accumulator - Implied
-*/
+
 
 /*
 Concering zero page think of the memory addresses as pages, theres 256 pages

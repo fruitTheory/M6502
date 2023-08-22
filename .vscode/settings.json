@@ -11,6 +11,9 @@
         "load_binary.h": "c",
         "config.h": "c",
         "memory.h": "c",
-        "mos_6502_memory.h": "c"
+        "mos_6502_memory.h": "c",
+        "compare": "c",
+        "limits": "c",
+        "new": "c"
     }
 }

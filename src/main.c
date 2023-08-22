@@ -16,14 +16,14 @@ int main(int argc, char* argv[]){
     // initialized MOS_6502 variable
     struct MOS_6502 MOS_6502;
     MOS_6502_init(&MOS_6502);
-    printf("size of MOS_6502: %lli\n", sizeof(struct MOS_6502));
+    printf("size of MOS_6502 struct: %lli\n", sizeof(struct MOS_6502));
     
-    // attempt load program into memory
+    // load program into memory
     uchar8_t* program = load_program(argc, argv);
-    print_file_info(argc, argv);
-    ushort16_t program_size = get_file_size(argv);
+    print_program_info(argc, argv);
+    ushort16_t program_size = get_program_size(argv);
     printf("program size: %i bytes\n", program_size);
-    program_file_store(&MOS_6502, program, program_size);
+    store_program(&MOS_6502, program, program_size);
     free(program);
 
     // print stuff belore

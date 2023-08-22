@@ -5,7 +5,7 @@
 
 
 // get program size - may be a better way
-ushort16_t get_file_size(char* argv[]){
+ushort16_t get_program_size(char* argv[]){
 
     const char* filename = argv[1]; // set filename to first user arguement
     FILE* program_file = fopen(filename, "rb");
@@ -18,14 +18,14 @@ ushort16_t get_file_size(char* argv[]){
 }
 
 // print file name and the bytes contained
-void print_file_info(int argc, char* argv[]){
+void print_program_info(int argc, char* argv[]){
     // set filename to first user arguement
     const char* filename = argv[1];
     printf("File selected: %s\n", filename);
 
     uchar8_t* program = load_program(argc, argv);
     printf("bytes: ");
-    ushort16_t program_size = get_file_size(argv);
+    ushort16_t program_size = get_program_size(argv);
     for (ushort16_t index = 0; index < program_size; index++) {
         printf("%02X ", program[index]);
     } puts("");
