@@ -41,19 +41,19 @@ void execute_instruction(struct MOS_6502* MOS_6502, uchar8_t opcode){
         case ADC_ZERO_PAGE_X_D: 
             ADC(MOS_6502, user_value, ZERO_PAGE_X);
             break;
-        case ADC_ABSOLUTE: 
+        case ADC_ABSOLUTE_D: 
             ADC(MOS_6502, user_value, ABSOLUTE);
             break;
-        case ADC_ABSOLUTE_X: 
+        case ADC_ABSOLUTE_X_D: 
             ADC(MOS_6502, user_value, ABSOLUTE_X);
             break;
-        case ADC_ABSOLUTE_Y: 
+        case ADC_ABSOLUTE_Y_D: 
             ADC(MOS_6502, user_value, ABSOLUTE_Y);
             break;
-        case ADC_INDIRECT_X: 
+        case ADC_INDIRECT_X_D: 
             ADC(MOS_6502, user_value, INDIRECT_X);
             break;
-        case ADC_INDIRECT_Y: 
+        case ADC_INDIRECT_Y_D: 
             ADC(MOS_6502, user_value, INDIRECT_Y);
             break;
 
