@@ -2,10 +2,10 @@
 
 Emulator for the MOS 6502 microprocessor, written in C
 
-## Features (TBD)
+## Features
 
-- Full emulation of the 6502 CPU legal opcodes
-- Emulation of other system components
+- Full emulation of the legal CPU opcodes
+- Emulation of primary system components
 - Support for basic input/output
 
 ### Prerequisites
