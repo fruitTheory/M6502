@@ -20,7 +20,7 @@ int main(int argc, char* argv[]){
     M6502_init(&M6502);
     printf("size of M6502 struct: %lli\n", sizeof(struct M6502));
     
-    // load program into memory
+    // load program into memory - array of uchar8_t
     uchar8_t* program = load_program(argc, argv);
     print_program_info(argc, argv);
     ushort16_t program_size = get_program_size(argv);

@@ -38,8 +38,8 @@ clean:
 	del "${BUILD}"
 
 run:
-	${BINARIES}main ${ASM}test_mos.bin
-#${BINARIES}main ${ASM}M6502_decimal_test.bin
+#${BINARIES}main ${ASM}test_mos.bin
+	${BINARIES}main ${ASM}6502_decimal_test.bin
 
 # Test section
 test: ${TEST_OBJS}

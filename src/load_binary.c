@@ -63,6 +63,6 @@ uchar8_t* load_program(int argc, char* argv[]){
 
     fclose(program_file);
 
-    // returning 
-    return &file_buffer[0];
+    // same as returning &file_buffer[0] - memory address of first element
+    return file_buffer;
 }
