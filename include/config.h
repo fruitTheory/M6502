@@ -36,21 +36,8 @@ typedef enum{
 - X Y are just offsets based on X Y register
 - Zero page 8 bit Absolute 16 bit
 - A act directly upon the Accumulator
+- Relative is just a 8 bit relative offset if branch is true
 */
-
-// address_mode Accumulator = ACCUMULATOR;
-// address_mode Immediate = IMMEDIATE;
-// address_mode ZeroPage = ZERO_PAGE;
-// address_mode ZeroPageX = ZERO_PAGE_X;
-// address_mode ZeroPageY = ZERO_PAGE_Y;
-// address_mode Absolute = ABSOLUTE;
-// address_mode AbsoluteX = ABSOLUTE_X;
-// address_mode AbsoluteY = ABSOLUTE_Y;
-// address_mode Indirect = INDIRECT;
-// address_mode IndirectX = INDIRECT_X;
-// address_mode IndirectY = INDIRECT_Y;
-// address_mode Relative = RELATIVE;
-
 
 // Instructions 
 
@@ -237,7 +224,6 @@ Concering zero page think of the memory addresses as pages, theres 256 pages
 probably from page 0-255, and 256 locations on each page so 256x256 is 65536
 Zero page is just addresses without a highbyte ranging from 0x0000-0x00FF
 */
-
 
 /*
 Rewrite these with masswerk examples

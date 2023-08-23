@@ -37,32 +37,37 @@ ${BUILD}%.o:${SOURCES}%.c
 clean:
 	del "${BUILD}"
 
+RUN_NAME = test_ca65
 run:
-#${BINARIES}main ${ASM}test_mos.bin
-	${BINARIES}main ${ASM}6502_decimal_test.bin
-
-# Test section
-test: ${TEST_OBJS}
-	${CC} ${FLAGS} ${INCLUDES} ${TEST_OBJS} ${TESTING}main_test.c -o ${BINARIES}main_test
-
-
-# ASM section
-asm_build:
-	@echo "Running asm"
-	nasm -f win64 ${ASM}test.asm -o ${ASM}test.obj
-	${CC} ${ASM}test.obj -o ${ASM}test.bin
-
+	${BINARIES}main ${ASM}${RUN_NAME}.bin
+	
+# Use as65 assembler
 as65:
-	as65 -z ${ASM}test_mos2.asm
-#as65 ${ASM}M6502_decimal_test.a65
+	as65 ${ASM}test_as65.asm
+#as65 ${ASM}6502_decimal_test.a65
+
+BASE_NAME = test_ca65
+# Use ca65 assembler
+ca65:
+	ca65 -l ${ASM}${BASE_NAME}.lst ${ASM}${BASE_NAME}.asm 
+	ld65 -t none ${ASM}${BASE_NAME}.o -o ${ASM}${BASE_NAME}.bin
 
 
-make_bin:
-#mingw32-make ${BUILD}M6502_memory.o
-	${CC} ${INCLUDES} ${SOURCES}load_binary.c -o ${BINARIES}load_bin
-	${BINARIES}load_bin ${ASM}test_mos.bin
-#${BINARIES}load_bin ${ASM}M6502_decimal_test.bin
+# # Binary file test section
+# make_bin:
+# #mingw32-make ${BUILD}M6502_memory.o
+# 	${CC} ${INCLUDES} ${SOURCES}load_binary.c -o ${BINARIES}load_bin
+# 	${BINARIES}load_bin ${ASM}test_mos.bin
+# #${BINARIES}load_bin ${ASM}M6502_decimal_test.bin
 
-# Binary file test section
-${BUILD}M6502_memory.o:${SOURCES}M6502_memory.c
-	${CC} ${FLAGS} ${INCLUDES} -c $< -o $@  
+# ${BUILD}M6502_memory.o:${SOURCES}M6502_memory.c
+# 	${CC} ${FLAGS} ${INCLUDES} -c $< -o $@  
+# # Test section
+# test: ${TEST_OBJS}
+# 	${CC} ${FLAGS} ${INCLUDES} ${TEST_OBJS} ${TESTING}main_test.c -o ${BINARIES}main_test
+
+# # ASM section
+# asm_build:
+# 	@echo "Running asm"
+# 	nasm -f win64 ${ASM}test.asm -o ${ASM}test.obj
+# 	${CC} ${ASM}test.obj -o ${ASM}test.bin

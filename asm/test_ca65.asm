@@ -1,8 +1,7 @@
+    .org $0200
 
-    org $0100
+    lda #$48  
 
-    lda #$48    ; Load ASCII value for 'H'
-    ;sta $06     ; Store at address $0000
 
     lda #$45    ; Load ASCII value for 'E'
     ;sta $01     ; Store at address $0001
