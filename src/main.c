@@ -5,6 +5,7 @@
 #include "M6502_stack.h"
 #include "load_binary.h"
 #include <stdlib.h>
+#include "memory.h"
 
 
 int main(int argc, char* argv[]){
@@ -12,7 +13,8 @@ int main(int argc, char* argv[]){
     // first thing
     //Check_SDL_Version();
     printf("total system memory: %i\n", max_memory);
-
+    flag_bit -= 5;
+    printf("flag bit: %i\n", flag_bit);
     // initialized M6502 variable
     struct M6502 M6502;
     M6502_init(&M6502);
@@ -23,7 +25,7 @@ int main(int argc, char* argv[]){
     print_program_info(argc, argv);
     ushort16_t program_size = get_program_size(argv);
     printf("program size: %i bytes\n", program_size);
-    store_program(&M6502, program, program_size);
+    M6502_store_program(&M6502, program, program_size);
     free(program);
 
     // print stuff belore

@@ -14,7 +14,7 @@ typedef struct
 }M6502_registers;
 
 // 8 bits of processor status flags stored in status register
-enum SR_Flags{
+typedef enum {
     Carry, // Set if the last operation carried (addition) or borrowed (subtraction)
     Zero, //  Set if the result of the operation is zero, otherwise clear
     Interrupt, // If set, disables all maskable interrupts
@@ -23,42 +23,7 @@ enum SR_Flags{
     Ignored, // Ignored
     Overflow, //  Set if the signed result overflows, otherwise clear
     Negative // Set if the result is negative, clear if positive
-};
-
-
-// The program counter is incremented when an instruction is read for execution
-// the program counter needs to be incremented by amount of data needed by instruction
-
-
-// check bit 7 - 1000 0000
-#define flag_negative_bit 0x80
-// check bit 6 - 0100 0000
-#define flag_overflow_bit 0x40
-// check bit 5 - 0010 0000
-#define flag_ignored_bit 0x20
-// check bit 4 - 0001 0000
-#define flag_break_bit 0x10 
-// check bit 3 - 0000 1000
-#define flag_decimal_bit 0x08 
-// check bit 2 - 0000 0100
-#define flag_interrupt_bit 0x04 
-// check bit 1 - 0000 0010
-#define flag_zero_bit 0x02 
-// check bit 0 - 0000 0001
-#define flag_carry_bit 0x01
-
-
-/*
-if(flag & flag_carry_bit)
-0x80 // check bit 7
-0x40 // check bit 6
-0x20 // check bit 5
-0x10 // check bit 4
-0x08 // check bit 3
-0x04 // check bit 2
-0x02 // check bit 1
-0x01 // check bit 0
-*/
+}SR_Flags;
 
 /*
 The zero flag (Z) indicates a value of all zero bits and the negative flag (N) indicates the presence of a set sign bit
@@ -94,3 +59,6 @@ Any of these flags (but the break flag) may be set or cleared by dedicated instr
 to conditionally divert the control flow depending on the respective state of the Z, N, C or V flag.
 
 */
+
+// The program counter is incremented when an instruction is read for execution
+// the program counter needs to be incremented by amount of data needed by instruction

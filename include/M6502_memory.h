@@ -1,6 +1,8 @@
 #pragma once
 
 #include "config.h"
+#include <stddef.h>
+
 
 typedef struct
 {
@@ -10,11 +12,14 @@ typedef struct
 }M6502_memory;
 
 
-void set_memory(M6502_memory* memory, ushort16_t location, ushort16_t value);
+void M6502_set_memory(M6502_memory* memory, ushort16_t location, ushort16_t value);
 void M6502_memory_inbounds(ushort16_t index);
 
 uchar8_t M6502_memory_get(M6502_memory* memory, ushort16_t location);
 ushort16_t M6502_memory_get_short(M6502_memory* memory, ushort16_t location);
+
+//struct M6502; // forward declaration so compiler knows the struct exists and will be defined later
+void M6502_store_program(struct M6502* M6502, uchar8_t* file, size_t program_size);
 
 // memory map (reservered)
 

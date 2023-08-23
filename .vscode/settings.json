@@ -14,6 +14,7 @@
         "M6502_memory.h": "c",
         "compare": "c",
         "limits": "c",
-        "new": "c"
+        "new": "c",
+        "m6502_instructions.h": "c"
     }
 }

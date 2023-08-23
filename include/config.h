@@ -30,6 +30,13 @@ typedef enum{
     INDIRECT_Y,
     RELATIVE
 }address_mode;
+/* Notes: 
+- Indirect is more like redirect
+- Immeadiate is only literal value regardless of hex or decimal
+- X Y are just offsets based on X Y register
+- Zero page 8 bit Absolute 16 bit
+- A act directly upon the Accumulator
+*/
 
 // address_mode Accumulator = ACCUMULATOR;
 // address_mode Immediate = IMMEDIATE;
@@ -268,30 +275,4 @@ Zero Page - $00 -- Same as Absolute but only 8bit addresses
 Zero Page X-indexed - $00, X -- ""  Add supplied address with whats in X register for new address
 Zero Page Y-indexed - $00, Y -- ""  This mode can only be used with the LDX and STX instructions
 
-
-*/
-
-/*
-    implicit - is just as is
-
-    accumulator =  act directly on the accumulator, uses A
-
-    immeadiate - is specifying a literal number like #10 - ($0A)
-
-    zero page - any relation to page 0, always low byte 0xFF
-    zero page x - same but offset by x, LDA ($70,X)- 70 + x -- get value at $0075
-    zero page y - same as x but only used with LDX and STX
-
-    absolute - same as zero page but word $7085
-    absolute X - ""
-    absolute Y - ""
-
-    indirect - only used by JMP
-    indirect X - like zero page, X, but 2 more cycles to fetch a pointer address to another address where it gets value
-    indirect Y - same as x but with y register
-
-    relative - only used for Branching - option to branch from a location of PC
-
-    anything X or Y is mainly for iterating through data sets
-    
 */

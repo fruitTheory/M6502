@@ -1,29 +1,17 @@
 #include "M6502.h"
 #include <memory.h>
 #include <assert.h>
-#include <stdio.h>
 #include "config.h"
 #include "M6502_instructions.h"
+
+
+// global flag var - 255 | 1111 1111
+uchar8_t flag_bit = 0xFF;
 
 // initialize the processor
 void M6502_init(struct M6502* M6502){
     memset(M6502, 0, sizeof(&M6502));
     M6502_stack_init(M6502);
-}
-
-// store the program into memory
-void store_program(struct M6502* M6502, uchar8_t* file, size_t program_size){
-
-    assert(stack_end+program_size < max_memory);
-
-    // copy file into the program load location
-    memcpy(&M6502->memory.address[program_initial_load], file, program_size);
-    M6502->registers.PC = program_initial_load;
-
-    // print all bytes of file
-    for(int i = 0; i < (program_size); i++){
-        printf("value at memory address %04X: %02X\n", M6502->registers.PC+i, M6502->memory.address[program_initial_load+i]);
-    }
 }
 
 void execute_instruction(struct M6502* M6502, uchar8_t opcode){
@@ -33,6 +21,9 @@ void execute_instruction(struct M6502* M6502, uchar8_t opcode){
         // if instruction has addressing modes pass it a mode
     {
         // ADC - Add Memory to Accumulator with Carry
+        // case ADC_ACCUMULATOR_D: 
+        //     ADC(M6502, user_value, IMMEDIATE);
+        //     break;
         case ADC_IMMEDIATE_D: 
             ADC(M6502, user_value, IMMEDIATE);
             break;

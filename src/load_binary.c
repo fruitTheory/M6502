@@ -66,30 +66,3 @@ uchar8_t* load_program(int argc, char* argv[]){
     // returning 
     return &file_buffer[0];
 }
-
-// int main(int argc, char* argv[]){
-
-//     print_file_info(argc, argv);
-//     return EXIT_SUCCESS;
-// }
-
-// Extra: Testing memory get functions
-    // uchar8_t* file_buffer = load_program(argc, argv);
-    // ushort16_t address[2]={0x05, 0x06};
-    // M6502_memory_get_short(address, 0x00);
-
-// uchar8_t M6502_memory_get(ushort16_t* memory, ushort16_t location){
-//     //M6502_memory_inbounds(location);
-//     return memory[location];
-// }
-
-// ushort16_t M6502_memory_get_short(ushort16_t* memory, ushort16_t location){
-//     uchar8_t byte1 = M6502_memory_get(memory, location);
-//     uchar8_t byte2 = M6502_memory_get(memory, location+1);
-//     /*// testing
-//         printf("byte1 = %02X byte2 = %02X\n", byte1, byte2);
-//         ushort16_t test = byte1 << 8 | byte2;
-//         printf("word: %04X\n", test); */
-//     return byte1 << 8 | byte2; 
-//     // Shifting bits left takes 8 bit -> 16bit, and | merges high byte
-// }
