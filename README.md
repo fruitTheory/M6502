@@ -1,16 +1,17 @@
-# MOS M6502 Emulator
+# MOS 6502 Emulator
 
-Emulator for the MOS M6502 microprocessor, written in C
+Emulator for the MOS 6502 microprocessor, written in C
 
-## Features
+## Features (TBD)
 
-- Full emulation of the MOS M6502 CPU
+- Full emulation of the 6502 CPU legal opcodes
+- Emulation of other system components
 - Support for basic input/output
 
 ### Prerequisites
 
 - A C 64-bit compiler (ex. GCC, Clang, MSVC)
-- Other dependencies or prerequisites
+- Potentially other dependencies (SDL)
 
 ### Building
 
@@ -24,8 +25,10 @@ Emulator for the MOS M6502 microprocessor, written in C
 
 ## Roadmap
 
-- Implement additional M6502 features such as
-- Improve performance and accuracy
+- Implement primary opcodes
+- Timings and Interrupts 
+- Refine components
+- Build on top, other components 
 
 ## Contributing
 
@@ -37,4 +40,5 @@ Licensed under the MIT License - [LICENSE.md](LICENSE.md)
 
 ## Acknowledgments
 
-- Resources, libraries, individuals to credit
+- nesdev.org - obelisk's guide
+- masswerk.at - 6502 instruction set reference
