@@ -30,18 +30,21 @@ ushort16_t M6502_memory_get_word(M6502_memory* memory, ushort16_t location){
 }
 
 // store the program into initial load memory
-void M6502_store_program(struct M6502* M6502, uchar8_t* file, size_t program_size){
+void M6502_store_program(struct M6502* computer, uchar8_t* file, size_t program_size){
     assert(stack_end+program_size < max_memory);
     // copy file into the program load location
-    memcpy(&M6502->memory.address[program_initial_load], file, program_size);
+    memcpy(&computer->memory.address[program_initial_load], file, program_size);
 
     // Set program counter and print all bytes onward until reaching program size
-    M6502->registers.PC = program_initial_load;
+    computer->registers.PC = program_initial_load;
     // print all bytes of file
     for(int i = 0; i < (program_size); i++){
-        printf("value at memory address %04X: %02X\n", M6502->registers.PC+i, M6502->memory.address[program_initial_load+i]);
+        printf("value at memory address %04X: %02X\n", computer->registers.PC+i, computer->memory.address[program_initial_load+i]);
     }
 }
+
+
+
 
 // Set program counter and print all bytes onward until reaching program size
 // M6502->registers.PC = program_initial_load;

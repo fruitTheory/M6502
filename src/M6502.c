@@ -3,53 +3,63 @@
 #include <assert.h>
 #include "config.h"
 #include "M6502_instructions.h"
-
+#include <stdio.h>
 
 // global flag var - 255 | 1111 1111
 uchar8_t flag_bit = 0xFF;
 
 // initialize the processor
-void M6502_init(struct M6502* M6502){
-    memset(M6502, 0, sizeof(&M6502));
-    M6502_stack_init(M6502);
+void M6502_init(struct M6502* computer){
+    memset(computer, 0, sizeof(&computer));
+    M6502_stack_init(computer);
 }
 
-void execute_instruction(struct M6502* M6502, uchar8_t opcode){
+// void analyze_opcode(uchar8_t opcode){
+//     opcode
+// }
 
-    uchar8_t user_value = 1;
+uchar8_t instruction_fetch(struct M6502* computer){
+    uchar8_t opcode = computer->memory.address[computer->registers.PC];
+    printf("opcode: %02X\n", opcode);
+    return opcode;
+}
+
+// this function determines which opcode we fetched
+void analyze_opcode(struct M6502* computer, uchar8_t opcode){
+    
     switch (opcode)
         // if instruction has addressing modes pass it a mode
     {
         // ADC - Add Memory to Accumulator with Carry
-        // case ADC_ACCUMULATOR_D: 
-        //     ADC(M6502, user_value, IMMEDIATE);
-        //     break;
         case ADC_IMMEDIATE_D: 
-            ADC(M6502, user_value, IMMEDIATE);
+            ADC(computer, IMMEDIATE);
             break;
         case ADC_ZERO_PAGE_D: 
-            ADC(M6502, user_value, ZERO_PAGE);
+            ADC(computer, ZERO_PAGE);
             break;
         case ADC_ZERO_PAGE_X_D: 
-            ADC(M6502, user_value, ZERO_PAGE_X);
+            ADC(computer, ZERO_PAGE_X);
             break;
         case ADC_ABSOLUTE_D: 
-            ADC(M6502, user_value, ABSOLUTE);
+            ADC(computer, ABSOLUTE);
             break;
         case ADC_ABSOLUTE_X_D: 
-            ADC(M6502, user_value, ABSOLUTE_X);
+            ADC(computer, ABSOLUTE_X);
             break;
         case ADC_ABSOLUTE_Y_D: 
-            ADC(M6502, user_value, ABSOLUTE_Y);
+            ADC(computer, ABSOLUTE_Y);
             break;
         case ADC_INDIRECT_X_D: 
-            ADC(M6502, user_value, INDIRECT_X);
+            ADC(computer, INDIRECT_X);
             break;
         case ADC_INDIRECT_Y_D: 
-            ADC(M6502, user_value, INDIRECT_Y);
+            ADC(computer, INDIRECT_Y);
             break;
 
-        case BRK_D:
+        // LDA - Load Accumulator
+        case LDA_IMMEDIATE_D:
+            //LDA_Immeadiate(computer);
+            LDA(computer, IMMEDIATE);
             break;
         default:
             break;

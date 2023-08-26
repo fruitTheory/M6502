@@ -40,5 +40,9 @@ Licensed under the MIT License - [LICENSE.md](LICENSE.md)
 
 ## Acknowledgments
 
-- nesdev.org - obelisk's guide
+- nesdev.org - obelisk's guide - Andrew Jacobs
+- as65 - assembler by Andrew Jacobs
 - masswerk.at - 6502 instruction set reference
+- ca65 - Assembler by Ullrich von Bassewitz, Greg King
+- hex editor - hexed.it ♡
+

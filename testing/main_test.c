@@ -9,23 +9,23 @@ $ORG = program_initial_load;
 
 
 void set_flag();
-void CMP(struct M6502* M6502, uchar8_t user_value);
+void CMP(struct M6502* computer, uchar8_t user_value);
 
 int main(int argc, char* argv[]){
 
 
-    struct M6502 M6502;
+    struct M6502 computer;
 
-    M6502.registers.AC = 0xFF;
+    computer.registers.AC = 0xFF;
 
-    M6502_init(&M6502);
+    M6502_init(&computer);
     
     uchar8_t user_value = 0xF;
-    M6502.registers.PC = 0x00FA;
-    printf("%04x\n", M6502.memory.address[M6502.registers.PC]);
+    computer.registers.PC = 0x00FA;
+    printf("%04x\n", computer.memory.address[computer.registers.PC]);
 
-    CMP(&M6502, user_value);
-    execute_instruction(&M6502, 0x00);
+    CMP(&computer, user_value);
+    execute_instruction(&computer, 0x00);
 
     if(0xC0 & flag_negative_bit){
         printf("this is true");

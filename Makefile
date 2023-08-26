@@ -7,8 +7,7 @@ ASM = ./asm/
 TESTING = ./testing/
 CC = gcc
 
-OBJECTS =   ${BUILD}check_SDL_version.o \
-			${BUILD}M6502.o \
+OBJECTS =	${BUILD}M6502.o \
 			${BUILD}M6502_stack.o \
 			${BUILD}M6502_memory.o \
 			${BUILD}load_binary.o \
@@ -25,9 +24,10 @@ TEST_OBJS = ${BUILD}M6502.o \
 
 LOAD_BIN_OBJS = ${BUILD}M6502_memory.o \
 
+# Removed SDL stuff - ${LIBRARY_DIR} ${LINKED_LIBRARIES} 
 
 all: ${OBJECTS} # Include objects program relies on
-	${CC} ${FLAGS} ${INCLUDES} ${SOURCES}main.c ${OBJECTS} ${LIBRARY_DIR} ${LINKED_LIBRARIES} -o ${BINARIES}main
+	${CC} ${FLAGS} ${INCLUDES} ${SOURCES}main.c ${OBJECTS} -o ${BINARIES}main
 
 # Build all - wildcards
 ${BUILD}%.o:${SOURCES}%.c
@@ -37,9 +37,9 @@ ${BUILD}%.o:${SOURCES}%.c
 clean:
 	del "${BUILD}"
 
-RUN_NAME = test_ca65
+RUN_FILE = test_ca65
 run:
-	${BINARIES}main ${ASM}${RUN_NAME}.bin
+	${BINARIES}main ${ASM}${RUN_FILE}.bin
 	
 # Use as65 assembler
 as65:

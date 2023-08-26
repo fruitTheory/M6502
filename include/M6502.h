@@ -14,8 +14,10 @@ struct M6502{
     
 };
 
-void M6502_init(struct M6502* M6502);
-void execute_instruction(struct M6502* M6502, uchar8_t opcode);
+void M6502_init(struct M6502* computer);
+void execute_instruction(struct M6502* computer, uchar8_t opcode);
+uchar8_t instruction_fetch(struct M6502* computer);
+void analyze_opcode(struct M6502* computer, uchar8_t opcode);
 
 
 extern uchar8_t flag_bit;
