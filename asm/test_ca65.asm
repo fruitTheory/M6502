@@ -15,6 +15,8 @@
     lda #$4F    ; Load ASCII value for 'O'
     ;sta $04     ; Store at address $0004
 
+    lda $0262
+
     sta $3000,x     ;Store accumulator
 
     jmp $1234

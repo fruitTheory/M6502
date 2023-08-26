@@ -10,23 +10,38 @@ uchar8_t flag_bit = 0xFF;
 
 // initialize the processor
 void M6502_init(struct M6502* computer){
+    // set any memory to 0
     memset(computer, 0, sizeof(&computer));
-    M6502_stack_init(computer);
+
+    printf("stack first addy: %i\n", computer->stack.stack_address[0]);
+    computer->stack.stack_address[0] = 2;
+    printf("size of stack array: %lli\n", sizeof(computer->stack.stack_address));
+
+    memset(computer->stack.stack_address, 1, sizeof(computer->stack.stack_address));
+    memcpy(&computer->memory.address[stack_start], &computer->stack.stack_address, sizeof(computer->stack.stack_address));
+
+    printf("stack after copy: %i\n", computer->memory.address[stack_start-1]);
+    printf("stack after copy: %i\n", computer->memory.address[stack_start]);
+    printf("stack after copy: %i\n", computer->memory.address[stack_start+1]);
+
+    //M6502_stack_init(computer);
 }
 
 // void analyze_opcode(uchar8_t opcode){
 //     opcode
 // }
 
-uchar8_t instruction_fetch(struct M6502* computer){
+// returns an opcode
+uchar8_t instruction_fetch(struct M6502* computer, int index){
+    printf("PC: %04X\n", computer->registers.PC);
     uchar8_t opcode = computer->memory.address[computer->registers.PC];
     printf("opcode: %02X\n", opcode);
     return opcode;
 }
 
-// this function determines which opcode we fetched
-void analyze_opcode(struct M6502* computer, uchar8_t opcode){
-    
+// determines which opcode was returned
+void analyze_opcode(struct M6502* computer, uchar8_t opcode, int index){
+
     switch (opcode)
         // if instruction has addressing modes pass it a mode
     {
@@ -59,9 +74,15 @@ void analyze_opcode(struct M6502* computer, uchar8_t opcode){
         // LDA - Load Accumulator
         case LDA_IMMEDIATE_D:
             //LDA_Immeadiate(computer);
-            LDA(computer, IMMEDIATE);
+            
+            LDA(computer, IMMEDIATE, index);
+            break;
+
+        case LDA_ABSOLUTE_D:
+            LDA(computer, ABSOLUTE, index);
             break;
         default:
+            puts("case not found");
             break;
     }
 }
