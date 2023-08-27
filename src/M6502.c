@@ -27,12 +27,9 @@ void M6502_init(struct M6502* computer){
     //M6502_stack_init(computer);
 }
 
-// void analyze_opcode(uchar8_t opcode){
-//     opcode
-// }
 
 // returns an opcode
-uchar8_t instruction_fetch(struct M6502* computer, int index){
+uchar8_t instruction_fetch(struct M6502* computer){
     printf("PC: %04X\n", computer->registers.PC);
     uchar8_t opcode = computer->memory.address[computer->registers.PC];
     printf("opcode: %02X\n", opcode);
@@ -40,7 +37,7 @@ uchar8_t instruction_fetch(struct M6502* computer, int index){
 }
 
 // determines which opcode was returned
-void analyze_opcode(struct M6502* computer, uchar8_t opcode, int index){
+void analyze_opcode(struct M6502* computer, uchar8_t opcode){
 
     switch (opcode)
         // if instruction has addressing modes pass it a mode
@@ -73,14 +70,17 @@ void analyze_opcode(struct M6502* computer, uchar8_t opcode, int index){
 
         // LDA - Load Accumulator
         case LDA_IMMEDIATE_D:
-            //LDA_Immeadiate(computer);
-            
-            LDA(computer, IMMEDIATE, index);
+            LDA(computer, IMMEDIATE);
             break;
 
         case LDA_ABSOLUTE_D:
-            LDA(computer, ABSOLUTE, index);
+            LDA(computer, ABSOLUTE);
             break;
+
+        case CLC_D: //clear carry flag
+            CLC();
+            break;
+
         default:
             puts("case not found");
             break;

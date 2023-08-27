@@ -8,7 +8,7 @@ typedef struct
 {
     // including RAM, ROM, and memory-mapped I/O.
     uchar8_t address[max_memory];
-    // please look into this making it ushort instead uchar doubles size of computer
+    // each address can hold one byte
 }M6502_memory;
 
 struct M6502; // forward declaration so compiler knows the struct exists and will be defined later

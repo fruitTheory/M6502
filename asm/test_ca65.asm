@@ -21,4 +21,6 @@
 
     jmp $1234
 
+    clc
+
     brk         ; Break (end of program)

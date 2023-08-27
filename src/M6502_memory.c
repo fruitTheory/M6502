@@ -23,8 +23,8 @@ uchar8_t M6502_memory_get_byte(struct M6502* computer, ushort16_t location){
 }
 // get two bytes in little endian order
 ushort16_t M6502_memory_get_word(struct M6502* computer, ushort16_t location){
-    uchar8_t lo_byte = M6502_memory_get_byte(computer, location);
-    uchar8_t hi_byte = M6502_memory_get_byte(computer, location+1);
+    uchar8_t lo_byte = M6502_memory_get_byte(computer, location+1);
+    uchar8_t hi_byte = M6502_memory_get_byte(computer, location+2);
     // Shifting bits left takes 8 bit -> 16bit, and | merges high byte with low bute
     return hi_byte << 8 | lo_byte; 
 }
