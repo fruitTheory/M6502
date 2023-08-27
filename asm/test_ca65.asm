@@ -15,9 +15,19 @@
     lda #$4F    ; Load ASCII value for 'O'
     ;sta $04     ; Store at address $0004
 
-    lda $0262
+    lda $0045   ; zerpage addy
 
-    sta $3000,x     ;Store accumulator
+    lda $0262   ; absolute addy
+
+    lda $50,X ; zeropage offset by X
+
+    lda $0272,X   ; absolute offset by X
+
+    lda ($40, X)    ; load a byte indirectly from memory
+
+    lda ($40),Y     ;Load a byte indirectly from memory
+
+    sta $3000,X     ;Store accumulator
 
     jmp $1234
 

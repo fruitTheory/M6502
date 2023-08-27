@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include "memory.h"
 #include "M6502_instructions.h"
+#include <time.h>
 
 
 int main(int argc, char* argv[]){
@@ -20,7 +21,7 @@ int main(int argc, char* argv[]){
     struct M6502 computer;
     M6502_init(&computer);
     printf("size of computer is: %lli bytes\n", sizeof(struct M6502));
-    
+
     // load program into memory - array of uchar8_t
     uchar8_t* program = load_program(argc, argv);
     print_program_info(argc, argv);
@@ -31,17 +32,6 @@ int main(int argc, char* argv[]){
 
     execute_instruction(&computer, program_size);
     
-    // computer.memory.address[0x0262] = 69;
-    // for(ushort16_t i = 0; i < (program_size - global_byte_count); i++){
-    //     printf("global: %i\n",global_byte_count);
-    //     uchar8_t opcode = instruction_fetch(&computer, i);
-    //     analyze_opcode(&computer, opcode, i);
-    //     computer.registers.PC += 1;
-    // }
-
-    // uchar8_t opcode = instruction_fetch(&computer);
-    // analyze_opcode(&computer, opcode);
-
     // // stack stuff
     // M6502_stack_init(&computer);
     // printf("stack unitialized: %i\n", computer.registers.SP);

@@ -2,6 +2,7 @@
 
 typedef unsigned char uchar8_t;
 typedef unsigned short ushort16_t;
+typedef unsigned long ulong64_t;
 typedef const char* cString;
 
 #define EXIT_SUCCESS 0
@@ -91,6 +92,7 @@ typedef enum{
 #define CMP_ABSOLUTE_X_D 0xDD // Compare Accumulator - Absolute, X
 #define CMP_ABSOLUTE_Y_D 0xD9 // Compare Accumulator - Absolute, Y
 #define CMP_INDIRECT_X_D 0xC1 // Compare Accumulator - (Indirect, X)
+#define CMP_INDIRECT_Y_D 0xD1 // Compare Accumulator - (Indirect, Y)
 
 #define CPX_IMMEDIATE_D 0xE0 // Compare X Register - Immediate
 #define CPX_ZERO_PAGE_D 0xE4 // Compare X Register - Zero Page
@@ -114,6 +116,7 @@ typedef enum{
 #define EOR_ABSOLUTE_X_D 0x5D // Exclusive OR - Absolute, X
 #define EOR_ABSOLUTE_Y_D 0x59 // Exclusive OR - Absolute, Y
 #define EOR_INDIRECT_X_D 0x41 // Exclusive OR - (Indirect, X)
+#define EOR_INDIRECT_Y_D 0x51 // Exclusive OR - (Indirect, Y)
 
 #define INC_ZERO_PAGE_D 0xE6 // Increment a Memory Location - Zero Page
 #define INC_ZERO_PAGE_X_D 0xF6 // Increment a Memory Location - Zero Page, X
@@ -163,6 +166,7 @@ typedef enum{
 #define ORA_ABSOLUTE_X_D 0x1D // Logical Inclusive OR - Absolute, X
 #define ORA_ABSOLUTE_Y_D 0x19 // Logical Inclusive OR - Absolute, Y
 #define ORA_INDIRECT_X_D 0x01 // Logical Inclusive OR - (Indirect, X)
+#define ORA_INDIRECT_Y_D 0x11 // Logical Inclusive OR - (Indirect, X)
 
 #define PHA_D 0x48 // Push Accumulator on Stack - Implied
 #define PHP_D 0x08 // Push Processor Status on Stack - Implied
@@ -223,42 +227,4 @@ typedef enum{
 Concering zero page think of the memory addresses as pages, theres 256 pages
 probably from page 0-255, and 256 locations on each page so 256x256 is 65536
 Zero page is just addresses without a highbyte ranging from 0x0000-0x00FF
-*/
-
-/*
-Rewrite these with masswerk examples
-
-Addressing Modes:
-
-Accumulator - A -- specified using a special operand value 'A'
-
-Absolute - $0000 -- Instructions using absolute addressing 16 bit address
-                    JMP $1234       ;Jump to location $1234
-Absolute X-indexed - $0000, X -- Add supplied address with whats in X register for new address
-Absolute Y-indexed - $0000, Y -- ""
-
-Immediate - #00 -- '#' symbol followed by an numeric expression
-                    LDA #10         ;Load 10 ($0A) into the accumulator
-                    LDX #LO LABEL   ;Load the LSB of a 16 bit address into X
-                    LDY #HI LABEL   ;Load the MSB of a 16 bit address into Y
-
-Implied - BRK -- is implicit doesnt need anything else ~
-
-Indirect - ($0000) -- Only for JMP contains a 16 bit address which identifies 
-                      the location of the least significant byte of another address
-                      JMP ($FFFC)     ;Force a power on reset
-                      JMP (TARGET)    ;Jump via a labelled memory area
-
-Indirect Indexed ($00), Y --  LDA ($40),Y     ;Load a byte indirectly from memory
-                              STA (DST),Y     ;Store accumulator indirectly into memory
-
-Indexed Indirect ($00, X) --  LDA ($40,X)     ;Load a byte indirectly from memory
-                              STA (MEM,X)     ;Store accumulator indirectly into memory
-
-Relative - BCC -- only used by branch instructions (BCC, BEQ, BNE, etc.)
-
-Zero Page - $00 -- Same as Absolute but only 8bit addresses
-Zero Page X-indexed - $00, X -- ""  Add supplied address with whats in X register for new address
-Zero Page Y-indexed - $00, Y -- ""  This mode can only be used with the LDX and STX instructions
-
 */

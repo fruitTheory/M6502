@@ -18,7 +18,6 @@ void M6502_init(struct M6502* computer);
 uchar8_t instruction_fetch(struct M6502* computer);
 void analyze_opcode(struct M6502* computer, uchar8_t opcode);
 
-
 extern uchar8_t flag_bit;
 
 #define flag_negative_bit 0x80 // check bit 7 - 1000 0000

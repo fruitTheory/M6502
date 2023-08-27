@@ -42,13 +42,3 @@ void M6502_store_program(struct M6502* computer, uchar8_t* file, size_t program_
         printf("value at memory address %04X: %02X\n", computer->registers.PC+i, computer->memory.address[program_initial_load+i]);
     }
 }
-
-
-
-
-// Set program counter and print all bytes onward until reaching program size
-// M6502->registers.PC = program_initial_load;
-// // print all bytes of file
-// for(int i = 0; i < (program_size); i++){
-//     printf("value at memory address %04X: %02X\n", M6502->registers.PC+i, M6502->memory.address[program_initial_load+i]);
-// }

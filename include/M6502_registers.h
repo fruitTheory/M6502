@@ -26,39 +26,8 @@ typedef enum {
 }SR_Flags;
 
 /*
-The zero flag (Z) indicates a value of all zero bits and the negative flag (N) indicates the presence of a set sign bit
-in bit-position 7. These flags are always updated, whenever a value is transferred to a CPU register (A,X,Y)
-and as a result of any logical ALU operations. The Z and N flags are also updated by increment and
-decrement operations acting on a memory location.
-
-The carry flag (C) flag is used as a buffer and as a borrow in arithmetic operations. Any comparisons will update this
-additionally to the Z and N flags, as do shift and rotate operations.
-
-All arithmetic operations update the Z, N, C and V flags.
-
-The overflow flag (V) indicates overflow with signed binary arithmetics. As a signed byte represents a range of -128 to +127,
-an overflow can never occur when the operands are of opposite sign, since the result will never exceed this range.
-Thus, overflow may only occur, if both operands are of the same sign. Then, the result must be also of the same sign.
-Otherwise, overflow is detected and the overflow flag is set. (I.e., both operands have a zero in the sign position at
-bit 7, but bit 7 of the result is 1, or, both operands have the sign-bit set, but the result is positive.)
-
-The decimal flag (D) sets the ALU to binary coded decimal (BCD) mode for additions and subtractions (ADC, SBC).
-
-The interrupt inhibit flag (I) blocks any maskable interrupt requests (IRQ).
-
-The break flag (B) is not an actual flag implemented in a register, and rather appears only, when the status register is pushed
-onto or pulled from the stack. When pushed, it will be 1 when transfered by a BRK or PHP instruction,
-and zero otherwise (i.e., when pushed by a hardware interrupt). When pulled into the status register (by PLP or on RTI),
-it will be ignored.
-In other words, the break flag will be inserted, whenever the status register is transferred to the stack by software (BRK or PHP),
-and will be zero, when transferred by hardware. Since there is no actual slot for the break flag, it will be always ignored,
-when retrieved (PLP or RTI). The break flag is not accessed by the CPU at anytime and there is no internal representation.
-Its purpose is more for patching, to discern an interrupt caused by a BRK instruction from a normal interrupt initiated by hardware.
 
 Any of these flags (but the break flag) may be set or cleared by dedicated instructions. Moreover, there are branch instructions
 to conditionally divert the control flow depending on the respective state of the Z, N, C or V flag.
 
 */
-
-// The program counter is incremented when an instruction is read for execution
-// the program counter needs to be incremented by amount of data needed by instruction

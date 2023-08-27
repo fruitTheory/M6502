@@ -26,7 +26,8 @@ Emulator for the MOS 6502 microprocessor, written in C
 ## Roadmap
 
 - Implement primary opcodes
-- Timings and Interrupts 
+- Timings and Interrupts
+- Debug functions
 - Refine components
 - Build on top, other components 
 
