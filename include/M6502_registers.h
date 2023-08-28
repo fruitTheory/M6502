@@ -26,8 +26,6 @@ typedef enum {
 }SR_Flags;
 
 /*
-
 Any of these flags (but the break flag) may be set or cleared by dedicated instructions. Moreover, there are branch instructions
 to conditionally divert the control flow depending on the respective state of the Z, N, C or V flag.
-
 */

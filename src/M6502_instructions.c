@@ -9,12 +9,12 @@ static ulong64_t cycles;
 static ushort16_t instruction_byte_count;
 
 // increment program counter by + 1, Used by 2 byte instructions
-static void Byte_Increment(struct M6502* computer){
+static inline void Byte_Increment(struct M6502* computer){
     computer->registers.PC += 1;
     instruction_byte_count += 1;
 }
 // increment after a 2 byte operation
-static void Word_Increment(struct M6502* computer){
+static inline void Word_Increment(struct M6502* computer){
     computer->registers.PC += 2;
     instruction_byte_count += 2;
 }

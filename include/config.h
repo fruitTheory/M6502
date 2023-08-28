@@ -222,9 +222,3 @@ typedef enum{
 #define TXA_D 0x8A // Transfer X to Accumulator - Implied
 #define TXS_D 0x9A // Transfer X to Stack Pointer - Implied
 #define TYA_D 0x98 // Transfer Y to Accumulator - Implied
-
-/*
-Concering zero page think of the memory addresses as pages, theres 256 pages
-probably from page 0-255, and 256 locations on each page so 256x256 is 65536
-Zero page is just addresses without a highbyte ranging from 0x0000-0x00FF
-*/

@@ -21,17 +21,19 @@ ushort16_t M6502_memory_get_word(struct M6502* computer, ushort16_t location);
 
 void M6502_store_program(struct M6502* computer, uchar8_t* file, size_t program_size);
 
-// memory map (reservered)
-
 /*
+memory map (reservered)
+
 The first 256 byte page of memory ($0000-$00FF) is referred to as 'Zero Page' and is the focus of a number of special 
 addressing modes that result in shorter (and quicker) instructions or allow indirect access to the memory.
-*/
 
-// The second page of memory ($0100-$01FF) is reserved for the system stack and which cannot be relocated.
+The second page of memory ($0100-$01FF) is reserved for the system stack and which cannot be relocated.
 
-/*
 The only other reserved locations in the memory map are the very last 6 bytes of memory $FFFA to $FFFF which must be
 programmed with the addresses of the non-maskable interrupt handler ($FFFA/B), the power on reset location ($FFFC/D)
 and the BRK/interrupt request handler ($FFFE/F) respectively.
+
+Concering zero page think of the memory addresses as pages, theres 256 pages
+probably from page 0-255, and 256 locations on each page so 256x256 is 65536
+Zero page is just addresses without a highbyte ranging from 0x0000-0x00FF
 */
