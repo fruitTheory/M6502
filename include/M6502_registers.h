@@ -13,17 +13,17 @@ typedef struct
 
 }M6502_registers;
 
-// 8 bits of processor status flags stored in status register
-typedef enum {
-    Carry, // Set if the last operation carried (addition) or borrowed (subtraction)
-    Zero, //  Set if the result of the operation is zero, otherwise clear
-    Interrupt, // If set, disables all maskable interrupts
-    Decimal, // Used to enable Binary Coded Decimal (BCD) mode in the processor, ignored in 8-bit M6502s
-    Break, // Only appears when a BRK instruction has been executed and an interrupt has been generated
-    Ignored, // Ignored
-    Overflow, //  Set if the signed result overflows, otherwise clear
-    Negative // Set if the result is negative, clear if positive
-}SR_Flags;
+// // 8 bits of processor status flags stored in status register
+// typedef enum {
+//     Carry, // Set if the last operation carried (addition) or borrowed (subtraction)
+//     Zero, //  Set if the result of the operation is zero, otherwise clear
+//     Interrupt, // If set, disables all maskable interrupts
+//     Decimal, // Used to enable Binary Coded Decimal (BCD) mode in the processor, ignored in 8-bit M6502s
+//     Break, // Only appears when a BRK instruction has been executed and an interrupt has been generated
+//     Ignored, // Ignored
+//     Overflow, //  Set if the signed result overflows, otherwise clear
+//     Negative // Set if the result is negative, clear if positive
+// }SR_Flags;
 
 /*
 Any of these flags (but the break flag) may be set or cleared by dedicated instructions. Moreover, there are branch instructions

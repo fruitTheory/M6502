@@ -5,20 +5,18 @@
 #include "M6502_instructions.h"
 #include <stdio.h>
 
-// global flag var - 255 | 1111 1111
-uchar8_t flag_bit = 0xFF;
-
 // initialize the processor
 void M6502_init(struct M6502* computer){
     // set everything in memory to 0
     memset(computer, 0, sizeof(&computer));
     M6502_stack_init(computer);
+    status_register = 0b01010101; // temporary SR init 0x55 - 0101 0101
 }
 
 // returns an opcode
 uchar8_t instruction_fetch(struct M6502* computer){
-    printf("PC: %04X\n", computer->registers.PC);
-    uchar8_t opcode = computer->memory.address[computer->registers.PC];
+    printf("PC: %04X\n", program_counter);
+    uchar8_t opcode = memory_address[program_counter];
     printf("opcode: %02X\n", opcode);
     return opcode;
 }

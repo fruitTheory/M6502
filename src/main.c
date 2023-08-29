@@ -15,8 +15,7 @@ int main(int argc, char* argv[]){
     // first thing
     //Check_SDL_Version();
     printf("total system memory: %i\n", max_memory);
-    flag_bit -= 5;
-    printf("flag bit: %i\n", flag_bit);
+
     // initialized M6502 variable
     struct M6502 computer;
     M6502_init(&computer);

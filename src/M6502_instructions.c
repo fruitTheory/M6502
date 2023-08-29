@@ -3,19 +3,20 @@
 #include <stdio.h>
 #include "M6502_memory.h"
 
-static ulong64_t cycles;
+
 // A container for bytes to help know when program instruction ends -
 // It is the total amount of bytes needed by executed instructions
 static ushort16_t instruction_byte_count;
+static ulong64_t cycles;
 
 // increment program counter by + 1, Used by 2 byte instructions
 static inline void Byte_Increment(struct M6502* computer){
-    computer->registers.PC += 1;
+    program_counter += 1;
     instruction_byte_count += 1;
 }
 // increment after a 2 byte operation
 static inline void Word_Increment(struct M6502* computer){
-    computer->registers.PC += 2;
+    program_counter += 2;
     instruction_byte_count += 2;
 }
 // increment cycle count
@@ -23,8 +24,8 @@ void cycle_push(uchar8_t cycle){
     cycles += cycle;
 }
 // return cycle count
-ulong64_t cycle_pop(){
-    printf("cycles: %li\n", cycles);
+ulong64_t cycles_current(){
+    printf("current cycle: %li\n", cycles);
     return cycles;
 }
 
@@ -36,7 +37,41 @@ void execute_instruction(struct M6502* computer, ushort16_t program_size){
         uchar8_t opcode = instruction_fetch(computer);
         analyze_opcode(computer, opcode);
         // natural program counter increment for instruction call
-        computer->registers.PC += 1;
+        program_counter += 1;
+    }
+}
+
+void set_flag(struct M6502* computer, uchar8_t FLAG){
+    
+    switch(FLAG)
+    {
+        case CARRY:
+
+            break;
+        case ZERO:
+
+            break;
+        case INTERRUPT:
+
+            break;
+        case DECIMAL:
+
+            break;
+        case BREAK:
+
+            break;
+        case IGNORED:
+
+            break;
+        case OVERFLOW:
+
+            break;
+        case NEGATIVE:
+            status_register |= flag_negative_bit; // OR operation is inclusive
+            break;
+        default:
+            puts("Error: not a valid flag");
+        break;
     }
 }
 
@@ -478,54 +513,70 @@ void JSR(struct M6502* computer, uchar8_t mode)
 }
 
 void LDA(struct M6502* computer, uchar8_t mode){
+    #define accumulator (computer->registers.AC)
+    #define program_counter (computer->registers.PC)
+    #define memory_address (computer->memory.address)
+    #define x_register (computer->registers.X)
+    #define y_register (computer->registers.Y)
+    #define status_register (computer->registers.SR)
 
     switch(mode)
     {
         case IMMEDIATE: // 0xA9
             Byte_Increment(computer);
-            computer->registers.AC = computer->memory.address[computer->registers.PC];
-            printf("Accumulator: %02X\n", computer->registers.AC);
-            //if(computer->registers.AC > 0x007F)
+            accumulator = memory_address[program_counter];
+            printf("Accumulator: %02X\n", accumulator);
+
+            accumulator = -7;
+            printf("Accumulator negative: %04X\n", accumulator);
+            // returns 1000 0000 if negative else 0000 0000 if positive
+            if(flag_negative_bit & accumulator){
+                puts("Sign is negative!");
+                printf("status register before SF func: %04X\n", status_register);
+                set_flag(computer, NEGATIVE);
+                printf("status register after SF func: %04X\n", status_register);
+            }
+            
             cycle_push(2);
-            cycle_pop();
+            cycles_current();
             break;
 
         case ZERO_PAGE: // 0xA5
             Byte_Increment(computer);
-            computer->registers.AC = computer->memory.address[computer->registers.PC];
-            printf("Accumulator: %02X\n", computer->registers.AC);
+            accumulator = memory_address[program_counter];
+            printf("Accumulator: %02X\n", accumulator);
             break;
 
         case ZERO_PAGE_X: // 0xB5
-            computer->registers.X = 0x40;
-            computer->memory.address[0x0090] = 69;
+            x_register = 0x40;
+            memory_address[0x0090] = 69;
             Byte_Increment(computer);
  
-            printf("X reg: %02X\n", computer->registers.X);
-            uchar8_t result = computer->memory.address[computer->registers.PC];
+            printf("X reg: %02X\n", x_register);
+            uchar8_t result = memory_address[program_counter];
 
-            printf("result PC: %04X\n", (result+computer->registers.X));
-            computer->registers.AC = computer->memory.address[(result+computer->registers.X)];
-            printf("Accumulator: %i\n", computer->registers.AC);
+            printf("result PC: %04X\n", (result + x_register));
+            accumulator = memory_address[(result + x_register)];
+            printf("Accumulator: %i\n", accumulator);
             break;
 
         case ABSOLUTE: // 0xAD
-            computer->memory.address[0x0262] = 69; // temp address and value
+            memory_address[0x0262] = 69; // temp address and value
             // needs the current point counter and then get the bytes of the next two addresses
-            computer->registers.AC = computer->memory.address[M6502_memory_get_word(computer, computer->registers.PC)];
+            accumulator = memory_address[M6502_memory_get_word(computer, program_counter)];
             Word_Increment(computer);
 
-            printf("Accumulator: %i\n", computer->registers.AC);
+            printf("Accumulator: %i\n", accumulator);
 
             break;
 
         case ABSOLUTE_X: // 0xBD
-            computer->memory.address[0x0262] = 69; // temp address and value
+            memory_address[0x0262] = 69; // temp address and value
             // needs the current point counter and then get the bytes of the next two addresses
-            computer->registers.AC = computer->memory.address[M6502_memory_get_word(computer, computer->registers.PC+computer->registers.X)];
+            accumulator = memory_address[M6502_memory_get_word(computer, program_counter+x_register)];
             Word_Increment(computer);
 
-            printf("Accumulator: %i\n", computer->registers.AC);
+            printf("Accumulator: %i\n", accumulator);
             break;
         case ABSOLUTE_Y: // 0xBD
             puts("Do Cmd");
@@ -533,15 +584,15 @@ void LDA(struct M6502* computer, uchar8_t mode){
 
         case INDIRECT_X: // 0xA1
             Byte_Increment(computer);
-            //printf("X reg: %02X\n", computer->registers.X);
-            computer->registers.AC = computer->memory.address[computer->registers.PC + computer->registers.X];
-            printf("Accumulator: %02X\n", computer->registers.AC);
+            //printf("X reg: %02X\n", x_register);
+            accumulator = memory_address[program_counter + x_register];
+            printf("Accumulator: %02X\n", accumulator);
             break;
 
         case INDIRECT_Y: // 0xB1
             Byte_Increment(computer);
-            computer->registers.AC = computer->memory.address[computer->registers.PC+computer->registers.Y];
-            printf("Accumulator: %02X\n", computer->registers.AC);
+            accumulator = memory_address[program_counter+computer->registers.Y];
+            printf("Accumulator: %02X\n", accumulator);
             break;
 
         default:
@@ -942,5 +993,3 @@ void TYA(struct M6502* computer)
 {
     cycle_push(2); // 0x98
 }
-
-// This concludes the 6502 instruction set functions

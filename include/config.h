@@ -16,6 +16,13 @@ typedef const char* cString;
 #define stack_end 0x01FF // decimal(byte) 511 - Use as offset for programs
 #define program_initial_load 0x0200 // decimal(byte) 512 - Programs first byte
 
+#define accumulator (computer->registers.AC)
+#define program_counter (computer->registers.PC)
+#define memory_address (computer->memory.address)
+#define x_register (computer->registers.X)
+#define y_register (computer->registers.Y)
+#define status_register (computer->registers.SR)
+
 // enumeration to represent addressing modes
 typedef enum{
     ACCUMULATOR,
@@ -39,6 +46,27 @@ typedef enum{
 - A act directly upon the Accumulator
 - Relative is just a 8 bit relative offset if branch is true
 */
+
+#define flag_negative_bit 0x80 // check bit 7 - 1000 0000
+#define flag_overflow_bit 0x40 // check bit 6 - 0100 0000
+#define flag_ignored_bit 0x20 // check bit 5 - 0010 0000
+#define flag_break_bit 0x10 // check bit 4 - 0001 0000
+#define flag_decimal_bit 0x08 // check bit 3 - 0000 1000
+#define flag_interrupt_bit 0x04 // check bit 2 - 0000 0100
+#define flag_zero_bit 0x02 // check bit 1 - 0000 0010
+#define flag_carry_bit 0x01 // check bit 0 - 0000 0001
+
+// 8 bits of processor status flags stored in status register
+typedef enum {
+    CARRY, // Set if the last operation carried (addition) or borrowed (subtraction)
+    ZERO, //  Set if the result of the operation is zero, otherwise clear
+    INTERRUPT, // If set, disables all maskable interrupts
+    DECIMAL, // Used to enable Binary Coded Decimal (BCD) mode in the processor, ignored in 8-bit M6502s
+    BREAK, // Only appears when a BRK instruction has been executed and an interrupt has been generated
+    IGNORED, // Ignored
+    OVERFLOW, //  Set if the signed result overflows, otherwise clear
+    NEGATIVE // Set if the result is negative, clear if positive
+}SR_Flags;
 
 // Instructions 
 
