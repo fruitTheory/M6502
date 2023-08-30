@@ -15,6 +15,13 @@
         "compare": "c",
         "limits": "c",
         "new": "c",
-        "m6502_instructions.h": "c"
+        "m6502_instructions.h": "c",
+        "array": "c",
+        "*.tcc": "c",
+        "memory": "c",
+        "istream": "c",
+        "functional": "c",
+        "tuple": "c",
+        "utility": "c"
     }
 }

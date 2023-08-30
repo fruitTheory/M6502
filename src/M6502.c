@@ -5,12 +5,23 @@
 #include "M6502_instructions.h"
 #include <stdio.h>
 
+
+ushort16_t instruction_byte_count;
+ulong64_t cycles;
+
 // initialize the processor
 void M6502_init(struct M6502* computer){
     // set everything in memory to 0
     memset(computer, 0, sizeof(&computer));
     M6502_stack_init(computer);
     status_register = 0b01010101; // temporary SR init 0x55 - 0101 0101
+}
+
+extern inline void cycle_push(uchar8_t cycle);
+
+ulong64_t cycle_current(){
+    printf("current cycle: %li\n", cycles);
+    return cycles;
 }
 
 // returns an opcode

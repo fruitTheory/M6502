@@ -5,7 +5,7 @@
 #include "M6502_stack.h"
 #include "load_binary.h"
 #include <stdlib.h>
-#include "memory.h"
+#include <memory.h>
 #include "M6502_instructions.h"
 #include <time.h>
 
@@ -14,7 +14,7 @@ int main(int argc, char* argv[]){
 
     // first thing
     //Check_SDL_Version();
-    printf("total system memory: %i\n", max_memory);
+    printf("total system memory: %i\n", max_address);
 
     // initialized M6502 variable
     struct M6502 computer;

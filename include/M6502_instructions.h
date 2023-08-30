@@ -1,9 +1,7 @@
 #include "config.h"
 #include "M6502.h"
 
-ulong64_t cycles_current();
 
-void cycle_push(uchar8_t cycle);
 void execute_instruction(struct M6502* computer, ushort16_t program_size);
 
 void set_flag(struct M6502* computer, uchar8_t FLAG);

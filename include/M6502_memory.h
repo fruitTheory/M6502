@@ -7,19 +7,28 @@
 typedef struct
 {
     // including RAM, ROM, and memory-mapped I/O.
-    uchar8_t address[max_memory];
+    uchar8_t address[max_address];
     // each address can hold one byte
 }M6502_memory;
 
 struct M6502; // forward declaration so compiler knows the struct exists and will be defined later
 
-void M6502_set_memory(struct M6502* computer, ushort16_t location, uchar8_t value);
+void M6502_set_memory(struct M6502* computer, ushort16_t address, uchar8_t value);
 void M6502_memory_inbounds(ushort16_t index);
 
-uchar8_t M6502_memory_get_byte(struct M6502* computer, ushort16_t location);
-ushort16_t M6502_memory_get_word(struct M6502* computer, ushort16_t location);
+uchar8_t M6502_memory_get_byte(struct M6502* computer, ushort16_t address);
+ushort16_t M6502_memory_get_word(struct M6502* computer, ushort16_t address);
 
 void M6502_store_program(struct M6502* computer, uchar8_t* file, size_t program_size);
+
+void Byte_Increment(struct M6502* computer);
+
+// increment after a 2 byte operation
+// static inline void Word_Increment(struct M6502* computer){
+//     program_counter += 2;
+//     instruction_byte_count += 2;
+// }
+// increment cycle count
 
 /*
 memory map (reservered)

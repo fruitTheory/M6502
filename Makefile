@@ -46,7 +46,7 @@ as65:
 	as65 ${ASM}test_as65.asm
 #as65 ${ASM}6502_decimal_test.a65
 
-BASE_NAME = chess_test
+BASE_NAME = test_ca65
 # Use ca65 assembler
 ca65:
 	ca65 -l ${ASM}${BASE_NAME}.lst ${ASM}${BASE_NAME}.asm 
