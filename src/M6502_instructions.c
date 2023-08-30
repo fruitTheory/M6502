@@ -1,7 +1,8 @@
 #include "M6502_instructions.h"
+#include "M6502_memory.h"
 #include "config.h"
 #include <stdio.h>
-#include "M6502_memory.h"
+
 
 
 // executes all program instructions
@@ -16,6 +17,7 @@ void execute_instruction(struct M6502* computer, ushort16_t program_size){
     }
 }
 
+// sets provided status register flag
 void set_flag(struct M6502* computer, uchar8_t FLAG){
 
     // Another way could be to shift 1 << 6 - 0000 0001 -> 0100 0000
@@ -51,9 +53,64 @@ void set_flag(struct M6502* computer, uchar8_t FLAG){
     }
 }
 
+// check if provided flag needs to be set, this also sets that flag
+void check_flag(struct M6502* computer, uchar8_t FLAG){
+
+    switch(FLAG)
+    {
+        case CARRY:
+            break;
+        case ZERO:
+            if(accumulator == 0)
+                puts("Set Zero flag!");
+            break;
+        case INTERRUPT:
+            break;
+        case DECIMAL:
+            break;
+        case BREAK:
+            break;
+        case IGNORED:
+            break;
+        case OVERFLOW:
+
+            break;
+        case NEGATIVE:
+            if(flag_negative_bit & accumulator){
+                puts("Sign is negative!");
+                set_flag(computer, NEGATIVE);
+            }
+            break;
+        default:
+            puts("Error: not a valid flag");
+        break;
+    }
+}
+
+// this may actually need the address input after instruction performed
+void check_page(struct M6502* computer, uchar8_t register_n, uchar8_t memory_type){
+    ushort16_t input_address;
+    // probably temp if statement if indirect Y also deals with 2 byte value like absolute
+    if(memory_type == memory_type_word){
+        input_address = M6502_get_word(computer, program_counter, increment_false);
+        //input_address = 0xFA;
+        puts("if");}
+    else{
+        input_address = M6502_get_byte(computer, program_counter);
+        //input_address = 0xFA;
+        puts("else");}
+
+    ushort16_t input_address_offset = input_address + register_n;
+    float old_page = input_address/256; // this naturally truncates 
+    float new_page = input_address_offset/256;
+    (old_page != new_page) ? cycle_push(5) : cycle_push(4); // if new page != old page +1 cycle
+    //(old_page != new_page) ? puts("cyc: 5") :puts("cyc: 4"); // if new page != old page +1 cycle
+}
+
+
 void ADC(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case IMMEDIATE: // 0x69
@@ -100,7 +157,7 @@ void ADC(struct M6502* computer, uchar8_t mode)
 
 void AND(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case IMMEDIATE: // 0x29
@@ -146,7 +203,7 @@ void AND(struct M6502* computer, uchar8_t mode)
 
 void ASL(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case ACCUMULATOR: // 0x0A
@@ -202,7 +259,7 @@ void BEQ(struct M6502* computer)
 
 void BIT(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case ZERO_PAGE: // 0x24
@@ -272,7 +329,7 @@ void CLV(struct M6502* computer)
 
 void CMP(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case IMMEDIATE: // 0xC9
@@ -318,7 +375,7 @@ void CMP(struct M6502* computer, uchar8_t mode)
 
 void CPX(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case IMMEDIATE: // 0xE0
@@ -342,7 +399,7 @@ void CPX(struct M6502* computer, uchar8_t mode)
 
 void CPY(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case IMMEDIATE: // 0xC0
@@ -366,7 +423,7 @@ void CPY(struct M6502* computer, uchar8_t mode)
 
 void DEC(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case ZERO_PAGE: // 0xC6
@@ -405,7 +462,7 @@ void DEY(struct M6502* computer)
 
 void EOR(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case IMMEDIATE: // 0x49
@@ -451,7 +508,7 @@ void EOR(struct M6502* computer, uchar8_t mode)
 
 void INC(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case ZERO_PAGE: // 0xE6
@@ -490,12 +547,12 @@ void INY(struct M6502* computer)
 
 void JMP(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case ABSOLUTE: // 0x4C
 
-            M6502_memory_get_word(computer, program_counter);
+            M6502_get_word(computer, program_counter, increment_true);
             cycle_push(3);
             break;
         case INDIRECT: // 0x6C
@@ -522,28 +579,22 @@ void JSR(struct M6502* computer, uchar8_t mode)
 }
 
 void LDA(struct M6502* computer, uchar8_t mode){
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case IMMEDIATE: { // 0xA9
 
+            x_register = 0x9;
+            check_page(computer, x_register, memory_type_word);
+
             accumulator = memory_address[program_counter];
+            //printf("Accumulator: %04X\n", accumulator);
 
-            //accumulator = -7;
-            printf("Accumulator: %04X\n", accumulator);
-
-            // returns 1000 0000 if negative else 0000 0000 if positive
-            if(flag_negative_bit & accumulator){
-                puts("Sign is negative!");
-                printf("status register before SF func: %04X\n", status_register);
-                set_flag(computer, NEGATIVE);
-                printf("status register after SF func: %04X\n", status_register);
-            }
-            if(accumulator == 0)
-                puts("Set Zero flag!");
+            check_flag(computer, NEGATIVE);
+            check_flag(computer, ZERO);
             
-            cycle_push(2);
-            cycle_current();
+            //cycle_push(2);
+            //cycle_current();
             break;
             }
 
@@ -553,49 +604,29 @@ void LDA(struct M6502* computer, uchar8_t mode){
             cycle_push(3);
             break;
 
-        case ZERO_PAGE_X: // 0xB5
-            x_register = 0x40;
-            memory_address[0x0090] = 69;
- 
-            printf("X reg: %02X\n", x_register);
-            uchar8_t result = memory_address[program_counter];
-
-            printf("result PC: %04X\n", (result + x_register));
-            accumulator = memory_address[(result + x_register)];
+        case ZERO_PAGE_X:{ // 0xB5
+            uchar8_t input_address = memory_address[program_counter];
+            accumulator = memory_address[(input_address + x_register)];
             printf("Accumulator: %i\n", accumulator);
             cycle_push(4);
             break;
-
+        }
         case ABSOLUTE: // 0xAD
-            memory_address[0x0262] = 69; // temp address and value
-            // needs the current point counter and then get the bytes of the next two addresses
-            accumulator = memory_address[M6502_memory_get_word(computer, program_counter)];
-
-
+            accumulator = memory_address[M6502_get_word(computer, program_counter, increment_true)];
             printf("Accumulator: %i\n", accumulator);
             cycle_push(4);
             break;
 
         case ABSOLUTE_X: // 0xBD
 
-            // page_check(struct M6502* computer, uchar8_t register (which register X Y))
-            // page_check(computer, x_register);
-
-            ushort16_t input_address = memory_address[program_counter]; // the actual value stored by user
-            ushort16_t input_address_offset = input_address + x_register;
-            float old_page = input_address/256; // this naturally truncates 
-            float new_page = input_address_offset/256;
-            (old_page != new_page) ? cycle_push(5) : cycle_push(4); // if new page != old page +1 cycle
-
-            accumulator = memory_address[M6502_memory_get_word(computer, program_counter + x_register)];
+            accumulator = memory_address[M6502_get_word(computer, (program_counter + x_register), increment_true)];
 
             printf("Accumulator: %i\n", accumulator);
             break;
 
         case ABSOLUTE_Y: // 0xBD
 
-            accumulator = memory_address[M6502_memory_get_word(computer, program_counter + y_register)];
-  
+            accumulator = memory_address[M6502_get_word(computer, (program_counter + y_register), increment_true)];
             
             printf("Accumulator: %i\n", accumulator);
             cycle_push(4); // +1 if page crossed
@@ -603,13 +634,23 @@ void LDA(struct M6502* computer, uchar8_t mode){
 
         case INDIRECT_X: // 0xA1
 
+        /*
+        LDA ($70,X)
+        load the contents of the location given in addresses
+        "$0070+X" and "$0070+1+X" into A
+        */
+
             accumulator = memory_address[program_counter + x_register];
             printf("Accumulator: %02X\n", accumulator);
             cycle_push(6);
             break;
 
         case INDIRECT_Y: // 0xB1
-
+        /*
+        LDA ($70),Y
+        add the contents of the Y-register to the pointer provided in
+        "$0070" and "$0071" and load the contents of this address into A
+        */
             accumulator = memory_address[program_counter + y_register];
             printf("Accumulator: %02X\n", accumulator);
 
@@ -628,7 +669,7 @@ void LDA(struct M6502* computer, uchar8_t mode){
 
 void LDX(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case IMMEDIATE: // 0xA2
@@ -661,7 +702,7 @@ void LDX(struct M6502* computer, uchar8_t mode)
 
 void LDY(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case IMMEDIATE: // 0xA0
@@ -692,7 +733,7 @@ void LDY(struct M6502* computer, uchar8_t mode)
 
 void LSR(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case ACCUMULATOR: // 0x4A
@@ -727,7 +768,7 @@ void NOP(struct M6502* computer)
 
 void ORA(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case IMMEDIATE: // 0x09
@@ -790,7 +831,7 @@ void PLP(struct M6502* computer)
 
 void ROL(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case ACCUMULATOR: // 0x2A
@@ -820,7 +861,7 @@ void ROL(struct M6502* computer, uchar8_t mode)
 
 void ROR(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case ACCUMULATOR: // 0x6A
@@ -860,7 +901,7 @@ void RTS(struct M6502* computer)
 
 void SBC(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case IMMEDIATE: // 0xE9
@@ -918,7 +959,7 @@ void SEI(struct M6502* computer)
 
 void STA(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case ZERO_PAGE: // 0x85
@@ -960,7 +1001,7 @@ void STA(struct M6502* computer, uchar8_t mode)
 
 void STX(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case ZERO_PAGE: // 0x86
@@ -983,7 +1024,7 @@ void STX(struct M6502* computer, uchar8_t mode)
 
 void STY(struct M6502* computer, uchar8_t mode)
 {
-    Byte_Increment(computer);
+    PC_increment(computer);
     switch(mode)
     {
         case ZERO_PAGE: // 0x84

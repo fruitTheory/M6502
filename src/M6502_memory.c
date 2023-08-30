@@ -15,23 +15,24 @@ void M6502_set_memory(struct M6502* computer, ushort16_t address, uchar8_t value
     memory_address[address] = value;
 }
 
-// increment program counter by + 1, Used by 2 byte instructions
-void Byte_Increment(struct M6502* computer){
+// increment program counter by + 1
+void PC_increment(struct M6502* computer){
     program_counter += 1;
     instruction_byte_count += 1;
 }
 
 // get bytes at memory address
-uchar8_t M6502_memory_get_byte(struct M6502* computer, ushort16_t address){
+uchar8_t M6502_get_byte(struct M6502* computer, ushort16_t address){
 
     M6502_address_inbounds(address);
     return memory_address[address];
 }
 // get two bytes in little endian order - increments program counter +1
-ushort16_t M6502_memory_get_word(struct M6502* computer, ushort16_t address){
-    uchar8_t lo_byte = M6502_memory_get_byte(computer, address);
-    uchar8_t hi_byte = M6502_memory_get_byte(computer, address+1);
-    Byte_Increment(computer);
+// increment should always be true unless being used outside of program counter (abstracted)
+ushort16_t M6502_get_word(struct M6502* computer, ushort16_t address, uchar8_t increment){
+    uchar8_t lo_byte = M6502_get_byte(computer, address);
+    uchar8_t hi_byte = M6502_get_byte(computer, address+1);
+    if(increment == increment_true) PC_increment(computer);
     // Shifting bits left takes 8 bit -> 16bit, and | merges high byte with low bute
     return hi_byte << 8 | lo_byte; 
 }

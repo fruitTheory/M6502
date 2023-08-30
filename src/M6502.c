@@ -1,8 +1,8 @@
 #include "M6502.h"
+#include "M6502_instructions.h"
+#include "config.h"
 #include <memory.h>
 #include <assert.h>
-#include "config.h"
-#include "M6502_instructions.h"
 #include <stdio.h>
 
 

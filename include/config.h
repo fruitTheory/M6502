@@ -23,6 +23,12 @@ typedef const char* cString;
 #define y_register (computer->registers.Y)
 #define status_register (computer->registers.SR)
 
+#define increment_true 0 // used with get_memory_word function
+#define increment_false -1 // used with get_memory_word function
+
+#define memory_type_byte 1
+#define memory_type_word 2
+
 // enumeration to represent addressing modes
 typedef enum{
     ACCUMULATOR,

@@ -16,12 +16,12 @@ struct M6502; // forward declaration so compiler knows the struct exists and wil
 void M6502_set_memory(struct M6502* computer, ushort16_t address, uchar8_t value);
 void M6502_memory_inbounds(ushort16_t index);
 
-uchar8_t M6502_memory_get_byte(struct M6502* computer, ushort16_t address);
-ushort16_t M6502_memory_get_word(struct M6502* computer, ushort16_t address);
+uchar8_t M6502_get_byte(struct M6502* computer, ushort16_t address);
+ushort16_t M6502_get_word(struct M6502* computer, ushort16_t address, uchar8_t increment);
 
 void M6502_store_program(struct M6502* computer, uchar8_t* file, size_t program_size);
 
-void Byte_Increment(struct M6502* computer);
+void PC_increment(struct M6502* computer);
 
 // increment after a 2 byte operation
 // static inline void Word_Increment(struct M6502* computer){
