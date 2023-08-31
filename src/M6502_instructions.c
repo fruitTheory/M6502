@@ -4,16 +4,17 @@
 #include <stdio.h>
 
 
-
 // executes all program instructions
 void execute_instruction(struct M6502* computer, ushort16_t program_size){
     // for loop takes program size and subtracts as instructions happen
-    for(ushort16_t i = 0; i < (program_size - instruction_byte_count); i++){
-        //printf("global: %i\n",instruction_byte_count);
+    for(ushort16_t i = 0; i < (program_size - (instruction_byte_count)); i++){
         uchar8_t opcode = instruction_fetch(computer);
         analyze_opcode(computer, opcode);
-        // natural program counter increment for instruction call
         program_counter += 1;
+        // Note for this function - it goes to analyze_opcode and PC is +1 for instruction
+        // If the instruction requires another byte, the PC is +1 from M6502_get_word()
+        // When it returns from instruction the PC is +1 as seen above to prepare for next opcode
+        // Implied and Accumulator will need to decrement PC by -1 as they are only 1 byte in total
     }
 }
 
@@ -91,14 +92,14 @@ void check_flag(struct M6502* computer, uchar8_t FLAG){
 void check_page(struct M6502* computer, uchar8_t register_n, uchar8_t memory_type){
     ushort16_t input_address;
     // probably temp if statement if indirect Y also deals with 2 byte value like absolute
-    if(memory_type == memory_type_word){
+    if(memory_type == memory_type_word)
         input_address = M6502_get_word(computer, program_counter, increment_false);
         //input_address = 0xFA;
-        puts("if");}
-    else{
+        //puts("if");}
+    else
         input_address = M6502_get_byte(computer, program_counter);
         //input_address = 0xFA;
-        puts("else");}
+        //puts("else");}
 
     ushort16_t input_address_offset = input_address + register_n;
     float old_page = input_address/256; // this naturally truncates 
@@ -110,7 +111,6 @@ void check_page(struct M6502* computer, uchar8_t register_n, uchar8_t memory_typ
 
 void ADC(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
     switch(mode)
     {
         case IMMEDIATE: // 0x69
@@ -157,7 +157,6 @@ void ADC(struct M6502* computer, uchar8_t mode)
 
 void AND(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
     switch(mode)
     {
         case IMMEDIATE: // 0x29
@@ -203,7 +202,6 @@ void AND(struct M6502* computer, uchar8_t mode)
 
 void ASL(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
     switch(mode)
     {
         case ACCUMULATOR: // 0x0A
@@ -259,7 +257,6 @@ void BEQ(struct M6502* computer)
 
 void BIT(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
     switch(mode)
     {
         case ZERO_PAGE: // 0x24
@@ -329,7 +326,7 @@ void CLV(struct M6502* computer)
 
 void CMP(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
+    
     switch(mode)
     {
         case IMMEDIATE: // 0xC9
@@ -375,7 +372,7 @@ void CMP(struct M6502* computer, uchar8_t mode)
 
 void CPX(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
+    
     switch(mode)
     {
         case IMMEDIATE: // 0xE0
@@ -399,7 +396,7 @@ void CPX(struct M6502* computer, uchar8_t mode)
 
 void CPY(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
+    
     switch(mode)
     {
         case IMMEDIATE: // 0xC0
@@ -423,7 +420,7 @@ void CPY(struct M6502* computer, uchar8_t mode)
 
 void DEC(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
+    
     switch(mode)
     {
         case ZERO_PAGE: // 0xC6
@@ -462,7 +459,7 @@ void DEY(struct M6502* computer)
 
 void EOR(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
+    
     switch(mode)
     {
         case IMMEDIATE: // 0x49
@@ -508,7 +505,7 @@ void EOR(struct M6502* computer, uchar8_t mode)
 
 void INC(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
+    
     switch(mode)
     {
         case ZERO_PAGE: // 0xE6
@@ -547,12 +544,13 @@ void INY(struct M6502* computer)
 
 void JMP(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
+    
     switch(mode)
     {
         case ABSOLUTE: // 0x4C
 
-            M6502_get_word(computer, program_counter, increment_true);
+            ushort16_t location = M6502_get_word(computer, program_counter, increment_true);
+            program_counter = location;
             cycle_push(3);
             break;
         case INDIRECT: // 0x6C
@@ -579,21 +577,21 @@ void JSR(struct M6502* computer, uchar8_t mode)
 }
 
 void LDA(struct M6502* computer, uchar8_t mode){
-    PC_increment(computer);
+    
     switch(mode)
     {
         case IMMEDIATE: { // 0xA9
 
-            x_register = 0x9;
-            check_page(computer, x_register, memory_type_word);
+            // x_register = 0x9;
+            // check_page(computer, x_register, memory_type_word);
 
             accumulator = memory_address[program_counter];
-            //printf("Accumulator: %04X\n", accumulator);
+            printf("Accumulator: %02X\n", accumulator);
 
             check_flag(computer, NEGATIVE);
             check_flag(computer, ZERO);
             
-            //cycle_push(2);
+            cycle_push(2);
             //cycle_current();
             break;
             }
@@ -669,7 +667,7 @@ void LDA(struct M6502* computer, uchar8_t mode){
 
 void LDX(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
+    
     switch(mode)
     {
         case IMMEDIATE: // 0xA2
@@ -702,7 +700,7 @@ void LDX(struct M6502* computer, uchar8_t mode)
 
 void LDY(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
+    
     switch(mode)
     {
         case IMMEDIATE: // 0xA0
@@ -733,7 +731,7 @@ void LDY(struct M6502* computer, uchar8_t mode)
 
 void LSR(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
+    
     switch(mode)
     {
         case ACCUMULATOR: // 0x4A
@@ -768,7 +766,7 @@ void NOP(struct M6502* computer)
 
 void ORA(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
+    
     switch(mode)
     {
         case IMMEDIATE: // 0x09
@@ -831,7 +829,7 @@ void PLP(struct M6502* computer)
 
 void ROL(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
+    
     switch(mode)
     {
         case ACCUMULATOR: // 0x2A
@@ -861,7 +859,7 @@ void ROL(struct M6502* computer, uchar8_t mode)
 
 void ROR(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
+    
     switch(mode)
     {
         case ACCUMULATOR: // 0x6A
@@ -901,7 +899,7 @@ void RTS(struct M6502* computer)
 
 void SBC(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
+    
     switch(mode)
     {
         case IMMEDIATE: // 0xE9
@@ -959,7 +957,7 @@ void SEI(struct M6502* computer)
 
 void STA(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
+    
     switch(mode)
     {
         case ZERO_PAGE: // 0x85
@@ -977,7 +975,7 @@ void STA(struct M6502* computer, uchar8_t mode)
             break;
         case ABSOLUTE_X: // 0x9D
 
- 
+            M6502_get_word(computer, program_counter, increment_true);
             cycle_push(5);
             break;
         case ABSOLUTE_Y: // 0x99
@@ -1001,7 +999,7 @@ void STA(struct M6502* computer, uchar8_t mode)
 
 void STX(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
+    
     switch(mode)
     {
         case ZERO_PAGE: // 0x86
@@ -1024,7 +1022,7 @@ void STX(struct M6502* computer, uchar8_t mode)
 
 void STY(struct M6502* computer, uchar8_t mode)
 {
-    PC_increment(computer);
+    
     switch(mode)
     {
         case ZERO_PAGE: // 0x84

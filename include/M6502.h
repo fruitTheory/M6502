@@ -19,8 +19,9 @@ uchar8_t instruction_fetch(struct M6502* computer);
 void analyze_opcode(struct M6502* computer, uchar8_t opcode);
 
 
-// A container for bytes to help know when program instruction ends -
-// It is the total amount of bytes needed by executed instructions
+// A container used to store the amount of bytes internal instructions use
+// It is used to subtract from the total program size
+// Subtracting from this adds bytes to amount outputted
 extern ushort16_t instruction_byte_count;
 // Total number of CPU cycles
 extern ulong64_t cycles;
@@ -30,4 +31,15 @@ inline void cycle_push(uchar8_t cycle){
 }
 ulong64_t cycle_current();
 
+// increment program counter by + 1
+inline void PC_increment(struct M6502* computer){
+    program_counter += 1;
+    instruction_byte_count += 1;
+}
+
+// decrement program counter by - 1
+inline void PC_decrement(struct M6502* computer){
+    program_counter -= 1;
+    instruction_byte_count -= 1;
+}
 

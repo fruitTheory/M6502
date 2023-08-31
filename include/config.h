@@ -23,6 +23,9 @@ typedef const char* cString;
 #define y_register (computer->registers.Y)
 #define status_register (computer->registers.SR)
 
+#define stack_pointer (computer->registers.SP) // points to stack related memory address
+#define stack_addresses (computer->stack.stack_address)
+
 #define increment_true 0 // used with get_memory_word function
 #define increment_false -1 // used with get_memory_word function
 

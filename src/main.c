@@ -31,15 +31,12 @@ int main(int argc, char* argv[]){
 
     execute_instruction(&computer, program_size);
     
-    // // stack stuff
-    // M6502_stack_init(&computer);
-    // printf("stack unitialized: %i\n", computer.registers.SP);
-    // computer.registers.SP = 5;
-    // printf("stack initialized: %i\n", computer.registers.SP);
+    // stack stuff
+    M6502_stack_init(&computer);
 
-    // // push and pop to stack
-    // M6502_stack_push(&computer, 0x100);
-    // M6502_stack_pop(&computer, 0x100);
+    // push and pop to stack
+    M6502_stack_push(&computer, 0x101);
+    M6502_stack_pop(&computer, 0x102);
 
     return EXIT_SUCCESS;
 }

@@ -5,10 +5,6 @@
 #include <assert.h>
 #include <stdio.h>
 
-
-ushort16_t instruction_byte_count;
-ulong64_t cycles;
-
 // initialize the processor
 void M6502_init(struct M6502* computer){
     // set everything in memory to 0
@@ -17,6 +13,11 @@ void M6502_init(struct M6502* computer){
     status_register = 0b01010101; // temporary SR init 0x55 - 0101 0101
 }
 
+ushort16_t instruction_byte_count;
+ulong64_t cycles;
+
+extern inline void PC_increment(struct M6502* computer);
+extern inline void PC_decrement(struct M6502* computer);
 extern inline void cycle_push(uchar8_t cycle);
 
 ulong64_t cycle_current(){
@@ -26,14 +27,17 @@ ulong64_t cycle_current(){
 
 // returns an opcode
 uchar8_t instruction_fetch(struct M6502* computer){
-    printf("PC: %04X\n", program_counter);
     uchar8_t opcode = memory_address[program_counter];
+    printf("PC: %04X\n", program_counter);
     printf("opcode: %02X\n", opcode);
     return opcode;
 }
 
 // determines which opcode was returned
 void analyze_opcode(struct M6502* computer, uchar8_t opcode){
+
+    // Initial byte to get off the instruction to the user input
+    PC_increment(computer);
 
     switch (opcode)
     {
@@ -91,6 +95,7 @@ void analyze_opcode(struct M6502* computer, uchar8_t opcode){
 
         // ASL - Arithmetic Shift Left
         case ASL_ACCUMULATOR_D: 
+            PC_decrement(computer);
             ASL(computer, ACCUMULATOR);
             break;
         case ASL_ZERO_PAGE_D: 
@@ -141,7 +146,8 @@ void analyze_opcode(struct M6502* computer, uchar8_t opcode){
             break;
 
         // BRK - Force Interrupt
-        case BRK_D: 
+        case BRK_D:
+            PC_decrement(computer); 
             BRK(computer);
             break;
 
@@ -155,19 +161,23 @@ void analyze_opcode(struct M6502* computer, uchar8_t opcode){
             break;
 
         // CLC - Clear Carry Flag
-        case CLC_D: 
+        case CLC_D:
+            PC_decrement(computer);
             CLC(computer);
             break;
         // CLD - Clear Decimal Mode
         case CLD_D: 
+            PC_decrement(computer);
             CLD(computer);
             break;
         // CLI - Clear Interrupt Disable
         case CLI_D: 
+            PC_decrement(computer);
             CLI(computer);
             break;
         // CLV - Clear Overflow Flag
         case CLV_D: 
+            PC_decrement(computer);
             CLV(computer);
             break;
 
@@ -235,11 +245,13 @@ void analyze_opcode(struct M6502* computer, uchar8_t opcode){
 
         // DEX - Decrement the X Register
         case DEX_D: 
+            PC_decrement(computer);
             DEX(computer);
             break;
 
         // DEY - Decrement the Y Register
         case DEY_D: 
+            PC_decrement(computer);
             DEY(computer);
             break;
 
@@ -285,11 +297,13 @@ void analyze_opcode(struct M6502* computer, uchar8_t opcode){
 
         // INX - Increment the X Register
         case INX_D: 
+            PC_decrement(computer);
             INX(computer);
             break;
 
         // INY - Increment the Y Register
         case INY_D: 
+            PC_decrement(computer);
             INY(computer);
             break;
 
@@ -368,6 +382,7 @@ void analyze_opcode(struct M6502* computer, uchar8_t opcode){
 
         // LSR - Logical Shift Right
         case LSR_ACCUMULATOR_D: 
+            PC_decrement(computer);
             LSR(computer, ACCUMULATOR);
             break;
         case LSR_ZERO_PAGE_D: 
@@ -385,6 +400,7 @@ void analyze_opcode(struct M6502* computer, uchar8_t opcode){
 
         // NOP - No Operation
         case NOP_D: 
+            PC_decrement(computer);
             NOP(computer);
             break;
 
@@ -416,26 +432,31 @@ void analyze_opcode(struct M6502* computer, uchar8_t opcode){
 
         // PHA - Push Accumulator on Stack
         case PHA_D: 
+            PC_decrement(computer);
             PHA(computer);
             break;
 
         // PHP - Push Processor Status on Stack
         case PHP_D: 
+            PC_decrement(computer);
             PHP(computer);
             break;
 
         // PLA - Pull Accumulator from Stack
         case PLA_D: 
+            PC_decrement(computer);
             PLA(computer);
             break;
 
         // PLP - Pull Processor Status from Stack
         case PLP_D: 
+            PC_decrement(computer);
             PLP(computer);
             break;
 
         // ROL - Rotate Left
         case ROL_ACCUMULATOR_D: 
+            PC_decrement(computer);
             ROL(computer, ACCUMULATOR);
             break;
         case ROL_ZERO_PAGE_D: 
@@ -453,6 +474,7 @@ void analyze_opcode(struct M6502* computer, uchar8_t opcode){
 
         // ROR - Rotate Right
         case ROR_ACCUMULATOR_D: 
+            PC_decrement(computer);
             ROR(computer, ACCUMULATOR);
             break;
         case ROR_ZERO_PAGE_D: 
@@ -470,11 +492,13 @@ void analyze_opcode(struct M6502* computer, uchar8_t opcode){
 
         // RTI - Return from Interrupt
         case RTI_D: 
+            PC_decrement(computer);
             RTI(computer);
             break;
 
         // RTS - Return from Subroutine
         case RTS_D: 
+            PC_decrement(computer);
             RTS(computer);
             break;
 
@@ -506,16 +530,19 @@ void analyze_opcode(struct M6502* computer, uchar8_t opcode){
 
         // SEC - Set Carry Flag
         case SEC_D: 
+            PC_decrement(computer);
             SEC(computer);
             break;
 
         // SED - Set Decimal Mode
         case SED_D: 
+            PC_decrement(computer);
             SED(computer);
             break;
 
         // SEI - Set Interrupt Disable Status
         case SEI_D: 
+            PC_decrement(computer);
             SEI(computer);
             break;
 
@@ -563,36 +590,43 @@ void analyze_opcode(struct M6502* computer, uchar8_t opcode){
 
         // TAX - Transfer Accumulator to X
         case TAX_D: 
+            PC_decrement(computer);
             TAX(computer);
             break;
 
         // TAY - Transfer Accumulator to Y
         case TAY_D: 
+            PC_decrement(computer);
             TAY(computer);
             break;
 
         // TSX - Transfer Stack Pointer to X
         case TSX_D: 
+            PC_decrement(computer);
             TSX(computer);
             break;
 
         // TXA - Transfer X to Accumulator
         case TXA_D: 
+            PC_decrement(computer);
             TXA(computer);
             break;
 
         // TXS - Transfer X to Stack Pointer
         case TXS_D: 
+            PC_decrement(computer);
             TXS(computer);
             break;
 
         // TYA - Transfer Y to Accumulator
         case TYA_D: 
+            PC_decrement(computer);
             TYA(computer);
             break;
 
         // Not a legal opcode
         default:
+            PC_decrement(computer);
             puts("Error: case not found");
             break;
     }

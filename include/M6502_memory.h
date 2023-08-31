@@ -21,14 +21,11 @@ ushort16_t M6502_get_word(struct M6502* computer, ushort16_t address, uchar8_t i
 
 void M6502_store_program(struct M6502* computer, uchar8_t* file, size_t program_size);
 
-void PC_increment(struct M6502* computer);
-
-// increment after a 2 byte operation
-// static inline void Word_Increment(struct M6502* computer){
-//     program_counter += 2;
-//     instruction_byte_count += 2;
-// }
-// increment cycle count
+/*
+accumulator and implied operations are 1 byte
+most default are 2 bytes
+absolutes are 3 bytes - also jmp (indirect)
+*/
 
 /*
 memory map (reservered)
