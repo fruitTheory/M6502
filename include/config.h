@@ -26,8 +26,8 @@ typedef const char* cString;
 #define stack_pointer (computer->registers.SP) // points to stack related memory address
 #define stack_addresses (computer->stack.stack_address)
 
-#define increment_true 0 // used with get_memory_word function
-#define increment_false -1 // used with get_memory_word function
+#define increment_true 0 // used with get_memory_word function to determine if PC should be incremented
+#define increment_false -1 // used with get_memory_word function to determine if PC should be incremented
 
 #define memory_type_byte 1
 #define memory_type_word 2
@@ -48,11 +48,11 @@ typedef enum{
     RELATIVE
 }address_mode;
 /* Notes: 
-- Indirect is more like redirect
+- Indirects are more like a redirect or pointer to another location
 - Immeadiate is only literal value regardless of hex or decimal
 - X Y are just offsets based on X Y register
 - Zero page 8 bit Absolute 16 bit
-- A act directly upon the Accumulator
+- Accumulator acts directly upon the Accumulator
 - Relative is just a 8 bit relative offset if branch is true
 */
 

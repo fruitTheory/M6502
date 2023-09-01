@@ -13,16 +13,10 @@ static void M6502_is_stack_inbounds(struct M6502* computer){
 
 void M6502_stack_init(struct M6502* computer){
     memset(stack_addresses, 0, sizeof(stack_addresses));
-    // copy stack array to memory address 0x0100
+    // copy stack array to stack start address
     memcpy(&memory_address[stack_start], &stack_addresses, sizeof(stack_addresses));
     // stack for the cpu starts high and decrements down
     stack_pointer = stack_end;
-    
-    memory_address[0x100] = 0x69;
-
-    printf("stack after copy: %i\n", memory_address[stack_start-1]);
-    printf("stack after copy: %i\n", memory_address[stack_start]);
-    printf("stack after copy: %i\n", memory_address[stack_start+1]);
 }
 
 // push a value to the stack

@@ -10,7 +10,7 @@ $ORG = program_initial_load;
 int main(int argc, char* argv[]){
 
 
-    struct M6502 computer;
+    M6502 computer;
     
     return EXIT_SUCCESS;
 

@@ -19,7 +19,7 @@ int main(int argc, char* argv[]){
     // initialized M6502 variable
     struct M6502 computer;
     M6502_init(&computer);
-    printf("size of computer is: %lli bytes\n", sizeof(struct M6502));
+    printf("size of virtual computer is: %lli bytes\n", sizeof(struct M6502));
 
     // load program into memory - array of uchar8_t
     uchar8_t* program = load_program(argc, argv);

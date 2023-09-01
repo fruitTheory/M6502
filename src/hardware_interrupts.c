@@ -8,7 +8,6 @@ bool external_reset_button(bool pushed){
 
 }
 
-
 /*
 0xFFFC - 0xFFFD
 These two bytes are reserved for critical system interrupts
