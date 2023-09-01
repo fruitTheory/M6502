@@ -11,9 +11,10 @@ void execute_instruction(struct M6502* computer, ushort16_t program_size){
         uchar8_t opcode = instruction_fetch(computer);
         analyze_opcode(computer, opcode);
         program_counter += 1;
-        // Note for this function - it goes to analyze_opcode and PC is +1 for instruction
-        // If the instruction requires another byte, the PC is +1 from M6502_get_word()
-        // When it returns from instruction the PC is +1 as seen above to prepare for next opcode
+        // Note for this function - it goes to analyze_opcode and PC is +1 for instruction call
+        // If the instruction needs to return a byte, it will already be at the address
+        // If the instruction needs to return a word, the PC is +1 from M6502_get_word()
+        // When it returns from instruction the PC is +1 to prepare for next opcode
         // Implied and Accumulator will need to decrement PC by -1 as they are only 1 byte in total
     }
 }
@@ -55,7 +56,7 @@ void set_flag(struct M6502* computer, uchar8_t FLAG){
 }
 
 // check if provided flag needs to be set, this also sets that flag
-void check_flag(struct M6502* computer, uchar8_t FLAG){
+void check_flag(struct M6502* computer, uchar8_t FLAG, uchar8_t test_against){
 
     switch(FLAG)
     {
@@ -77,7 +78,7 @@ void check_flag(struct M6502* computer, uchar8_t FLAG){
 
             break;
         case NEGATIVE:
-            if(flag_negative_bit & accumulator){
+            if(flag_negative_bit & test_against){
                 puts("Sign is negative!");
                 set_flag(computer, NEGATIVE);
             }
@@ -588,8 +589,8 @@ void LDA(struct M6502* computer, uchar8_t mode){
             accumulator = memory_address[program_counter];
             printf("Accumulator: %02X\n", accumulator);
 
-            check_flag(computer, NEGATIVE);
-            check_flag(computer, ZERO);
+            check_flag(computer, NEGATIVE, accumulator);
+            check_flag(computer, ZERO, accumulator);
             
             cycle_push(2);
             //cycle_current();
