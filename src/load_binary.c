@@ -1,6 +1,7 @@
+#include "M6502.h"
+#include "load_binary.h"
 #include <stdio.h>
 #include <config.h>
-#include "load_binary.h"
 #include <stdlib.h>
 
 

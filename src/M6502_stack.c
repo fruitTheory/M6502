@@ -1,5 +1,5 @@
-#include "M6502_stack.h"
 #include "M6502.h"
+#include "M6502_stack.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -20,21 +20,26 @@ void M6502_stack_init(struct M6502* computer){
 }
 
 // push a value to the stack
-void M6502_stack_push(struct M6502* computer, ushort16_t push_value){
+void M6502_stack_push(struct M6502* computer, uchar8_t push_value){
     // stack stuff in progress
     M6502_is_stack_inbounds(computer);
-    memory_address[stack_pointer] = push_value;
+    uchar8_t stack_pushed = (memory_address[stack_pointer] = push_value);
     // Pushing bytes to the stack causes the stack pointer to be decremented 
     stack_pointer -= 1;
-    printf("Stack Pointer Push = %i\n", stack_pointer);
+    printf("Push to Stack: %02X\n", stack_pushed);
 }
 
 // pop a value off the stack
-void M6502_stack_pop(struct M6502* computer, ushort16_t val){
-
-    M6502_is_stack_inbounds(computer); 
-    //memory_address[stack_pointer] = val;
-    // Stack is incremented when value popped off - Registers can only hold on byte
+uchar8_t M6502_stack_pop(struct M6502* computer){
+    uchar8_t stack_current = memory_address[stack_pointer];
     stack_pointer += 1;
-    printf("Stack Pointer Pop = %i\n", stack_pointer);
+    // Stack incremented when value popped off - Registers can hold one byte
+    printf("Popping: %02X\n", stack_current);
+    return stack_current;
+}
+
+// get current value off the stack
+uchar8_t M6502_stack_get_current(struct M6502* computer){
+    uchar8_t stack_current = memory_address[stack_pointer];
+    return stack_current;
 }

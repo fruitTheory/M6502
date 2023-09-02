@@ -1,12 +1,12 @@
-#include <stdio.h>
 #include "config.h"
-#include "check_SDL_version.h"
 #include "M6502.h"
-#include "M6502_stack.h"
 #include "load_binary.h"
+#include "M6502_stack.h"
+#include "M6502_instructions.h"
+#include "check_SDL_version.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
-#include "M6502_instructions.h"
 #include <time.h>
 
 
@@ -31,12 +31,9 @@ int main(int argc, char* argv[]){
 
     execute_instruction(&computer, program_size);
     
-    // stack stuff
-    M6502_stack_init(&computer);
-
     // push and pop to stack
-    M6502_stack_push(&computer, 0x101);
-    M6502_stack_pop(&computer, 0x102);
+    // M6502_stack_push(&computer, 0x101);
+    // M6502_stack_pop(&computer);
 
     return EXIT_SUCCESS;
 }

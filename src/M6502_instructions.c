@@ -1,6 +1,7 @@
+#include "config.h"
+#include "M6502.h"
 #include "M6502_instructions.h"
 #include "M6502_memory.h"
-#include "config.h"
 #include <stdio.h>
 
 
@@ -12,11 +13,20 @@ void execute_instruction(struct M6502* computer, ushort16_t program_size){
         analyze_opcode(computer, opcode);
         program_counter += 1;
         // Note for this function - it goes to analyze_opcode and PC is +1 for instruction call
-        // If the instruction needs to  return byte, it will already be at that address
+        // If the instruction needs to return byte, it will already be at that address
         // If the instruction needs to return word, the PC is +1 from M6502_get_word()
         // When it returns from instruction the PC is +1 to prepare for next opcode
         // Implied and Accumulator will need to decrement PC by -1 as they are only 1 byte in total
     }
+}
+void set_flags_all(struct M6502* computer){
+    set_flag(computer, CARRY);
+    set_flag(computer, ZERO);
+    set_flag(computer, INTERRUPT);
+    set_flag(computer, DECIMAL);
+    set_flag(computer, BREAK);
+    set_flag(computer, OVERFLOW);
+    set_flag(computer, NEGATIVE);
 }
 
 // sets provided status register flag
@@ -41,7 +51,6 @@ void set_flag(struct M6502* computer, uchar8_t FLAG){
             status_register |= flag_break_bit;
             break;
         case IGNORED:
-
             break;
         case OVERFLOW:
             status_register |= flag_overflow_bit;
@@ -63,8 +72,10 @@ void check_flag(struct M6502* computer, uchar8_t FLAG, uchar8_t test_against){
         case CARRY:
             break;
         case ZERO:
-            if(accumulator == 0)
+            if(test_against == 0){
                 puts("Set Zero flag!");
+                set_flag(computer, ZERO);
+            }
             break;
         case INTERRUPT:
             break;
@@ -224,6 +235,7 @@ void BCC(struct M6502* computer)
 
 void BRK(struct M6502* computer)
 {
+    //cycle_current();
     cycle_push(7); // 0x00
 }
 
@@ -739,9 +751,9 @@ void LSR(struct M6502* computer, uchar8_t mode)
     }
 }
 
-void NOP(struct M6502* computer)
-{
-    cycle_push(2); // 0xEA
+void NOP(struct M6502* computer){ // 0xEA
+    // no operation
+    cycle_push(2);
 }
 
 void ORA(struct M6502* computer, uchar8_t mode)
@@ -787,28 +799,35 @@ void ORA(struct M6502* computer, uchar8_t mode)
     }
 }
 
-void PHA(struct M6502* computer)
-{
-    cycle_push(3); // 0x48
+void PHA(struct M6502* computer){ // 0x48
+    M6502_stack_push(computer, accumulator);
+    cycle_push(3);
 }
 
-void PHP(struct M6502* computer)
-{
-    cycle_push(3); // 0x08
+void PHP(struct M6502* computer){ // 0x08
+    // note says something about break flag be and bit 5 set to 1
+    M6502_stack_push(computer, status_register);
+    cycle_push(3);
 }
 
-void PLA(struct M6502* computer)
-{
-    cycle_push(4); // 0x68
+void PLA(struct M6502* computer){ // 0x68
+    // Pulls value from the stack puts into the accumulator
+    // Zero and negative flags are set
+    accumulator = M6502_stack_pop(computer);
+    check_flag(computer, ZERO, accumulator);
+    check_flag(computer, NEGATIVE, accumulator);
+    cycle_push(4);
 }
 
-void PLP(struct M6502* computer)
-{
-    cycle_push(4); // 0x28
+void PLP(struct M6502* computer){ // 0x28
+    // Pulls a value from the stack into the SR, sets flags based on the value pulled
+    status_register = M6502_stack_pop(computer);
+    // set flag works here because we are already dealing with status register
+    set_flags_all(computer);
+    cycle_push(4);
 }
 
-void ROL(struct M6502* computer, uchar8_t mode)
-{
+void ROL(struct M6502* computer, uchar8_t mode){
     
     switch(mode)
     {
@@ -935,9 +954,9 @@ void SEI(struct M6502* computer)
     cycle_push(2); // 0x78
 }
 
-void STA(struct M6502* computer, uchar8_t mode)
-{
-    
+void STA(struct M6502* computer, uchar8_t mode){
+
+    ushort16_t input_address;
     switch(mode)
     {
         case ZERO_PAGE: // 0x85
@@ -949,12 +968,12 @@ void STA(struct M6502* computer, uchar8_t mode)
             cycle_push(4);
             break;
         case ABSOLUTE: // 0x8D
-            
+            input_address = x_register;
             cycle_push(4);
             break;
         case ABSOLUTE_X: // 0x9D
 
-            M6502_get_word(computer, program_counter, increment_true);
+            input_address= M6502_get_word(computer, program_counter, increment_true);
             cycle_push(5);
             break;
         case ABSOLUTE_Y: // 0x99
@@ -977,19 +996,24 @@ void STA(struct M6502* computer, uchar8_t mode)
 
 void STX(struct M6502* computer, uchar8_t mode)
 {
-    
+    ushort16_t input_address;
     switch(mode)
     {
         case ZERO_PAGE: // 0x86
-            
+            // store x register to user defined zero page
+            memory_address[program_counter] = x_register;
             cycle_push(3);
             break;
         case ZERO_PAGE_Y: // 0x96
-            
+            // store x regiseter to user defined zero page plus y offset
+            input_address = memory_address[program_counter] + y_register;
+            memory_address[input_address] = x_register;
             cycle_push(4);
             break;
         case ABSOLUTE: // 0x8E
-            
+            // store y register at user define absolute
+            input_address = M6502_get_word(computer, program_counter, increment_true);
+            memory_address[input_address] = x_register;
             cycle_push(4);
             break;
         default:
@@ -998,54 +1022,78 @@ void STX(struct M6502* computer, uchar8_t mode)
     }
 }
 
-void STY(struct M6502* computer, uchar8_t mode)
-{
-    
+void STY(struct M6502* computer, uchar8_t mode){
+
+    ushort16_t input_address;
     switch(mode)
     {
         case ZERO_PAGE: // 0x84
-            
+            // store y register to user defined zero page
+            memory_address[program_counter] = y_register;
             cycle_push(3);
             break;
-        case ZERO_PAGE_X: // 0x94
-            
+        case ZERO_PAGE_X:{ // 0x94
+            // store y regiseter to user defined zero page plus x offset
+            input_address = memory_address[program_counter] + x_register;
+            memory_address[input_address] = y_register;
             cycle_push(4);
             break;
-        case ABSOLUTE: // 0x8C
-            
+        }
+        case ABSOLUTE:{ // 0x8C
+            // store y register at user define absolute
+            input_address = M6502_get_word(computer, program_counter, increment_true);
+            memory_address[input_address] = y_register;
             cycle_push(4);
             break;
+        }
         default:
             puts("Error: Please specify addressing mode");
             break;
     }
 }
 
-void TAX(struct M6502* computer)
-{
-    cycle_push(2); // 0xAA
+void TAX(struct M6502* computer){ // 0xAA
+    // transfer accumulator to x register
+    x_register = accumulator;
+    check_flag(computer, ZERO, x_register);
+    check_flag(computer, NEGATIVE, x_register);
+    cycle_push(2);
 }
 
-void TAY(struct M6502* computer)
-{
-    cycle_push(2); // 0xA8
+void TAY(struct M6502* computer){ // 0xA8
+    // transfer accumulator to y register
+    y_register = accumulator;
+    check_flag(computer, ZERO, y_register);
+    check_flag(computer, NEGATIVE, y_register);
+    cycle_push(2);
 }
 
-void TSX(struct M6502* computer)
-{
-    cycle_push(2); // 0xBA
+void TSX(struct M6502* computer){ // 0xBA
+    // transfer stack pointer to x register
+    x_register = stack_pointer;
+    check_flag(computer, ZERO, x_register);
+    check_flag(computer, NEGATIVE, x_register);
+    cycle_push(2);
 }
 
-void TXA(struct M6502* computer)
-{
-    cycle_push(2); // 0x8A
+void TXA(struct M6502* computer){ // 0x8A
+    // transfer x register to accumulator
+    accumulator = x_register;
+    check_flag(computer, ZERO, accumulator);
+    check_flag(computer, NEGATIVE, accumulator);
+    cycle_push(2);
 }
 
-void TXS(struct M6502* computer){
-    cycle_push(2); // 0x9A
+void TXS(struct M6502* computer){ // 0x9A
+    // transfer x register to stack pointer
+    stack_pointer = x_register;
+    cycle_push(2);
 }
 
-void TYA(struct M6502* computer)
-{
-    cycle_push(2); // 0x98
+void TYA(struct M6502* computer){ // 0x98
+    // transfer y register to accumulator
+    accumulator = y_register;
+    check_flag(computer, ZERO, accumulator);
+    check_flag(computer, NEGATIVE, accumulator);
+    cycle_push(2);
 }

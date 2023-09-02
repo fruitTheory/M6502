@@ -1,9 +1,8 @@
-#include<stdio.h>
 #include "check_SDL_version.h"
 #include "SDL2\SDL_version.h"
 #include "SDL2\SDL_mixer.h"
 #include "SDL2\SDL_image.h"
-
+#include<stdio.h>
 
 // function to check SDL versions - takes no input currently
 void Check_SDL_Version(){

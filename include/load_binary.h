@@ -1,4 +1,4 @@
-#include "M6502.h"
+#pragma once
 
 ushort16_t get_program_size(char* argv[]);
 uchar8_t* load_program(int argc, char* argv[]);

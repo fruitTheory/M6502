@@ -1,7 +1,7 @@
 #include "config.h"
+#include "M6502.h"
 #include "M6502_memory.h"
 #include <assert.h>
-#include "M6502.h"
 #include <string.h>
 #include <stdio.h>
 

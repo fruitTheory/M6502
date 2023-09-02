@@ -1,11 +1,11 @@
-#include "config.h"
-#include "M6502.h"
-
+#pragma once
 
 void execute_instruction(struct M6502* computer, ushort16_t program_size);
 
 void set_flag(struct M6502* computer, uchar8_t FLAG);
-
+void set_flags_all(struct M6502* computer);
+void check_flag(struct M6502* computer, uchar8_t FLAG, uchar8_t test_against);
+void check_page(struct M6502* computer, ushort16_t input_address, uchar8_t register_n);
 // Instructions
 void ADC(struct M6502* computer, uchar8_t mode);
 void AND(struct M6502* computer, uchar8_t mode);

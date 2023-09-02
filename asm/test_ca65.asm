@@ -22,4 +22,7 @@
 
     clc         ; clear carry flag
 
+    pha         ; push accum to stack
+    php         ; push status register to stack
+
     brk         ; Break (end of program)
