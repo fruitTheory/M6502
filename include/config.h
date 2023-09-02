@@ -52,7 +52,7 @@ typedef enum{
 - Immeadiate is only literal value regardless of hex or decimal
 - X Y are just offsets based on X Y register
 - Zero page 8 bit Absolute 16 bit
-- Accumulator acts directly upon the Accumulator
+- Accumulator acts directly upon Accumulator
 - Relative is just a 8 bit relative offset if branch is true
 */
 

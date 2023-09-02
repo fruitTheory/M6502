@@ -18,10 +18,9 @@ void M6502_init(struct M6502* computer);
 uchar8_t instruction_fetch(struct M6502* computer);
 void analyze_opcode(struct M6502* computer, uchar8_t opcode);
 
-
 // A container used to store the amount of bytes internal instructions use
 // It is used to subtract from the total program size
-// Subtracting from this adds bytes to amount outputted
+// Subtracting from this adds bytes to amount of outputted instructions
 extern ushort16_t instruction_byte_count;
 // Total number of CPU cycles
 extern ulong64_t cycles;
