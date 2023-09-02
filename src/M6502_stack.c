@@ -37,9 +37,3 @@ uchar8_t M6502_stack_pop(struct M6502* computer){
     printf("Popping: %02X\n", stack_current);
     return stack_current;
 }
-
-// get current value off the stack
-uchar8_t M6502_stack_get_current(struct M6502* computer){
-    uchar8_t stack_current = memory_address[stack_pointer];
-    return stack_current;
-}

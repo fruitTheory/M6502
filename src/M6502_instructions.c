@@ -64,6 +64,12 @@ void set_flag(struct M6502* computer, uchar8_t FLAG){
     }
 }
 
+// check flag for zero and negative - shorthand function
+void check_flag_ZN(struct M6502* computer, uchar8_t test_against){
+    check_flag(computer, ZERO, test_against);
+    check_flag(computer, NEGATIVE, test_against);
+}
+
 // check if provided flag needs to be set, this also sets that flag
 void check_flag(struct M6502* computer, uchar8_t FLAG, uchar8_t test_against){
 
@@ -236,6 +242,7 @@ void BCC(struct M6502* computer)
 void BRK(struct M6502* computer)
 {
     //cycle_current();
+    set_flag(computer, BREAK);
     cycle_push(7); // 0x00
 }
 
@@ -319,8 +326,7 @@ void CLV(struct M6502* computer)
     cycle_push(2); // 0xB8
 }
 
-void CMP(struct M6502* computer, uchar8_t mode)
-{
+void CMP(struct M6502* computer, uchar8_t mode){
     
     switch(mode)
     {
@@ -364,8 +370,7 @@ void CMP(struct M6502* computer, uchar8_t mode)
     }
 }
 
-void CPX(struct M6502* computer, uchar8_t mode)
-{
+void CPX(struct M6502* computer, uchar8_t mode){
     
     switch(mode)
     {
@@ -387,8 +392,7 @@ void CPX(struct M6502* computer, uchar8_t mode)
     }
 }
 
-void CPY(struct M6502* computer, uchar8_t mode)
-{
+void CPY(struct M6502* computer, uchar8_t mode){
     
     switch(mode)
     {
@@ -410,8 +414,7 @@ void CPY(struct M6502* computer, uchar8_t mode)
     }
 }
 
-void DEC(struct M6502* computer, uchar8_t mode)
-{
+void DEC(struct M6502* computer, uchar8_t mode){
     
     switch(mode)
     {
@@ -437,18 +440,19 @@ void DEC(struct M6502* computer, uchar8_t mode)
     }
 }
 
-void DEX(struct M6502* computer)
-{
-    cycle_push(2); // 0xCA
+void DEX(struct M6502* computer){ // 0xCA
+    x_register -= 1;
+    check_flag_ZN(computer, x_register);
+    cycle_push(2);
 }
 
-void DEY(struct M6502* computer)
-{
-    cycle_push(2); // 0x88
+void DEY(struct M6502* computer){ // 0x88
+    y_register -= 1;
+    check_flag_ZN(computer, y_register);
+    cycle_push(2);
 }
 
-void EOR(struct M6502* computer, uchar8_t mode)
-{
+void EOR(struct M6502* computer, uchar8_t mode){
     
     switch(mode)
     {
@@ -518,18 +522,19 @@ void INC(struct M6502* computer, uchar8_t mode)
     }
 }
 
-void INX(struct M6502* computer)
-{
-    cycle_push(2); // 0xE8
+void INX(struct M6502* computer){ // 0xE8
+    x_register += 1;
+    check_flag_ZN(computer, x_register);
+    cycle_push(2);
 }
 
-void INY(struct M6502* computer)
-{
-    cycle_push(2); // 0xC8
+void INY(struct M6502* computer){ // 0xC8
+    y_register += 1;
+    check_flag_ZN(computer, y_register);
+    cycle_push(2);
 }
 
-void JMP(struct M6502* computer, uchar8_t mode)
-{
+void JMP(struct M6502* computer, uchar8_t mode){
     
     switch(mode)
     {
@@ -549,8 +554,8 @@ void JMP(struct M6502* computer, uchar8_t mode)
     }
 }
 
-void JSR(struct M6502* computer, uchar8_t mode)
-{
+void JSR(struct M6502* computer, uchar8_t mode){
+
     if (mode == ABSOLUTE) // 0x20
     {
 
@@ -570,8 +575,7 @@ void LDA(struct M6502* computer, uchar8_t mode){
             // load immeadiate value at location
             accumulator = memory_address[program_counter];
             printf("Accumulator: %02X\n", accumulator);
-            check_flag(computer, NEGATIVE, accumulator);
-            check_flag(computer, ZERO, accumulator);
+            check_flag_ZN(computer, accumulator);
             cycle_push(2);
             break;
         }
@@ -580,8 +584,7 @@ void LDA(struct M6502* computer, uchar8_t mode){
             // load whats at the input address
             accumulator = memory_address[input_address];
             printf("Accumulator: %02X\n", accumulator);
-            check_flag(computer, NEGATIVE, accumulator);
-            check_flag(computer, ZERO, accumulator);
+            check_flag_ZN(computer, accumulator);
             cycle_push(3);
             break;
         }
@@ -589,16 +592,14 @@ void LDA(struct M6502* computer, uchar8_t mode){
             uchar8_t input_address = memory_address[program_counter];
             accumulator = memory_address[(input_address + x_register)];
             printf("Accumulator: %i\n", accumulator);
-            check_flag(computer, NEGATIVE, accumulator);
-            check_flag(computer, ZERO, accumulator);
+            check_flag_ZN(computer, accumulator);
             cycle_push(4);
             break;
         }
         case ABSOLUTE: // 0xAD
             accumulator = memory_address[M6502_get_word(computer, program_counter, increment_true)];
             printf("Accumulator: %i\n", accumulator);
-            check_flag(computer, NEGATIVE, accumulator);
-            check_flag(computer, ZERO, accumulator);
+            check_flag_ZN(computer, accumulator);
             cycle_push(4);
             break;
 
@@ -607,8 +608,7 @@ void LDA(struct M6502* computer, uchar8_t mode){
             ushort16_t input_address = M6502_get_word(computer, program_counter, increment_true);
             accumulator = memory_address[input_address + x_register];
             printf("Accumulator: %i\n", accumulator);
-            check_flag(computer, NEGATIVE, accumulator);
-            check_flag(computer, ZERO, accumulator);
+            check_flag_ZN(computer, accumulator);
             cycle_push(4); // +1 if page crossed
             check_page(computer, input_address, x_register); // will cycle if page crossed
             break;
@@ -617,8 +617,7 @@ void LDA(struct M6502* computer, uchar8_t mode){
             ushort16_t input_address = M6502_get_word(computer, program_counter, increment_true);
             accumulator = memory_address[input_address + y_register];
             printf("Accumulator: %i\n", accumulator);
-            check_flag(computer, NEGATIVE, accumulator);
-            check_flag(computer, ZERO, accumulator);
+            check_flag_ZN(computer, accumulator);
             cycle_push(4); // +1 if page crossed
             check_page(computer, input_address, y_register); // will cycle if page crossed
             break;
@@ -630,8 +629,7 @@ void LDA(struct M6502* computer, uchar8_t mode){
             // stores contents in the accumulator
             accumulator = memory_address[indirect_byte_offset];
             printf("Accumulator: %02X\n", accumulator);
-            check_flag(computer, NEGATIVE, accumulator);
-            check_flag(computer, ZERO, accumulator);
+            check_flag_ZN(computer, accumulator);
             cycle_push(6);
             break;
         }
@@ -647,8 +645,7 @@ void LDA(struct M6502* computer, uchar8_t mode){
             // store into accumlator the value at the final indirect address
             accumulator = memory_address[indirect_address_offset];
             printf("Accumulator: %02X\n", accumulator);
-            check_flag(computer, NEGATIVE, accumulator);
-            check_flag(computer, ZERO, accumulator);
+            check_flag_ZN(computer, accumulator);
             cycle_push(5); // +1 if page crossed
             check_page(computer, indirect_address, y_register); // will cycle if page crossed
             break;
@@ -659,8 +656,7 @@ void LDA(struct M6502* computer, uchar8_t mode){
     }
 }
 
-void LDX(struct M6502* computer, uchar8_t mode)
-{
+void LDX(struct M6502* computer, uchar8_t mode){
     
     switch(mode)
     {
@@ -756,8 +752,7 @@ void NOP(struct M6502* computer){ // 0xEA
     cycle_push(2);
 }
 
-void ORA(struct M6502* computer, uchar8_t mode)
-{
+void ORA(struct M6502* computer, uchar8_t mode){
     
     switch(mode)
     {
@@ -813,14 +808,15 @@ void PHP(struct M6502* computer){ // 0x08
 void PLA(struct M6502* computer){ // 0x68
     // Pulls value from the stack puts into the accumulator
     // Zero and negative flags are set
+    // double check it means stack pop and value from stack pointer
     accumulator = M6502_stack_pop(computer);
-    check_flag(computer, ZERO, accumulator);
-    check_flag(computer, NEGATIVE, accumulator);
+    check_flag_ZN(computer, accumulator);
     cycle_push(4);
 }
 
 void PLP(struct M6502* computer){ // 0x28
     // Pulls a value from the stack into the SR, sets flags based on the value pulled
+    // double check it means stack pop and value from stack pointer
     status_register = M6502_stack_pop(computer);
     // set flag works here because we are already dealing with status register
     set_flags_all(computer);
@@ -886,18 +882,17 @@ void ROR(struct M6502* computer, uchar8_t mode)
     }
 }
 
-void RTI(struct M6502* computer)
-{
-    cycle_push(6); // 0x40
+void RTI(struct M6502* computer){ // 0x40
+
+    cycle_push(6);
 }
 
-void RTS(struct M6502* computer)
-{
-    cycle_push(6); // 0x60
+void RTS(struct M6502* computer){ // 0x60
+
+    cycle_push(6);
 }
 
-void SBC(struct M6502* computer, uchar8_t mode)
-{
+void SBC(struct M6502* computer, uchar8_t mode){
     
     switch(mode)
     {
@@ -939,19 +934,20 @@ void SBC(struct M6502* computer, uchar8_t mode)
     }
 }
 
-void SEC(struct M6502* computer)
-{
-    cycle_push(2); // 0x38
+// double check these flags below will actually be set to 1
+void SEC(struct M6502* computer){ // 0x38
+    set_flag(computer, CARRY);
+    cycle_push(2);
 }
 
-void SED(struct M6502* computer)
-{
-    cycle_push(2); // 0xF8
+void SED(struct M6502* computer){ // 0xF8
+    set_flag(computer, DECIMAL);
+    cycle_push(2);
 }
 
-void SEI(struct M6502* computer)
-{
-    cycle_push(2); // 0x78
+void SEI(struct M6502* computer){ // 0x78
+    set_flag(computer, INTERRUPT);
+    cycle_push(2);
 }
 
 void STA(struct M6502* computer, uchar8_t mode){
@@ -994,8 +990,8 @@ void STA(struct M6502* computer, uchar8_t mode){
     }
 }
 
-void STX(struct M6502* computer, uchar8_t mode)
-{
+void STX(struct M6502* computer, uchar8_t mode){
+    
     ushort16_t input_address;
     switch(mode)
     {
@@ -1055,32 +1051,28 @@ void STY(struct M6502* computer, uchar8_t mode){
 void TAX(struct M6502* computer){ // 0xAA
     // transfer accumulator to x register
     x_register = accumulator;
-    check_flag(computer, ZERO, x_register);
-    check_flag(computer, NEGATIVE, x_register);
+    check_flag_ZN(computer, x_register);
     cycle_push(2);
 }
 
 void TAY(struct M6502* computer){ // 0xA8
     // transfer accumulator to y register
     y_register = accumulator;
-    check_flag(computer, ZERO, y_register);
-    check_flag(computer, NEGATIVE, y_register);
+    check_flag_ZN(computer, y_register);
     cycle_push(2);
 }
 
 void TSX(struct M6502* computer){ // 0xBA
     // transfer stack pointer to x register
     x_register = stack_pointer;
-    check_flag(computer, ZERO, x_register);
-    check_flag(computer, NEGATIVE, x_register);
+    check_flag_ZN(computer, x_register);
     cycle_push(2);
 }
 
 void TXA(struct M6502* computer){ // 0x8A
     // transfer x register to accumulator
     accumulator = x_register;
-    check_flag(computer, ZERO, accumulator);
-    check_flag(computer, NEGATIVE, accumulator);
+    check_flag_ZN(computer, accumulator);
     cycle_push(2);
 }
 
