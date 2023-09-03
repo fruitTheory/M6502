@@ -636,13 +636,26 @@ void JMP(struct M6502* computer, uchar8_t mode){
     }
 }
 
-void JSR(struct M6502* computer, uchar8_t mode){ // 0x20
-    // jump to absolute address supplied
-    ushort16_t input_address;
-    input_address = M6502_get_word(computer, program_counter, increment_true);
-    program_counter = input_address;
+void JSR(struct M6502* computer, uchar8_t mode){ // 0x20 - Absolute
+    // Jump to Subroutine - first get subroutine address
+    // M6502_stack_push(computer, program_counter);
+    ushort16_t input_address = M6502_get_word(computer, program_counter, increment_true);
+    // for a 16 bit address push needs to happen twice
+    // THE PROGRAM COUNTER IS 16 BIT and the STACK IS 8 BIT
+    // PC is 0x021A at JSR, then 0x021A at 0x1F(memory value), then 0x021A at 0x02(memory value)
+    // right now its just pushing 0x001C and 0x001B
+    // I need to break the program counter up, right now its storing only LSB 1A, 19, instead of 021A
+    uchar8_t extract_msb = program_counter>>8;
+    uchar8_t extract_lsb = (char)program_counter;
+    //printf("Input Address: %04X\n", input_address);
+    printf("Program Counter: %04X\n", program_counter>>8);
+    printf("Program Counter: %04X\n", (char)program_counter);
+    M6502_stack_push(computer, extract_msb); // most significant byte
+    M6502_stack_push(computer, extract_lsb); // least significant byte
+    //M6502_stack_push(computer, 0x69);
+    // set the program counter to supplied address, minus 1 keeps PC loop on track
+    program_counter = input_address-1;
     cycle_push(6);
-
 }
 
 void LDA(struct M6502* computer, uchar8_t mode){
@@ -745,7 +758,6 @@ void LDX(struct M6502* computer, uchar8_t mode){
     // load memory into X register
     ushort16_t input_address;
     ushort16_t offset_address;
-    ushort16_t word_address;
     switch(mode)
     {
         case IMMEDIATE: // 0xA2
@@ -789,7 +801,6 @@ void LDY(struct M6502* computer, uchar8_t mode){
     // load memory into Y register
     ushort16_t input_address;
     ushort16_t offset_address;
-    ushort16_t word_address;
     switch(mode)
     {
         case IMMEDIATE: // 0xA0
@@ -999,7 +1010,7 @@ void PLP(struct M6502* computer){ // 0x28
 }
 
 void ROL(struct M6502* computer, uchar8_t mode){
-    
+    // Rotate left fill bit 1 with current value of carry flag
     switch(mode)
     {
         case ACCUMULATOR: // 0x2A
@@ -1027,16 +1038,26 @@ void ROL(struct M6502* computer, uchar8_t mode){
     }
 }
 
-void ROR(struct M6502* computer, uchar8_t mode)
-{
-    
+void ROR(struct M6502* computer, uchar8_t mode){
+    // Rotate right fill bit 7 with current value of carry flag
+    // ushort16_t input_address;
+    // ushort16_t offset_address;
+    ushort16_t m_result;
+    ushort16_t carry_result;
     switch(mode)
     {
         case ACCUMULATOR: // 0x6A
+            accumulator >>= 1;
+            // wrong just need to compare against current carry bit
+            accumulator = accumulator | status_register;
             cycle_push(2);
             break;
         case ZERO_PAGE: // 0x66
-            
+            // first shift the value at memory addres 1 bit right
+            m_result = memory_address[program_counter] >>= 1;
+            // wrong, we need just the carry bit of the current status register
+            carry_result = m_result | status_register;
+
             cycle_push(5);
             break;
         case ZERO_PAGE_X: // 0x76
@@ -1058,12 +1079,19 @@ void ROR(struct M6502* computer, uchar8_t mode)
 }
 
 void RTI(struct M6502* computer){ // 0x40
-
+    // Return from Interrupt
+    status_register = M6502_stack_pop(computer); // this should pull Status Register
+    program_counter = M6502_stack_pop(computer); // this should pull Program counter
     cycle_push(6);
 }
 
 void RTS(struct M6502* computer){ // 0x60
-
+    // Return from Subroutine
+    uchar8_t lsb = M6502_stack_pop(computer); // most significant byte
+    uchar8_t msb = M6502_stack_pop(computer); // least significant byte
+    ushort16_t popped_address = msb << 8 | lsb;
+    program_counter = popped_address; // this should pull Program counter
+    printf("Program coutner Popped: %04X\n", program_counter);
     cycle_push(6);
 }
 
@@ -1146,7 +1174,7 @@ void STA(struct M6502* computer, uchar8_t mode){
             break;
         case ABSOLUTE_X: // 0x9D
 
-            input_address= M6502_get_word(computer, program_counter, increment_true);
+            input_address = M6502_get_word(computer, program_counter, increment_true);
             cycle_push(5);
             break;
         case ABSOLUTE_Y: // 0x99

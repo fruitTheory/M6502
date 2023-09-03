@@ -22,7 +22,15 @@
 
     clc         ; clear carry flag
 
-    pha         ; push accum to stack
-    php         ; push status register to stack
+    ;pha         ; push accum to stack
+    ;php         ; push status register to stack
 
+    lda $10        ; Load the accumulator with the value at memory location $10
+    jsr ADD_VALUES ; Call the subroutine to add another value to the accumulator
+    sta $12        ; Store the result in memory location $12
     brk         ; Break (end of program)
+    
+ADD_VALUES:
+    adc $11        ; Add the value at memory location $11 to the accumulator
+    rts            ; Return from subroutine
+
