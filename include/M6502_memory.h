@@ -36,3 +36,8 @@ and the BRK/interrupt request handler ($FFFE/F) respectively
 Concering pages think of memory as separated into pages, theres 256 pages and 256 locations on each page,
 so 256x256 is 65535 bytes and zero page is just the first page with shortest addresses
 */
+
+/*
+a well-known bug in indirect jump instruction, JMP (address), where if the address is on a page boundary, 
+it doesn't fetch the correct second byte of the target address. This is a specific quirk of the 6502
+*/

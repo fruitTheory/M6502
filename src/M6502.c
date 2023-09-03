@@ -5,6 +5,10 @@
 #include <assert.h>
 #include <stdio.h>
 
+/*
+*   General M6502 functions
+*/
+
 // initialize the processor
 void M6502_init(struct M6502* computer){
     // set everything in memory to 0
@@ -31,6 +35,17 @@ uchar8_t instruction_fetch(struct M6502* computer){
     printf("PC: %04X\n", program_counter);
     printf("opcode: %02X\n", opcode);
     return opcode;
+}
+
+// check if page was crossed from the input address to new offset address - adds cycle if page crossed
+void check_page(struct M6502* computer, ushort16_t input_address, uchar8_t register_n){
+    
+    ushort16_t input_address_offset = input_address + register_n;
+
+    float old_page = input_address/256; // this naturally truncates 
+    float new_page = input_address_offset/256;
+    (old_page != new_page) ? cycle_push(1) : cycle_push(0); // if new page != old page +1 cycle
+    //(old_page != new_page) ? puts("cyc: 1") :puts("cyc: 0"); // if new page != old page +1 cycle
 }
 
 // determines which opcode was returned

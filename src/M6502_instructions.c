@@ -1,6 +1,7 @@
 #include "config.h"
 #include "M6502.h"
 #include "M6502_instructions.h"
+#include "M6502_flags.h"
 #include "M6502_memory.h"
 #include <stdio.h>
 
@@ -19,151 +20,18 @@ void execute_instruction(struct M6502* computer, ushort16_t program_size){
         // Implied and Accumulator will need to decrement PC by -1 as they are only 1 byte in total
     }
 }
-void set_flags_all(struct M6502* computer){
-    set_flag(computer, CARRY);
-    set_flag(computer, ZERO);
-    set_flag(computer, INTERRUPT);
-    set_flag(computer, DECIMAL);
-    set_flag(computer, BREAK);
-    set_flag(computer, OVERFLOW);
-    set_flag(computer, NEGATIVE);
-}
 
-// sets provided status register flag
-void set_flag(struct M6502* computer, uchar8_t FLAG){
 
-    // Another way could be to shift 1 << 6 - 0000 0001 -> 0100 0000
-    switch(FLAG)
-    {
-        case CARRY:
-            status_register |= flag_carry_bit;
-            break;
-        case ZERO:
-            status_register |= flag_zero_bit;
-            break;
-        case INTERRUPT:
-            status_register |= flag_interrupt_bit;
-            break;
-        case DECIMAL:
-            status_register |= flag_decimal_bit;
-            break;
-        case BREAK:
-            status_register |= flag_break_bit;
-            break;
-        case IGNORED:
-            break;
-        case OVERFLOW:
-            status_register |= flag_overflow_bit;
-            break;
-        case NEGATIVE:
-            status_register |= flag_negative_bit; // OR operation is inclusive
-            break;
-        default:
-            puts("Error: not a valid flag");
-        break;
-    }
-}
-
-// clears provided status register flag
-void clear_flag(struct M6502* computer, uchar8_t FLAG){
-    // xor also works here as it returns 1 if only one of the bits is 1
-    // 0010 0110 = 0010 0110 ^ 0000 0100 = 0010 0010
-    // 0000 0100 -> 1111 1011 & 0010 0110 = 0010 0010
-    // invert the set bit and & against SR, all remain same 
-    // except the one that is compared against 0 aka inverted bit
-    switch(FLAG)
-    {
-        case CARRY:
-            status_register &= ~flag_carry_bit;
-            break;
-        case ZERO:
-            status_register &= ~flag_zero_bit;
-            break;
-        case INTERRUPT:
-            status_register &= ~flag_interrupt_bit;
-            break;
-        case DECIMAL:
-            status_register &= ~flag_decimal_bit;
-            break;
-        case BREAK:
-            status_register &= ~flag_break_bit;
-            break;
-        case IGNORED:
-            break;
-        case OVERFLOW:
-            status_register &= ~flag_overflow_bit;
-            break;
-        case NEGATIVE:
-            status_register &= ~flag_negative_bit;
-            break;
-        default:
-            puts("Error: not a valid flag");
-        break;
-    }
-}
-
-// check flag for zero and negative - shorthand function
-void check_flag_ZN(struct M6502* computer, uchar8_t test_against){
-    check_flag(computer, ZERO, test_against);
-    check_flag(computer, NEGATIVE, test_against);
-}
-
-// check if provided flag needs to be set, this also sets that flag
-void check_flag(struct M6502* computer, uchar8_t FLAG, uchar8_t test_against){
-
-    switch(FLAG)
-    {
-        case CARRY:
-            break;
-        case ZERO:
-            //printf("SR: %04X\n", status_register);
-            if(test_against == 0){
-                //puts("Set Zero flag!");
-                set_flag(computer, ZERO);
-            }else{
-                //puts("Cleared Zero flag!");
-                clear_flag(computer, ZERO);
-            }
-            //printf("SR: %04X\n", status_register);
-            break;
-        case INTERRUPT:
-            break;
-        case DECIMAL:
-            break;
-        case BREAK:
-            break;
-        case IGNORED:
-            break;
-        case OVERFLOW:
-
-            break;
-        case NEGATIVE:
-            //printf("SR: %04X\n", status_register);
-            if(flag_negative_bit & test_against){
-                //puts("Sign is negative!");
-                set_flag(computer, NEGATIVE);
-            }else{
-                //puts("Cleared Negative sign!");
-                clear_flag(computer, NEGATIVE);
-            }
-            //printf("SR: %04X\n", status_register);
-            break;
-        default:
-            puts("Error: not a valid flag");
-        break;
-    }
-}
-
-// check if page was crossed from the input address to new offset address - adds cycle if page crossed
-void check_page(struct M6502* computer, ushort16_t input_address, uchar8_t register_n){
+// // check if page was crossed from the input address to new offset address - adds cycle if page crossed
+// void check_page(struct M6502* computer, ushort16_t input_address, uchar8_t register_n){
     
-    ushort16_t input_address_offset = input_address + register_n;
+//     ushort16_t input_address_offset = input_address + register_n;
 
-    float old_page = input_address/256; // this naturally truncates 
-    float new_page = input_address_offset/256;
-    (old_page != new_page) ? cycle_push(1) : cycle_push(0); // if new page != old page +1 cycle
-    //(old_page != new_page) ? puts("cyc: 1") :puts("cyc: 0"); // if new page != old page +1 cycle
-}
+//     float old_page = input_address/256; // this naturally truncates 
+//     float new_page = input_address_offset/256;
+//     (old_page != new_page) ? cycle_push(1) : cycle_push(0); // if new page != old page +1 cycle
+//     //(old_page != new_page) ? puts("cyc: 1") :puts("cyc: 0"); // if new page != old page +1 cycle
+// }
 
 
 void ADC(struct M6502* computer, uchar8_t mode){
@@ -214,8 +82,10 @@ void ADC(struct M6502* computer, uchar8_t mode){
 void AND(struct M6502* computer, uchar8_t mode){
     // logical AND performed on accumulator against memory
     // input address doesnt need to be ushort for zero page but keeping design general
+    // view LDA for more detail on indirect addressing
     ushort16_t input_address;
     ushort16_t offset_address;
+    ushort16_t word_address;
     switch(mode)
     {
         case IMMEDIATE: // 0x29
@@ -268,15 +138,18 @@ void AND(struct M6502* computer, uchar8_t mode){
             // this one just takes a byte as an address
             input_address = M6502_get_byte(computer, program_counter);
             offset_address = input_address + x_register;
-            // AND operation against whats at the offsetted address
+            word_address = M6502_get_word(computer, offset_address, increment_false);
+            // AND operation against whats at the word address
             accumulator = accumulator & memory_address[offset_address];
             check_flag_ZN(computer, accumulator);
             check_flag(computer, CARRY, accumulator);
             cycle_push(6);
             break;
         case INDIRECT_Y: // 0x31
-            input_address = M6502_get_word(computer, program_counter, increment_true);
-            offset_address = input_address + y_register;
+            input_address = M6502_get_byte(computer, program_counter);
+            word_address = M6502_get_word(computer, input_address, increment_true);
+            offset_address = word_address + y_register;
+            // AND operation against whats at the offset address
             accumulator = accumulator & offset_address;
             check_flag_ZN(computer, accumulator);
             check_flag(computer, CARRY, accumulator);

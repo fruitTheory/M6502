@@ -23,6 +23,7 @@
         "functional": "c",
         "tuple": "c",
         "utility": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "assert.h": "c"
     }
 }

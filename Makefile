@@ -12,6 +12,7 @@ OBJECTS =	${BUILD}M6502.o \
 			${BUILD}M6502_memory.o \
 			${BUILD}load_binary.o \
 			${BUILD}M6502_instructions.o \
+			${BUILD}M6502_flags.o \
 
 LIBRARY_DIR =	 -L C:\Programs\SDL\SDL2_image-2.6.3\x86_64-w64-mingw32\lib \
 				 -L C:\Programs\SDL\SDL2_mixer-2.6.3\x86_64-w64-mingw32\lib \
@@ -19,10 +20,10 @@ LIBRARY_DIR =	 -L C:\Programs\SDL\SDL2_image-2.6.3\x86_64-w64-mingw32\lib \
 
 LINKED_LIBRARIES = -lSDL2  -lSDL2main -lSDL2_mixer -lSDL2_image
 
-TEST_OBJS = ${BUILD}M6502.o \
-			${BUILD}M6502_stack.o \
+# TEST_OBJS = ${BUILD}M6502.o \
+# 			${BUILD}M6502_stack.o \
 
-LOAD_BIN_OBJS = ${BUILD}M6502_memory.o \
+# LOAD_BIN_OBJS = ${BUILD}M6502_memory.o \
 
 # Removed SDL stuff - ${LIBRARY_DIR} ${LINKED_LIBRARIES} 
 
