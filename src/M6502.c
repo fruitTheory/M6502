@@ -37,8 +37,8 @@ uchar8_t instruction_fetch(struct M6502* computer){
     return opcode;
 }
 
-// check if page was crossed from the input address to new offset address
-// register_n means offset input but typically register x or y is used
+// check if page was crossed when the input address offsets to a new address
+// register_n means the offset amount but typically register x or y is used as the offset
 // n is the amount of cycles added if page crossed
 void check_page(struct M6502* computer, ushort16_t input_address, uchar8_t register_n, uchar8_t n){
     
