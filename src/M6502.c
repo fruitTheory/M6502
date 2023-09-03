@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 /*
-*   General M6502 functions
+    General M6502 functions
 */
 
 // initialize the processor
@@ -37,14 +37,16 @@ uchar8_t instruction_fetch(struct M6502* computer){
     return opcode;
 }
 
-// check if page was crossed from the input address to new offset address - adds cycle if page crossed
-void check_page(struct M6502* computer, ushort16_t input_address, uchar8_t register_n){
+// check if page was crossed from the input address to new offset address
+// register_n means offset input but typically register x or y is used
+// n is the amount of cycles added if page crossed
+void check_page(struct M6502* computer, ushort16_t input_address, uchar8_t register_n, uchar8_t n){
     
     ushort16_t input_address_offset = input_address + register_n;
 
     float old_page = input_address/256; // this naturally truncates 
     float new_page = input_address_offset/256;
-    (old_page != new_page) ? cycle_push(1) : cycle_push(0); // if new page != old page +1 cycle
+    (old_page != new_page) ? cycle_push(n) : cycle_push(0); // if new page != old page +1 cycle
     //(old_page != new_page) ? puts("cyc: 1") :puts("cyc: 0"); // if new page != old page +1 cycle
 }
 

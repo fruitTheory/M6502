@@ -4,7 +4,6 @@
 #include <config.h>
 #include <stdlib.h>
 
-
 // get program size - may be a better way
 ushort16_t get_program_size(char* argv[]){
 

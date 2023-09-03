@@ -7,7 +7,7 @@
 static void M6502_is_stack_inbounds(struct M6502* computer){
     // throw assertion if stack pointer is not within stack range
     // assert(stack_pointer >= 0 && stack_pointer < stack_max_size);
-    printf("SP: %02X\n", stack_pointer);
+    //printf("SP: %02X\n", stack_pointer);
     assert(stack_pointer >= stack_start && stack_pointer <= stack_end);
 }
 
@@ -26,7 +26,7 @@ void M6502_stack_push(struct M6502* computer, uchar8_t push_value){
     uchar8_t stack_pushed = (memory_address[stack_pointer] = push_value);
     // Pushing bytes to the stack causes the stack pointer to be decremented 
     stack_pointer -= 1;
-    printf("Push to Stack: %02X\n", stack_pushed);
+    //printf("Pushed to Stack: %02X\n", stack_pushed);
 }
 
 // pop a value off the stack

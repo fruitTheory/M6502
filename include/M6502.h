@@ -17,7 +17,7 @@ struct M6502{
 void M6502_init(struct M6502* computer);
 uchar8_t instruction_fetch(struct M6502* computer);
 void analyze_opcode(struct M6502* computer, uchar8_t opcode);
-void check_page(struct M6502* computer, ushort16_t input_address, uchar8_t register_n);
+void check_page(struct M6502* computer, ushort16_t input_address, uchar8_t register_n, uchar8_t cycles);
 
 // A container used to store the amount of bytes internal instructions use
 // It is used to subtract from the total program size

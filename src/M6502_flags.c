@@ -2,15 +2,6 @@
 #include "M6502.h"
 #include <stdio.h>
 
-void set_flags_all(struct M6502* computer){
-    set_flag(computer, CARRY);
-    set_flag(computer, ZERO);
-    set_flag(computer, INTERRUPT);
-    set_flag(computer, DECIMAL);
-    set_flag(computer, BREAK);
-    set_flag(computer, OVERFLOW);
-    set_flag(computer, NEGATIVE);
-}
 
 // sets provided status register flag
 void set_flag(struct M6502* computer, uchar8_t FLAG){
@@ -45,6 +36,16 @@ void set_flag(struct M6502* computer, uchar8_t FLAG){
             puts("Error: not a valid flag");
         break;
     }
+}
+
+void set_flags_all(struct M6502* computer){
+    set_flag(computer, CARRY);
+    set_flag(computer, ZERO);
+    set_flag(computer, INTERRUPT);
+    set_flag(computer, DECIMAL);
+    set_flag(computer, BREAK);
+    set_flag(computer, OVERFLOW);
+    set_flag(computer, NEGATIVE);
 }
 
 // clears provided status register flag
@@ -85,12 +86,6 @@ void clear_flag(struct M6502* computer, uchar8_t FLAG){
     }
 }
 
-// check flag for zero and negative - shorthand function
-void check_flag_ZN(struct M6502* computer, uchar8_t test_against){
-    check_flag(computer, ZERO, test_against);
-    check_flag(computer, NEGATIVE, test_against);
-}
-
 // check if provided flag needs to be set, this also sets that flag
 void check_flag(struct M6502* computer, uchar8_t FLAG, uchar8_t test_against){
 
@@ -118,7 +113,6 @@ void check_flag(struct M6502* computer, uchar8_t FLAG, uchar8_t test_against){
         case IGNORED:
             break;
         case OVERFLOW:
-
             break;
         case NEGATIVE:
             //printf("SR: %04X\n", status_register);
@@ -135,4 +129,10 @@ void check_flag(struct M6502* computer, uchar8_t FLAG, uchar8_t test_against){
             puts("Error: not a valid flag");
         break;
     }
+}
+
+// check flag for zero and negative - shorthand function
+void check_flag_ZN(struct M6502* computer, uchar8_t test_against){
+    check_flag(computer, ZERO, test_against);
+    check_flag(computer, NEGATIVE, test_against);
 }

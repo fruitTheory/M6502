@@ -21,27 +21,18 @@ void execute_instruction(struct M6502* computer, ushort16_t program_size){
     }
 }
 
-
-// // check if page was crossed from the input address to new offset address - adds cycle if page crossed
-// void check_page(struct M6502* computer, ushort16_t input_address, uchar8_t register_n){
-    
-//     ushort16_t input_address_offset = input_address + register_n;
-
-//     float old_page = input_address/256; // this naturally truncates 
-//     float new_page = input_address_offset/256;
-//     (old_page != new_page) ? cycle_push(1) : cycle_push(0); // if new page != old page +1 cycle
-//     //(old_page != new_page) ? puts("cyc: 1") :puts("cyc: 0"); // if new page != old page +1 cycle
-// }
-
-
 void ADC(struct M6502* computer, uchar8_t mode){
 
-    uchar8_t result;
+    // Add memory to accumulator with carry value
+    // should really only be used after an instruction that causes overflow
+    //uchar8_t result;
     switch(mode)
     {
         case IMMEDIATE: // 0x69
-            result = accumulator + memory_address[program_counter] + flag_carry_bit;
-            printf("result: %02X\n", result);
+            accumulator = accumulator + memory_address[program_counter] + flag_carry_bit;
+            printf("result: %02X\n", accumulator);
+            check_flag_ZN(computer, accumulator);
+            set_flag(computer, CARRY);
             cycle_push(2);
             break;
         case ZERO_PAGE: // 0x65
@@ -123,7 +114,7 @@ void AND(struct M6502* computer, uchar8_t mode){
             check_flag_ZN(computer, accumulator);
             check_flag(computer, CARRY, accumulator);
             cycle_push(4); // +1 if page crossed
-            check_page(computer, input_address, x_register);
+            check_page(computer, input_address, x_register, 1);
             break;
         case ABSOLUTE_Y: // 0x39
             input_address = M6502_get_word(computer, program_counter, increment_true);
@@ -132,7 +123,7 @@ void AND(struct M6502* computer, uchar8_t mode){
             check_flag_ZN(computer, accumulator);
             check_flag(computer, CARRY, accumulator);
             cycle_push(4); // +1 if page crossed
-            check_page(computer, input_address, y_register);
+            check_page(computer, input_address, y_register, 1);
             break;
         case INDIRECT_X: // 0x21
             // this one just takes a byte as an address
@@ -154,6 +145,7 @@ void AND(struct M6502* computer, uchar8_t mode){
             check_flag_ZN(computer, accumulator);
             check_flag(computer, CARRY, accumulator);
             cycle_push(5); // +1 if page crossed
+            check_page(computer, input_address, y_register, 1);
             break;
         default:
             puts("Error: Please specify addressing mode");
@@ -161,27 +153,50 @@ void AND(struct M6502* computer, uchar8_t mode){
     }
 }
 
-void ASL(struct M6502* computer, uchar8_t mode)
-{
+void ASL(struct M6502* computer, uchar8_t mode){
+    // Arithmetic shift left
+    // should probably test these work
+    // * need to work on carry flag 
+    ushort16_t input_address;
+    ushort16_t offset_address;
+    ushort16_t m_result;
+
     switch(mode)
     {
         case ACCUMULATOR: // 0x0A
+            // note using flag negative bit just the check 7th bit
+            //accumulator ;
+            // shift accumulator 1 bit to the left
+            accumulator <<= 1;
+            check_flag_ZN(computer, accumulator);
             cycle_push(2);
             break;
         case ZERO_PAGE: // 0x06
-            
+            // shift the value provided at current location 1 bit to the left 
+            m_result = memory_address[program_counter] <<= 1;
+            check_flag_ZN(computer, m_result);
             cycle_push(5);
             break;
         case ZERO_PAGE_X: // 0x16
-            
+            offset_address = memory_address[program_counter] + x_register;
+            // shift the value provided at this location 1 bit to the left 
+            m_result = memory_address[offset_address] <<= 1;
+            check_flag_ZN(computer, m_result);
             cycle_push(6);
             break;
         case ABSOLUTE: // 0x0E
-
+            // provides a 16 bit address to work from
+            input_address = M6502_get_word(computer, program_counter, increment_true);
+            // shift the value provided at this location 1 bit to the left 
+            m_result = memory_address[input_address] <<= 1;
+            check_flag_ZN(computer, m_result);
             cycle_push(6);
             break;
         case ABSOLUTE_X: // 0x1E
-
+            input_address = M6502_get_word(computer, program_counter, increment_true);
+            offset_address = input_address + x_register;
+            m_result = memory_address[offset_address] <<= 1;
+            check_flag_ZN(computer, m_result);
             cycle_push(7);
             break;
         default:
@@ -191,18 +206,36 @@ void ASL(struct M6502* computer, uchar8_t mode)
 }
 
 void BCC(struct M6502* computer){ // 0x90
-        
-        cycle_push(2); // +1 if branch succeeds, +2 if to a new page
+    // Branch if carry clear
+    // if carry bit not set to 1, do branch to PC
+    if(!(status_register & flag_carry_bit)){
+        //PC += relative_displacement;
+        cycle_push(1);
+    }
+    cycle_push(2); // +1 if branch succeeds, +2 if to a new page
+    //check_page(computer, )
 }
 
 void BCS(struct M6502* computer){ // 0xB0
-    
+    // Branch if carry set
+    // if carry bit is set to 1, do branch to PC
+    if(status_register & flag_carry_bit){
+        //PC += relative_displacement;
+        cycle_push(1);
+    }
     cycle_push(2); // +1 if branch succeeds, +2 if to a new page
+    //check_page(computer, )
 }
 
 void BEQ(struct M6502* computer){ // 0xF0
     
+    // if zero flag is set to 1, do branch to PC
+    if(status_register & flag_zero_bit){
+        //PC += relative_displacement;
+        cycle_push(1);
+    }
     cycle_push(2); // +1 if branch succeeds, +2 if to a new page
+    //check_page(computer, )
 }
 
 void BIT(struct M6502* computer, uchar8_t mode){
@@ -225,18 +258,36 @@ void BIT(struct M6502* computer, uchar8_t mode){
 }
 
 void BMI(struct M6502* computer){ // 0x30
-    
+    // Branch if minus
+    // if negative flag is set, do branch to PC
+    if(status_register & flag_negative_bit){
+        //PC += relative_displacement;
+        cycle_push(1);
+    }
     cycle_push(2); // +1 if branch succeeds, +2 if to a new page
+    //check_page(computer, )
 }
 
 void BNE(struct M6502* computer){ // 0xD0
-    
+    // Branch if not equal
+    // if zero flag is clear, do branch to PC
+    if(!(status_register & flag_zero_bit)){
+        //PC += relative_displacement;
+        cycle_push(1);
+    }
     cycle_push(2); // +1 if branch succeeds, +2 if to a new page
+    //check_page(computer, )
 }
 
 void BPL(struct M6502* computer){ // 0x10
-    
+    // Branch if positive
+    // if negative flag is clear, do branch to PC
+    if(!(status_register & flag_negative_bit)){
+        //PC += relative_displacement;
+        cycle_push(1);
+    }
     cycle_push(2); // +1 if branch succeeds, +2 if to a new page
+    //check_page(computer, )
 }
 
 void BRK(struct M6502* computer){ // 0x00
@@ -247,36 +298,50 @@ void BRK(struct M6502* computer){ // 0x00
     cycle_push(7);
 }
 
-void BVC(struct M6502* computer)
-{
-    
-    cycle_push(2); // 0x50 +1 if branch succeeds, +2 if to a new page
+void BVC(struct M6502* computer){ // 0x50
+    // Branch if overflow clear
+    // if overflow flag is clear, do branch to PC
+    if(!(status_register & flag_overflow_bit)){
+        //PC += relative_displacement;
+        cycle_push(1);
+    }
+    cycle_push(2); // +1 if branch succeeds, +2 if to a new page
+    //check_page(computer, )
 }
 
-void BVS(struct M6502* computer)
-{
-    
-    cycle_push(2); // 0x70 +1 if branch succeeds, +2 if to a new page
+void BVS(struct M6502* computer){ // 0x70
+    // Branch if overflow set
+    // if overflow flag is set, do branch to PC
+    if(status_register & flag_overflow_bit){
+        //PC += relative_displacement;
+        cycle_push(1);
+    }
+    cycle_push(2); // +1 if branch succeeds, +2 if to a new page
+    //check_page(computer, )
 }
 
-void CLC(struct M6502* computer)
-{
-    cycle_push(2); // 0x18
+void CLC(struct M6502* computer){ // 0x18
+    // Clear carry flag
+    clear_flag(computer, CARRY);
+    cycle_push(2);
 }
 
-void CLD(struct M6502* computer)
-{
-    cycle_push(2); // 0xD8
+void CLD(struct M6502* computer){ // 0xD8
+    // Clear decimal mode
+    clear_flag(computer, DECIMAL);
+    cycle_push(2);
 }
 
-void CLI(struct M6502* computer)
-{
-    cycle_push(2); // 0x58
+void CLI(struct M6502* computer){ // 0x58
+    // Clear interrupt disable
+    clear_flag(computer, INTERRUPT);
+    cycle_push(2);
 }
 
-void CLV(struct M6502* computer)
-{
-    cycle_push(2); // 0xB8
+void CLV(struct M6502* computer){ // 0xB8
+    // Clear overflow flag
+    clear_flag(computer, OVERFLOW);
+    cycle_push(2);
 }
 
 void CMP(struct M6502* computer, uchar8_t mode){
@@ -491,7 +556,6 @@ void JMP(struct M6502* computer, uchar8_t mode){
     switch(mode)
     {
         case ABSOLUTE: // 0x4C
-
             ushort16_t location = M6502_get_word(computer, program_counter, increment_true);
             program_counter = location;
             cycle_push(3);
@@ -527,12 +591,9 @@ void LDA(struct M6502* computer, uchar8_t mode){
     switch(mode)
     {
         case IMMEDIATE: { // 0xA9
-            printf("AC: %02X ADDY: %02X SR: %02X\n", accumulator, memory_address[program_counter], flag_carry_bit);
-            uchar8_t result = accumulator + memory_address[program_counter] + flag_carry_bit;
-            printf("result: %02X\n", result);
             // load immeadiate value at location
             accumulator = memory_address[program_counter];
-            printf("Accumulator: %02X\n", accumulator);
+            //printf("Accumulator: %02X\n", accumulator);
             check_flag_ZN(computer, accumulator);
             cycle_push(2);
             break;
@@ -541,7 +602,7 @@ void LDA(struct M6502* computer, uchar8_t mode){
             input_address = memory_address[program_counter];
             // load whats at the input address
             accumulator = memory_address[input_address];
-            printf("Accumulator: %02X\n", accumulator);
+            //printf("Accumulator: %02X\n", accumulator);
             check_flag_ZN(computer, accumulator);
             cycle_push(3);
             break;
@@ -549,14 +610,14 @@ void LDA(struct M6502* computer, uchar8_t mode){
         case ZERO_PAGE_X:{ // 0xB5
             input_address = memory_address[program_counter];
             accumulator = memory_address[(input_address + x_register)];
-            printf("Accumulator: %i\n", accumulator);
+            //printf("Accumulator: %i\n", accumulator);
             check_flag_ZN(computer, accumulator);
             cycle_push(4);
             break;
         }
         case ABSOLUTE: // 0xAD
             accumulator = memory_address[M6502_get_word(computer, program_counter, increment_true)];
-            printf("Accumulator: %i\n", accumulator);
+            //printf("Accumulator: %i\n", accumulator);
             check_flag_ZN(computer, accumulator);
             cycle_push(4);
             break;
@@ -565,19 +626,19 @@ void LDA(struct M6502* computer, uchar8_t mode){
             // get 16 bit address at current PC and offset by x register, store result in accumulator
             input_address = M6502_get_word(computer, program_counter, increment_true);
             accumulator = memory_address[input_address + x_register];
-            printf("Accumulator: %i\n", accumulator);
+            //printf("Accumulator: %i\n", accumulator);
             check_flag_ZN(computer, accumulator);
             cycle_push(4); // +1 if page crossed
-            check_page(computer, input_address, x_register); // will cycle if page crossed
+            check_page(computer, input_address, x_register, 1); // will cycle if page crossed
             break;
         }
         case ABSOLUTE_Y:{ // 0xB9
             input_address = M6502_get_word(computer, program_counter, increment_true);
             accumulator = memory_address[input_address + y_register];
-            printf("Accumulator: %i\n", accumulator);
+            //printf("Accumulator: %i\n", accumulator);
             check_flag_ZN(computer, accumulator);
             cycle_push(4); // +1 if page crossed
-            check_page(computer, input_address, y_register); // will cycle if page crossed
+            check_page(computer, input_address, y_register, 1); // will cycle if page crossed
             break;
         }
         case INDIRECT_X:{ // 0xA1
@@ -589,7 +650,7 @@ void LDA(struct M6502* computer, uchar8_t mode){
             word_address = M6502_get_word(computer, offset_address, increment_false);
             // stores contents of the word address in the accumulator
             accumulator = memory_address[word_address];
-            printf("Accumulator: %02X\n", accumulator);
+            //printf("Accumulator: %02X\n", accumulator);
             check_flag_ZN(computer, accumulator);
             cycle_push(6);
             break;
@@ -603,10 +664,10 @@ void LDA(struct M6502* computer, uchar8_t mode){
             ushort16_t offset_address = word_address + y_register;
             // store into accumlator the value at the final offset address
             accumulator = memory_address[offset_address];
-            printf("Accumulator: %02X\n", accumulator);
+            //printf("Accumulator: %02X\n", accumulator);
             check_flag_ZN(computer, accumulator);
             cycle_push(5); // +1 if page crossed
-            check_page(computer, offset_address, y_register); // will cycle if page crossed
+            check_page(computer, offset_address, y_register, 1); // will cycle if page crossed
             break;
         }
         default:
