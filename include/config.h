@@ -24,7 +24,11 @@ typedef const char* cString;
 #define status_register (computer->registers.SR)
 
 #define stack_pointer (computer->registers.SP) // points to stack related memory address
-#define stack_addresses (computer->stack.stack_address)
+#define stack_container (computer->stack.stack)
+
+#define NMI 0xFFFA // Non-maskable interrupt handler
+#define RESET 0xFFFC // Power-on/Reset
+#define IRQ 0xFFFE // Interrupt Request Handler - BRK
 
 #define increment_true 0 // used with get_memory_word function to determine if PC should be incremented
 #define increment_false -1 // used with get_memory_word function to determine if PC should be incremented

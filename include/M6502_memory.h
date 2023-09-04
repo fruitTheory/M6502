@@ -13,8 +13,10 @@ typedef struct
 
 struct M6502; // forward declaration so compiler knows struct exists and will be defined later
 
-void M6502_set_memory(struct M6502* computer, ushort16_t address, uchar8_t value);
+void memory_init(struct M6502* computer);
+
 void M6502_memory_inbounds(ushort16_t index);
+void M6502_set_memory(struct M6502* computer, ushort16_t address, uchar8_t value);
 
 uchar8_t M6502_get_byte(struct M6502* computer, ushort16_t address);
 ushort16_t M6502_get_word(struct M6502* computer, ushort16_t address, uchar8_t increment);
@@ -22,22 +24,35 @@ ushort16_t M6502_get_word(struct M6502* computer, ushort16_t address, uchar8_t i
 void M6502_store_program(struct M6502* computer, uchar8_t* file, size_t program_size);
 
 /*
-memory map (reservered)
+Memory Mapping (nes):
 
-The first 256 byte page of memory ($0000-$00FF) is referred to as 'Zero Page' and is the focus of a number of special 
-addressing modes that result in shorter (and quicker) instructions
+RAM: 2 KB
+$0000-$07FF (0-2047): General internal RAM
 
-The second page of memory ($0100-$01FF) is reserved for the system stack and which cannot be relocated
+$0000-$00FF (0-255): zero page - quick addressing
+$0100-$01FF (256-511): reserved for stack
+$0200-$07FF (512-2047): general purpose RAM
 
-The only other reserved locations in the memory map are the very last 6 bytes of memory $FFFA to $FFFF which must be
-programmed with the addresses of the non-maskable interrupt handler ($FFFA/B), the power on reset location ($FFFC/D)
-and the BRK/interrupt request handler ($FFFE/F) respectively
+$0800-$1FFF(2048-8191): RAM mirrors
 
-Concering pages think of memory as separated into pages, theres 256 pages and 256 locations on each page,
-so 256x256 is 65535 bytes and zero page is just the first page with shortest addresses
-*/
+PPU and I/0: 7 KB
+$2000-$2007 (8192-8199): Registers used to control the PPU. They're memory-mapped, so the CPU interacts with the PPU by reading from and writing to these addresses.
+$2008-$3FFF (8200-16383): PPU Mirrors - Each 8 bytes of PPU $2000-$2007
 
-/*
-a well-known bug in indirect jump instruction, JMP (address), where if the address is on a page boundary, 
-it doesn't fetch the correct second byte of the target address. This is a specific quirk of the 6502
+APU and I/O Registers: 31 bytes
+$4000-$401F (16384-16415): Used to control the APU and other I/O functions
+
+Cartridge Space: 47 KB
+$4020-$FFFF (16416-65535): includes ROM and possibly RAM, depending on the cartridge
+
+$4020-$5FFF (16416-24575): cartridge RAM or extra hardware in cartridge
+$6000-$7FFF (24576-32767): Often used for battery-backed Save RAM
+$8000-$FFF9(32768-65529): PRG-ROM, where game program code is usually located
+
+System Vectors: 6 bytes
+$FFFA-$FFFF (65530-65535)
+($FFFA/B): Non-maskable interrupt handler 
+($FFFC/D): Power-on/Reset
+($FFFE/F): BRK/interrupt request handler
+
 */

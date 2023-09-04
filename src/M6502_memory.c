@@ -5,9 +5,16 @@
 #include <string.h>
 #include <stdio.h>
 
-static void M6502_address_inbounds(ushort16_t index){
-    assert(index > 0 && index < max_address);
+static void M6502_address_inbounds(ushort16_t address){
+    assert(address >= 0 && address <= max_address);
 }
+
+// void memory_init(struct M6502* computer){
+//     memset(RAM, 0, sizeof(RAM));
+//     // copy stack array to stack start address
+//     memcpy(&memory_address[stack_start], &RAM, sizeof(RAM));
+// }
+
 // sets byte at memory address
 void M6502_set_memory(struct M6502* computer, ushort16_t address, uchar8_t value){
 

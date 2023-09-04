@@ -59,3 +59,8 @@ void TSX(struct M6502* computer);
 void TXA(struct M6502* computer);
 void TXS(struct M6502* computer);
 void TYA(struct M6502* computer);
+
+/*
+a well-known bug in indirect jump instruction, JMP (address), where if the address is on a page boundary, 
+it doesn't fetch the correct second byte of the target address. This is a specific quirk of the 6502
+*/
