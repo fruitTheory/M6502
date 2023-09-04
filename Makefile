@@ -20,10 +20,6 @@ LIBRARY_DIR =	 -L C:\Programs\SDL\SDL2_image-2.6.3\x86_64-w64-mingw32\lib \
 
 LINKED_LIBRARIES = -lSDL2  -lSDL2main -lSDL2_mixer -lSDL2_image
 
-# TEST_OBJS = ${BUILD}M6502.o \
-# 			${BUILD}M6502_stack.o \
-
-# LOAD_BIN_OBJS = ${BUILD}M6502_memory.o \
 
 # Removed SDL stuff - ${LIBRARY_DIR} ${LINKED_LIBRARIES} 
 
@@ -52,23 +48,10 @@ BASE_NAME = test_ca65
 ca65:
 	ca65 -l ${ASM}${BASE_NAME}.lst ${ASM}${BASE_NAME}.asm 
 	ld65 -t none ${ASM}${BASE_NAME}.o -o ${ASM}${BASE_NAME}.bin
+#none is the config used
+	rm -f ${ASM}${BASE_NAME}.o
 
-
-# # Binary file test section
-# make_bin:
-# #mingw32-make ${BUILD}M6502_memory.o
-# 	${CC} ${INCLUDES} ${SOURCES}load_binary.c -o ${BINARIES}load_bin
-# 	${BINARIES}load_bin ${ASM}test_mos.bin
-# #${BINARIES}load_bin ${ASM}M6502_decimal_test.bin
-
-# ${BUILD}M6502_memory.o:${SOURCES}M6502_memory.c
-# 	${CC} ${FLAGS} ${INCLUDES} -c $< -o $@  
-# # Test section
-# test: ${TEST_OBJS}
-# 	${CC} ${FLAGS} ${INCLUDES} ${TEST_OBJS} ${TESTING}main_test.c -o ${BINARIES}main_test
-
-# # ASM section
-# asm_build:
-# 	@echo "Running asm"
-# 	nasm -f win64 ${ASM}test.asm -o ${ASM}test.obj
-# 	${CC} ${ASM}test.obj -o ${ASM}test.bin
+TESTING=./_testing/
+test:
+	gcc ${INCLUDES} ${TESTING}test.c -o ${TESTING}test
+	${TESTING}test

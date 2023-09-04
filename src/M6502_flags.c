@@ -92,17 +92,10 @@ void check_flag(struct M6502* computer, uchar8_t FLAG, uchar8_t test_against){
     switch(FLAG)
     {
         case CARRY:
+            test_against > 0xFF ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
             break;
         case ZERO:
-            //printf("SR: %04X\n", status_register);
-            if(test_against == 0){
-                //puts("Set Zero flag!");
-                set_flag(computer, ZERO);
-            }else{
-                //puts("Cleared Zero flag!");
-                clear_flag(computer, ZERO);
-            }
-            //printf("SR: %04X\n", status_register);
+            test_against == 0 ? set_flag(computer, ZERO):clear_flag(computer, ZERO);
             break;
         case INTERRUPT:
             break;
@@ -115,15 +108,7 @@ void check_flag(struct M6502* computer, uchar8_t FLAG, uchar8_t test_against){
         case OVERFLOW:
             break;
         case NEGATIVE:
-            //printf("SR: %04X\n", status_register);
-            if(flag_negative_bit & test_against){
-                //puts("Sign is negative!");
-                set_flag(computer, NEGATIVE);
-            }else{
-                //puts("Cleared Negative sign!");
-                clear_flag(computer, NEGATIVE);
-            }
-            //printf("SR: %04X\n", status_register);
+            flag_negative_bit & test_against ? set_flag(computer, NEGATIVE):clear_flag(computer, NEGATIVE);
             break;
         default:
             puts("Error: not a valid flag");
@@ -135,4 +120,23 @@ void check_flag(struct M6502* computer, uchar8_t FLAG, uchar8_t test_against){
 void check_flag_ZN(struct M6502* computer, uchar8_t test_against){
     check_flag(computer, ZERO, test_against);
     check_flag(computer, NEGATIVE, test_against);
+}
+
+// check if a flag is set returns 1 or 0
+int is_flag_set(struct M6502* computer, uchar8_t FLAG){
+    uchar8_t ret; 
+    switch(FLAG)
+    {
+        case CARRY:
+            // returns 1 if set or 0 if not
+            ret = status_register & flag_carry_bit;
+            return ret;
+            break;
+
+        default:
+            puts("Error: not a valid flag");
+            break;
+    }
+
+    return EXIT_FAILURE;
 }

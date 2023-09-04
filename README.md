@@ -1,6 +1,6 @@
-# MOS 6502 Emulator
+# fNES - NES Emulator
 
-Emulator for the MOS 6502 microprocessor, written in C
+Emulation of the Nintendo Entertainment System, written in C
 
 ## Features
 
@@ -46,4 +46,5 @@ Licensed under the MIT License - [LICENSE.md](LICENSE.md)
 - masswerk.at - 6502 instruction set reference
 - ca65 - Assembler by Ullrich von Bassewitz, Greg King
 - hex editor - hexed.it ♡
+- mcs6500 family programming manual
 

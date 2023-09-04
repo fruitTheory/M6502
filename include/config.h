@@ -36,6 +36,12 @@ typedef const char* cString;
 #define memory_type_byte 1
 #define memory_type_word 2
 
+// NES section open
+
+#define PPU (computer->NES_ppu.ppu)
+
+// NES secton close
+
 // enumeration to represent addressing modes
 typedef enum{
     ACCUMULATOR,

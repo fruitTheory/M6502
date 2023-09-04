@@ -3,7 +3,7 @@
 #include "M6502_registers.h"
 #include "M6502_stack.h"
 #include "M6502_memory.h"
-
+#include "ppu.h"
 
 // M6502 type - registers, stack, memory
 struct M6502{
@@ -11,6 +11,7 @@ struct M6502{
     M6502_registers registers;
     M6502_stack stack;
     M6502_memory memory;
+    NES_ppu ppu;
     
 };
 

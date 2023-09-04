@@ -23,36 +23,78 @@ void execute_instruction(struct M6502* computer, ushort16_t program_size){
 
 // Add memory to accumulator with carry value
 void ADC(struct M6502* computer, uchar8_t mode){
-    // should really only be used after an instruction that causes overflow
-    //uchar8_t result;
+    
+    ushort16_t input_address;
+    ushort16_t offset_address;
+    ushort16_t short_result;
+    uchar8_t flag_bit;
     switch(mode)
     {
         case IMMEDIATE: // 0x69
-            accumulator = accumulator + memory_address[program_counter] + flag_carry_bit;
-            printf("result: %02X\n", accumulator);
+            // returns if flag bit is set
+            flag_bit = is_flag_set(computer, CARRY);
+            // have to hack this at a higher level since char doesnt notify out of bounds
+            short_result = accumulator + memory_address[program_counter] + flag_bit;
+            accumulator = accumulator + memory_address[program_counter] + flag_bit;
+
             check_flag_ZN(computer, accumulator);
-            set_flag(computer, CARRY);
+            check_flag(computer, CARRY, short_result);
             cycle_push(2);
             break;
         case ZERO_PAGE: // 0x65
-            
+            input_address = memory_address[program_counter];
+            flag_bit = is_flag_set(computer, CARRY);
+            short_result = accumulator + memory_address[input_address] + flag_bit;
+            accumulator = accumulator + memory_address[input_address] + flag_bit;
+
+            check_flag_ZN(computer, accumulator);
+            check_flag(computer, CARRY, short_result);
             cycle_push(3);
             break;
         case ZERO_PAGE_X: // 0x75
-            
+            input_address = memory_address[program_counter];
+            offset_address = input_address + x_register;
+            flag_bit = is_flag_set(computer, CARRY);
+            short_result = accumulator + memory_address[offset_address] + flag_bit;
+            accumulator = accumulator + memory_address[offset_address] + flag_bit;
+
+            check_flag_ZN(computer, accumulator);
+            check_flag(computer, CARRY, short_result);
             cycle_push(4);
             break;
         case ABSOLUTE: // 0x6D
-            
+            input_address = M6502_get_word(computer, program_counter, increment_true);
+            flag_bit = is_flag_set(computer, CARRY);
+            short_result = accumulator + memory_address[input_address] + flag_bit;
+            accumulator = accumulator + memory_address[input_address] + flag_bit;
+
+            check_flag_ZN(computer, accumulator);
+            check_flag(computer, CARRY, short_result);
             cycle_push(4);
             break;
         case ABSOLUTE_X: // 0x7D
+            input_address = M6502_get_word(computer, program_counter, increment_true);
+            offset_address = input_address + x_register;
+            flag_bit = is_flag_set(computer, CARRY);
+            short_result = accumulator + memory_address[offset_address] + flag_bit;
+            accumulator = accumulator + memory_address[offset_address] + flag_bit;
 
+            check_flag_ZN(computer, accumulator);
+            check_flag(computer, CARRY, short_result);
             cycle_push(4); // +1 if page crossed
+            check_page(computer, input_address, x_register, 1);
             break;
         case ABSOLUTE_Y: // 0x79
+            input_address = M6502_get_word(computer, program_counter, increment_true);
+            offset_address = input_address + y_register;
+            flag_bit = is_flag_set(computer, CARRY);
+            short_result = accumulator + memory_address[offset_address] + flag_bit;
+            accumulator = accumulator + memory_address[offset_address] + flag_bit;
 
+            check_flag_ZN(computer, accumulator);
+            check_flag(computer, CARRY, short_result);
             cycle_push(4); // +1 if page crossed
+            check_page(computer, input_address, y_register, 1);
             break;
         case INDIRECT_X: // 0x61
             
@@ -393,6 +435,7 @@ void CMP(struct M6502* computer, uchar8_t mode){
             break;
         case ABSOLUTE: // 0xCD
             input_address = M6502_get_word(computer, program_counter, increment_true);
+            result = accumulator - memory_address[input_address];
 
             if(accumulator >= memory_address[input_address]) set_flag(computer, CARRY);
             if(accumulator == memory_address[input_address]) set_flag(computer, ZERO);
@@ -403,6 +446,7 @@ void CMP(struct M6502* computer, uchar8_t mode){
         case ABSOLUTE_X: // 0xDD
             input_address = M6502_get_word(computer, program_counter, increment_true);
             offset_address = input_address + x_register;
+            result = accumulator - memory_address[offset_address];
 
             if(accumulator >= memory_address[offset_address]) set_flag(computer, CARRY);
             if(accumulator == memory_address[offset_address]) set_flag(computer, ZERO);
@@ -413,6 +457,7 @@ void CMP(struct M6502* computer, uchar8_t mode){
         case ABSOLUTE_Y: // 0xD9
             input_address = M6502_get_word(computer, program_counter, increment_true);
             offset_address = input_address + y_register;
+            result = accumulator - memory_address[offset_address];
 
             if(accumulator >= memory_address[offset_address]) set_flag(computer, CARRY);
             if(accumulator == memory_address[offset_address]) set_flag(computer, ZERO);
