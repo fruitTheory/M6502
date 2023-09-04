@@ -1,4 +1,4 @@
-# fNES - NES Emulator
+# fTNES - NES Emulator
 
 Emulation of the Nintendo Entertainment System, written in C
 
