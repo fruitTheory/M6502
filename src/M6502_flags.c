@@ -86,43 +86,33 @@ void clear_flag(struct M6502* computer, uchar8_t FLAG){
     }
 }
 
-// check if provided flag needs to be set, this also sets that flag
-void check_flag(struct M6502* computer, uchar8_t FLAG, uchar8_t test_against){
+// Check if result is negative or positive, set flag accordingly, else clear flag
+void check_flag_Carry(struct M6502* computer, short test_against){
+    // this is a little sketchy, check if positive first, then force check if negative
+    // if neither positive nor negative it will clear the flag which should work both cases
+    if(test_against > 0xFF)set_flag(computer, CARRY), puts("Carry Positive!");
+    test_against < 0x00 ? set_flag(computer, CARRY),puts("Carry Negative!"):
+    clear_flag(computer, CARRY),puts("Carry Cleared!");
+}
 
-    switch(FLAG)
-    {
-        case CARRY:
-            test_against > 0xFF ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
-            break;
-        case ZERO:
-            test_against == 0 ? set_flag(computer, ZERO):clear_flag(computer, ZERO);
-            break;
-        case INTERRUPT:
-            break;
-        case DECIMAL:
-            break;
-        case BREAK:
-            break;
-        case IGNORED:
-            break;
-        case OVERFLOW:
-            break;
-        case NEGATIVE:
-            flag_negative_bit & test_against ? set_flag(computer, NEGATIVE):clear_flag(computer, NEGATIVE);
-            break;
-        default:
-            puts("Error: not a valid flag");
-        break;
-    }
+// Check input against 0, if equal then set the Zero flag, else clear flag
+void check_flag_Z(struct M6502* computer, uchar8_t test_against){
+
+    test_against == 0 ? set_flag(computer, ZERO):clear_flag(computer, ZERO);
+}
+// Check if bit 7 of input is set, and then sets flag if true, else clear flag
+void check_flag_N(struct M6502* computer, uchar8_t test_against){
+
+    flag_negative_bit & test_against ? set_flag(computer, NEGATIVE):clear_flag(computer, NEGATIVE);
 }
 
 // check flag for zero and negative - shorthand function
 void check_flag_ZN(struct M6502* computer, uchar8_t test_against){
-    check_flag(computer, ZERO, test_against);
-    check_flag(computer, NEGATIVE, test_against);
+    check_flag_Z(computer, test_against);
+    check_flag_N(computer, test_against);
 }
 
-// check if a flag is set returns 1 or 0
+// check if a flag is set returns 1 or 0, references current status register
 int is_flag_set(struct M6502* computer, uchar8_t FLAG){
     uchar8_t ret; 
     switch(FLAG)

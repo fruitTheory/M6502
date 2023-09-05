@@ -26,6 +26,7 @@ void ADC(struct M6502* computer, uchar8_t mode){
     
     ushort16_t input_address;
     ushort16_t offset_address;
+    ushort16_t word_address;
     ushort16_t short_result;
     uchar8_t flag_bit;
     switch(mode)
@@ -38,7 +39,7 @@ void ADC(struct M6502* computer, uchar8_t mode){
             accumulator = accumulator + memory_address[program_counter] + flag_bit;
 
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, short_result);
+            check_flag_Carry(computer, short_result);
             cycle_push(2);
             break;
         case ZERO_PAGE: // 0x65
@@ -48,7 +49,7 @@ void ADC(struct M6502* computer, uchar8_t mode){
             accumulator = accumulator + memory_address[input_address] + flag_bit;
 
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, short_result);
+            check_flag_Carry(computer, short_result);
             cycle_push(3);
             break;
         case ZERO_PAGE_X: // 0x75
@@ -59,7 +60,7 @@ void ADC(struct M6502* computer, uchar8_t mode){
             accumulator = accumulator + memory_address[offset_address] + flag_bit;
 
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, short_result);
+            check_flag_Carry(computer, short_result);
             cycle_push(4);
             break;
         case ABSOLUTE: // 0x6D
@@ -69,7 +70,7 @@ void ADC(struct M6502* computer, uchar8_t mode){
             accumulator = accumulator + memory_address[input_address] + flag_bit;
 
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, short_result);
+            check_flag_Carry(computer, short_result);
             cycle_push(4);
             break;
         case ABSOLUTE_X: // 0x7D
@@ -80,7 +81,7 @@ void ADC(struct M6502* computer, uchar8_t mode){
             accumulator = accumulator + memory_address[offset_address] + flag_bit;
 
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, short_result);
+            check_flag_Carry(computer, short_result);
             cycle_push(4); // +1 if page crossed
             check_page(computer, input_address, x_register, 1);
             break;
@@ -92,17 +93,34 @@ void ADC(struct M6502* computer, uchar8_t mode){
             accumulator = accumulator + memory_address[offset_address] + flag_bit;
 
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, short_result);
+            check_flag_Carry(computer, short_result);
             cycle_push(4); // +1 if page crossed
             check_page(computer, input_address, y_register, 1);
             break;
         case INDIRECT_X: // 0x61
-            
+            input_address = memory_address[program_counter];
+            offset_address = input_address + x_register;
+            flag_bit = is_flag_set(computer, CARRY);
+            word_address = M6502_get_word(computer, offset_address, increment_true);
+            short_result = accumulator + memory_address[word_address] + flag_bit;
+            accumulator = accumulator + memory_address[word_address] + flag_bit;
+
+            check_flag_ZN(computer, accumulator);
+            check_flag_Carry(computer, word_address);
             cycle_push(6);
             break;
         case INDIRECT_Y: // 0x71
+            input_address = M6502_get_byte(computer, program_counter);
+            word_address = M6502_get_word(computer, input_address, increment_true);
+            offset_address = word_address + y_register;
+            flag_bit = is_flag_set(computer, CARRY);
+            short_result = accumulator + memory_address[offset_address] + flag_bit;
+            accumulator = accumulator + memory_address[offset_address] + flag_bit;
             
+            check_flag_ZN(computer, accumulator);
+            check_flag_Carry(computer, offset_address);
             cycle_push(5); // +1 if page crossed
+            check_page(computer, input_address, y_register, 1);
             break;
         default:
             puts("Error: Please specify addressing mode for ADC");
@@ -122,14 +140,12 @@ void AND(struct M6502* computer, uchar8_t mode){
         case IMMEDIATE: // 0x29
             accumulator = accumulator & memory_address[program_counter];
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, accumulator);
             cycle_push(2);
             break;
         case ZERO_PAGE: // 0x25
             input_address = memory_address[program_counter];
             accumulator = accumulator & memory_address[input_address];
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, accumulator);
             cycle_push(3);
             break;
         case ZERO_PAGE_X: // 0x35
@@ -137,14 +153,12 @@ void AND(struct M6502* computer, uchar8_t mode){
             offset_address = input_address + x_register;
             accumulator = accumulator & memory_address[offset_address];
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, accumulator);
             cycle_push(4);
             break;
         case ABSOLUTE: // 0x2D
             input_address = M6502_get_word(computer, program_counter, increment_true);
             accumulator = accumulator & memory_address[input_address];
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, accumulator);
             cycle_push(4);
             break;
         case ABSOLUTE_X: // 0x3D
@@ -152,7 +166,6 @@ void AND(struct M6502* computer, uchar8_t mode){
             offset_address = input_address + x_register;
             accumulator = accumulator & memory_address[offset_address];
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, accumulator);
             cycle_push(4); // +1 if page crossed
             check_page(computer, input_address, x_register, 1);
             break;
@@ -161,7 +174,6 @@ void AND(struct M6502* computer, uchar8_t mode){
             offset_address = input_address + y_register;
             accumulator = accumulator & memory_address[offset_address];
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, accumulator);
             cycle_push(4); // +1 if page crossed
             check_page(computer, input_address, y_register, 1);
             break;
@@ -173,7 +185,6 @@ void AND(struct M6502* computer, uchar8_t mode){
             // AND operation against whats at the word address
             accumulator = accumulator & memory_address[offset_address];
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, accumulator);
             cycle_push(6);
             break;
         case INDIRECT_Y: // 0x31
@@ -183,7 +194,6 @@ void AND(struct M6502* computer, uchar8_t mode){
             // AND operation against whats at the offset address
             accumulator = accumulator & offset_address;
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, accumulator);
             cycle_push(5); // +1 if page crossed
             check_page(computer, input_address, y_register, 1);
             break;
@@ -410,7 +420,7 @@ void CMP(struct M6502* computer, uchar8_t mode){
             //  set flags 
             if(accumulator >= memory_address[program_counter]) set_flag(computer, CARRY);
             if(accumulator == memory_address[program_counter]) set_flag(computer, ZERO);
-            check_flag(computer, NEGATIVE, result);
+            check_flag_N(computer, result);
             cycle_push(2);
             break;
         case ZERO_PAGE: // 0xC5
@@ -420,7 +430,7 @@ void CMP(struct M6502* computer, uchar8_t mode){
             if(accumulator >= memory_address[input_address]) set_flag(computer, CARRY);
             if(accumulator == memory_address[input_address]) set_flag(computer, ZERO);
 
-            check_flag(computer, NEGATIVE, result);
+            check_flag_N(computer, result);
             cycle_push(3);
             break;
         case ZERO_PAGE_X: // 0xD5
@@ -430,7 +440,7 @@ void CMP(struct M6502* computer, uchar8_t mode){
             if(accumulator >= memory_address[input_address]) set_flag(computer, CARRY);
             if(accumulator == memory_address[input_address]) set_flag(computer, ZERO);
 
-            check_flag(computer, NEGATIVE, result);
+            check_flag_N(computer, result);
             cycle_push(4);
             break;
         case ABSOLUTE: // 0xCD
@@ -440,7 +450,7 @@ void CMP(struct M6502* computer, uchar8_t mode){
             if(accumulator >= memory_address[input_address]) set_flag(computer, CARRY);
             if(accumulator == memory_address[input_address]) set_flag(computer, ZERO);
 
-            check_flag(computer, NEGATIVE, result);
+            check_flag_N(computer, result);
             cycle_push(4);
             break;
         case ABSOLUTE_X: // 0xDD
@@ -451,7 +461,7 @@ void CMP(struct M6502* computer, uchar8_t mode){
             if(accumulator >= memory_address[offset_address]) set_flag(computer, CARRY);
             if(accumulator == memory_address[offset_address]) set_flag(computer, ZERO);
 
-            check_flag(computer, NEGATIVE, result);
+            check_flag_N(computer, result);
             cycle_push(4); // +1 if page crossed
             break;
         case ABSOLUTE_Y: // 0xD9
@@ -462,7 +472,7 @@ void CMP(struct M6502* computer, uchar8_t mode){
             if(accumulator >= memory_address[offset_address]) set_flag(computer, CARRY);
             if(accumulator == memory_address[offset_address]) set_flag(computer, ZERO);
 
-            check_flag(computer, NEGATIVE, result);
+            check_flag_N(computer, result);
             cycle_push(4); // +1 if page crossed
             break;
         case INDIRECT_X: // 0xC1
@@ -481,19 +491,34 @@ void CMP(struct M6502* computer, uchar8_t mode){
 
 // Compare X register
 void CPX(struct M6502* computer, uchar8_t mode){
-    
+
+    ushort16_t result;
+    ushort16_t input_address;
     switch(mode)
     {
         case IMMEDIATE: // 0xE0
-            
+            result = x_register - memory_address[program_counter];
+            if(x_register >= memory_address[program_counter]) set_flag(computer, CARRY);
+            if(x_register == memory_address[program_counter]) set_flag(computer, ZERO);
+            check_flag_N(computer, result);
             cycle_push(2);
             break;
         case ZERO_PAGE: // 0xE4
-            
+            input_address = memory_address[program_counter];
+            result = x_register - memory_address[input_address];
+
+            if(x_register >= memory_address[input_address]) set_flag(computer, CARRY);
+            if(x_register == memory_address[input_address]) set_flag(computer, ZERO);
+            check_flag_N(computer, result);
             cycle_push(3);
             break;
         case ABSOLUTE: // 0xEC
-            
+            input_address = M6502_get_word(computer, program_counter, increment_true);
+            result = x_register - memory_address[input_address];
+
+            if(x_register >= memory_address[input_address]) set_flag(computer, CARRY);
+            if(x_register == memory_address[input_address]) set_flag(computer, ZERO);
+            check_flag_N(computer, result);
             cycle_push(4);
             break;
         default:
@@ -504,19 +529,34 @@ void CPX(struct M6502* computer, uchar8_t mode){
 
 // Compare Y register
 void CPY(struct M6502* computer, uchar8_t mode){
-    
+
+    ushort16_t result;
+    ushort16_t input_address;
     switch(mode)
     {
         case IMMEDIATE: // 0xC0
-            
+            result = y_register - memory_address[program_counter];
+            if(y_register >= memory_address[program_counter]) set_flag(computer, CARRY);
+            if(y_register == memory_address[program_counter]) set_flag(computer, ZERO);
+            check_flag_N(computer, result);
             cycle_push(2);
             break;
         case ZERO_PAGE: // 0xC4
-            
+            input_address = memory_address[program_counter];
+            result = y_register - memory_address[input_address];
+
+            if(y_register >= memory_address[input_address]) set_flag(computer, CARRY);
+            if(y_register == memory_address[input_address]) set_flag(computer, ZERO);
+            check_flag_N(computer, result);
             cycle_push(3);
             break;
         case ABSOLUTE: // 0xCC
+            input_address = M6502_get_word(computer, program_counter, increment_true);
+            result = y_register - memory_address[input_address];
 
+            if(y_register >= memory_address[input_address]) set_flag(computer, CARRY);
+            if(y_register == memory_address[input_address]) set_flag(computer, ZERO);
+            check_flag_N(computer, result);
             cycle_push(4);
             break;
         default:
@@ -1001,7 +1041,7 @@ void ORA(struct M6502* computer, uchar8_t mode){
         case IMMEDIATE: // 0x09
             accumulator = accumulator | memory_address[program_counter];
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, accumulator);
+            check_flag_Carry(computer, accumulator);
             cycle_push(2);
             cycle_push(2);
             break;
@@ -1009,7 +1049,7 @@ void ORA(struct M6502* computer, uchar8_t mode){
             input_address = memory_address[program_counter];
             accumulator = accumulator | memory_address[input_address];
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, accumulator);
+            check_flag_Carry(computer, accumulator);
             cycle_push(3);
             break;
         case ZERO_PAGE_X: // 0x15
@@ -1017,14 +1057,14 @@ void ORA(struct M6502* computer, uchar8_t mode){
             offset_address = input_address + x_register;
             accumulator = accumulator | memory_address[offset_address];
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, accumulator);
+            check_flag_Carry(computer, accumulator);
             cycle_push(4);
             break;
         case ABSOLUTE: // 0x0D
             input_address = M6502_get_word(computer, program_counter, increment_true);
             accumulator = accumulator | memory_address[input_address];
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, accumulator);
+            check_flag_Carry(computer, accumulator);
             cycle_push(4);
             break;
         case ABSOLUTE_X: // 0x1D
@@ -1032,7 +1072,7 @@ void ORA(struct M6502* computer, uchar8_t mode){
             offset_address = input_address + x_register;
             accumulator = accumulator | memory_address[offset_address];
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, accumulator);
+            check_flag_Carry(computer, accumulator);
             cycle_push(4); // +1 if page crossed
             check_page(computer, input_address, x_register, 1);
             break;
@@ -1041,7 +1081,7 @@ void ORA(struct M6502* computer, uchar8_t mode){
             offset_address = input_address + y_register;
             accumulator = accumulator | memory_address[offset_address];
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, accumulator);
+            check_flag_Carry(computer, accumulator);
             cycle_push(4); // +1 if page crossed
             check_page(computer, input_address, y_register, 1);
             break;
@@ -1053,7 +1093,7 @@ void ORA(struct M6502* computer, uchar8_t mode){
             // OR operation against whats at the word address
             accumulator = accumulator | memory_address[offset_address];
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, accumulator);
+            check_flag_Carry(computer, accumulator);
             cycle_push(6);
             break;
         case INDIRECT_Y: // 0x11
@@ -1063,7 +1103,7 @@ void ORA(struct M6502* computer, uchar8_t mode){
             // OR operation against whats at the offset address
             accumulator = accumulator | offset_address;
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, accumulator);
+            check_flag_Carry(computer, accumulator);
             cycle_push(5); // +1 if page crossed
             check_page(computer, input_address, y_register, 1);
             break;
@@ -1193,42 +1233,104 @@ void RTS(struct M6502* computer){ // 0x60
 
 // Subtract with Carry
 void SBC(struct M6502* computer, uchar8_t mode){
+
+    ushort16_t input_address;
+    ushort16_t offset_address;
+    ushort16_t word_address;
+    short16_t short_result;
+    uchar8_t flag_bit;
     switch(mode)
     {
         case IMMEDIATE: // 0xE9
-            
-            accumulator = accumulator - memory_address[program_counter];
+            // returns if flag bit is set
+            flag_bit = is_flag_set(computer, CARRY);
+            // check if this is same response as adc
+            short_result = accumulator - memory_address[program_counter] - flag_bit;
+            accumulator = accumulator - memory_address[program_counter] - flag_bit;
+
             check_flag_ZN(computer, accumulator);
-            check_flag(computer, CARRY, accumulator);
+            check_flag_Carry(computer, short_result);
             cycle_push(2);
             break;
         case ZERO_PAGE: // 0xE5
-            
+            input_address = memory_address[program_counter];
+            flag_bit = is_flag_set(computer, CARRY);
+            short_result = accumulator - memory_address[input_address] - flag_bit;
+            accumulator = accumulator - memory_address[input_address] - flag_bit;
+
+            check_flag_ZN(computer, accumulator);
+            check_flag_Carry(computer, short_result);
             cycle_push(3);
             break;
         case ZERO_PAGE_X: // 0xF5
-            
+            input_address = memory_address[program_counter];
+            offset_address = input_address + x_register;
+            flag_bit = is_flag_set(computer, CARRY);
+            short_result = accumulator - memory_address[offset_address] - flag_bit;
+            accumulator = accumulator - memory_address[offset_address] - flag_bit;
+
+            check_flag_ZN(computer, accumulator);
+            check_flag_Carry(computer, short_result);
             cycle_push(4);
             break;
         case ABSOLUTE: // 0xED
-            
+            input_address = M6502_get_word(computer, program_counter, increment_true);
+            flag_bit = is_flag_set(computer, CARRY);
+            short_result = accumulator - memory_address[input_address] - flag_bit;
+            accumulator = accumulator - memory_address[input_address] - flag_bit;
+
+            check_flag_ZN(computer, accumulator);
+            check_flag_Carry(computer, short_result);
             cycle_push(4);
             break;
         case ABSOLUTE_X: // 0xFD
-            
+            input_address = M6502_get_word(computer, program_counter, increment_true);
+            offset_address = input_address + x_register;
+            flag_bit = is_flag_set(computer, CARRY);
+            short_result = accumulator - memory_address[offset_address] - flag_bit;
+            accumulator = accumulator - memory_address[offset_address] - flag_bit;
+
+            check_flag_ZN(computer, accumulator);
+            check_flag_Carry(computer, short_result);
             cycle_push(4); // +1 if page crossed
+            check_page(computer, input_address, x_register, 1);
             break;
         case ABSOLUTE_Y: // 0xF9
-            
+            input_address = M6502_get_word(computer, program_counter, increment_true);
+            offset_address = input_address + y_register;
+            flag_bit = is_flag_set(computer, CARRY);
+            short_result = accumulator - memory_address[offset_address] - flag_bit;
+            accumulator = accumulator - memory_address[offset_address] - flag_bit;
+
+            check_flag_ZN(computer, accumulator);
+            check_flag_Carry(computer, short_result);
             cycle_push(4); // +1 if page crossed
+            check_page(computer, input_address, y_register, 1);
             break;
         case INDIRECT_X: // 0xE1
-            
+            input_address = memory_address[program_counter];
+            offset_address = input_address + x_register;
+            word_address = M6502_get_word(computer, offset_address, increment_true);
+            flag_bit = is_flag_set(computer, CARRY);
+            short_result = accumulator - memory_address[word_address] - flag_bit;
+            accumulator = accumulator - memory_address[word_address] - flag_bit;
+
+            check_flag_ZN(computer, accumulator);
+            check_flag_Carry(computer, short_result);
             cycle_push(6);
             break;
         case INDIRECT_Y: // 0xF1
+            input_address = M6502_get_byte(computer, program_counter);
+            word_address = M6502_get_word(computer, input_address, increment_true);
+            offset_address = word_address + y_register;   
+            flag_bit = is_flag_set(computer, CARRY);
+            short_result = accumulator - memory_address[offset_address] - flag_bit;
+            accumulator = accumulator - memory_address[offset_address] - flag_bit;
             
+            check_flag_ZN(computer, accumulator);
+            check_flag_Carry(computer, short_result);
             cycle_push(5); // +1 if page crossed
+            check_page(computer, input_address, y_register, 1);
             break;
         default:
             puts("Error: Please specify addressing mode");
@@ -1405,7 +1507,6 @@ void TXS(struct M6502* computer){ // 0x9A
 // transfer y register to accumulator
 void TYA(struct M6502* computer){ // 0x98
     accumulator = y_register;
-    check_flag(computer, ZERO, accumulator);
-    check_flag(computer, NEGATIVE, accumulator);
+    check_flag_ZN(computer, accumulator);
     cycle_push(2);
 }

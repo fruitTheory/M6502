@@ -11,10 +11,6 @@
 
 int main(int argc, char* argv[]){
 
-    // first thing
-    //Check_SDL_Version();
-    printf("total system memory: %i\n", max_address);
-
     // initialized M6502 variable
     struct M6502 computer;
     M6502_init(&computer);
@@ -29,10 +25,6 @@ int main(int argc, char* argv[]){
     free(program);
 
     execute_instruction(&computer, program_size);
-    
-    // push and pop to stack
-    // M6502_stack_push(&computer, 0x101);
-    // M6502_stack_pop(&computer);
 
     return EXIT_SUCCESS;
 }
