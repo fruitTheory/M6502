@@ -49,7 +49,7 @@ ca65:
 	ca65 -l ${ASM}${BASE_NAME}.lst ${ASM}${BASE_NAME}.asm 
 	ld65 -t none ${ASM}${BASE_NAME}.o -o ${ASM}${BASE_NAME}.bin
 #none is the config used
-	rm -f ${ASM}${BASE_NAME}.o
+#rm -f ${ASM}${BASE_NAME}.o
 
 TESTING=./_testing/
 test:

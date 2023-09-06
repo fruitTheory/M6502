@@ -1,17 +1,19 @@
 # fTNES - NES Emulator
 
-Emulation of the Nintendo Entertainment System, written in C
+Emulation of the Nintendo Entertainment System, written in C  
+Currently a 6502 microprocessor but PPU is on the way
 
 ## Features
 
 - Full emulation of the legal CPU opcodes
-- Emulation of primary system components and I/O
+- Emulation of primary system components I/O
 - Support for NROM games, non memory-mapped
 
 ### Prerequisites
 
 - A C 64-bit compiler (ex. GCC, Clang, MSVC)
 - Potentially other dependencies (SDL)
+- Basic make and lib linking knowledge
 
 ### Building
 
@@ -20,7 +22,7 @@ Emulation of the Nintendo Entertainment System, written in C
 ### Running
 
 ```
-./emulator path_to_file
+./ftnes path_to_rom
 ```
 
 ## Roadmap
@@ -30,6 +32,8 @@ Emulation of the Nintendo Entertainment System, written in C
 - Debug functions
 - Build on top, NES components 
 - Refine components
+- Release version v0.01
+- Streamline build
 
 ## Contributing
 
