@@ -2,6 +2,11 @@
 #include "config.h"
 #include <stdbool.h>
 
+
+int temp(){
+    return 0x01 & 0x54;
+}
+
 int main(){
 
     unsigned char num1;
@@ -19,11 +24,18 @@ int main(){
     printf("num3: %04X\n", result);
     printf("num3: %i\n", result);
 
-    if(result < 0) puts("true");
+    result = 0x01 & 0x54;
+
+    if(result == 1) puts("true");
+    if(result == 0) puts("false");
+
+    if(!temp())
+        printf("new result: %i\n", result);
 
     // 0101 0101
     //0b01010100 & flag_carry_bit ? puts("true"):puts("false");
 
 
 }
+
 

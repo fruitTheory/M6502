@@ -4,26 +4,21 @@
 
     lda #$45    ; Load ASCII value for 'E'
 
-    lda $0045   ; zerpage addy
+decrement_loop:
+    sta $0200    ; Store the accumulator value to memory location $0200 (arbitrary location for this example)
+    dex          ; Decrement X register
+    bne skip     ; If X is not zero, skip the next instruction
+    dec $0200    ; Decrement value at memory location $0200
 
-    lda $0262   ; absolute addy
+skip:
+    dey          ; Decrement Y register
+    beq end      ; If Y is zero, end the loop
 
-    lda $50,X ; zeropage offset by X
+    sec          ; Set the carry flag
+    sbc #$01     ; Subtract 1 from the accumulator
+    bpl decrement_loop ; If result is positive, loop again
 
-    lda $0272,X   ; absolute offset by X
-
-    lda ($40, X)    ; load a byte indirectly from memory
-
-    lda ($40),Y     ;Load a byte indirectly from memory
-
-    sta $3000,X     ;Store accumulator
-
-    ;jmp $1234   ; jump to location
-
-    clc         ; clear carry flag
-
-    ;pha         ; push accum to stack
-    ;php         ; push status register to stack
+end:
 
     lda $10        ; Load the accumulator with the value at memory location $10
     jsr ADD_VALUES ; Call the subroutine to add another value to the accumulator

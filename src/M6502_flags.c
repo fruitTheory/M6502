@@ -38,16 +38,6 @@ void set_flag(struct M6502* computer, uchar8_t FLAG){
     }
 }
 
-void set_flags_all(struct M6502* computer){
-    set_flag(computer, CARRY);
-    set_flag(computer, ZERO);
-    set_flag(computer, INTERRUPT);
-    set_flag(computer, DECIMAL);
-    set_flag(computer, BREAK);
-    set_flag(computer, OVERFLOW);
-    set_flag(computer, NEGATIVE);
-}
-
 // clears provided status register flag
 void clear_flag(struct M6502* computer, uchar8_t FLAG){
     // xor also works here as it returns 1 if only one of the bits is 1
@@ -112,21 +102,80 @@ void check_flag_ZN(struct M6502* computer, uchar8_t test_against){
     check_flag_N(computer, test_against);
 }
 
-// check if a flag is set returns 1 or 0, references current status register
-int is_flag_set(struct M6502* computer, uchar8_t FLAG){
+// check if a flag is set returns 1 or 0, doubles as a 'is this bit set?'
+// please use status register as default test case, otherwise specify another value
+uchar8_t is_flag_set(uchar8_t FLAG, uchar8_t test_against){
     uchar8_t ret; 
     switch(FLAG)
     {
         case CARRY:
             // returns 1 if set or 0 if not
-            ret = status_register & flag_carry_bit;
+            ret = test_against & flag_carry_bit;
             return ret;
             break;
-
+        case ZERO:
+            ret = test_against & flag_zero_bit;
+            return ret;
+            break;
+        case INTERRUPT:
+            break;
+        case DECIMAL:
+            break;
+        case BREAK:
+            break;
+        case OVERFLOW:
+            ret = test_against & flag_overflow_bit;
+            return ret;
+            break;
+        case NEGATIVE:
+            // returns 1 if set or 0 if not
+            ret = test_against & flag_negative_bit;
+            return ret;
+            break;
         default:
             puts("Error: not a valid flag");
             break;
     }
 
+    return EXIT_FAILURE;
+}
+
+// set specific bit of specified input - only accepting 0 and 7 for now
+uchar8_t set_bit(uchar8_t bit, uchar8_t test_against){
+        switch(bit)
+    {
+        case 0:
+            test_against |= flag_zero_bit;
+            return test_against;
+            break;
+
+        case 7:
+            test_against |= flag_negative_bit;
+            return test_against;
+            break;
+        default:
+            puts("Error: use bit 0-7");
+            break;
+    }
+    return EXIT_FAILURE;
+}
+
+// clear specific bit of specified input - only accepting 0 and 7 for now
+uchar8_t clear_bit(uchar8_t bit, uchar8_t test_against){
+    switch(bit)
+    {
+        case 0:
+            test_against &= ~flag_zero_bit;
+            return test_against;
+            break;
+
+        case 7:
+            test_against &= ~flag_negative_bit;
+            return test_against;
+            break;
+        default:
+            puts("Error: use bit 0-7");
+            break;
+    }
     return EXIT_FAILURE;
 }

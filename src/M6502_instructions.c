@@ -33,7 +33,7 @@ void ADC(struct M6502* computer, uchar8_t mode){
     {
         case IMMEDIATE: // 0x69
             // returns if flag bit is set
-            flag_bit = is_flag_set(computer, CARRY);
+            flag_bit = is_flag_set(CARRY, status_register);
             // have to hack this at a higher level since char doesnt notify out of bounds
             short_result = accumulator + memory_address[program_counter] + flag_bit;
             accumulator = accumulator + memory_address[program_counter] + flag_bit;
@@ -44,7 +44,7 @@ void ADC(struct M6502* computer, uchar8_t mode){
             break;
         case ZERO_PAGE: // 0x65
             input_address = memory_address[program_counter];
-            flag_bit = is_flag_set(computer, CARRY);
+            flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator + memory_address[input_address] + flag_bit;
             accumulator = accumulator + memory_address[input_address] + flag_bit;
 
@@ -55,7 +55,7 @@ void ADC(struct M6502* computer, uchar8_t mode){
         case ZERO_PAGE_X: // 0x75
             input_address = memory_address[program_counter];
             offset_address = input_address + x_register;
-            flag_bit = is_flag_set(computer, CARRY);
+            flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator + memory_address[offset_address] + flag_bit;
             accumulator = accumulator + memory_address[offset_address] + flag_bit;
 
@@ -65,7 +65,7 @@ void ADC(struct M6502* computer, uchar8_t mode){
             break;
         case ABSOLUTE: // 0x6D
             input_address = M6502_get_word(computer, program_counter, increment_true);
-            flag_bit = is_flag_set(computer, CARRY);
+            flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator + memory_address[input_address] + flag_bit;
             accumulator = accumulator + memory_address[input_address] + flag_bit;
 
@@ -76,7 +76,7 @@ void ADC(struct M6502* computer, uchar8_t mode){
         case ABSOLUTE_X: // 0x7D
             input_address = M6502_get_word(computer, program_counter, increment_true);
             offset_address = input_address + x_register;
-            flag_bit = is_flag_set(computer, CARRY);
+            flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator + memory_address[offset_address] + flag_bit;
             accumulator = accumulator + memory_address[offset_address] + flag_bit;
 
@@ -88,7 +88,7 @@ void ADC(struct M6502* computer, uchar8_t mode){
         case ABSOLUTE_Y: // 0x79
             input_address = M6502_get_word(computer, program_counter, increment_true);
             offset_address = input_address + y_register;
-            flag_bit = is_flag_set(computer, CARRY);
+            flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator + memory_address[offset_address] + flag_bit;
             accumulator = accumulator + memory_address[offset_address] + flag_bit;
 
@@ -100,7 +100,7 @@ void ADC(struct M6502* computer, uchar8_t mode){
         case INDIRECT_X: // 0x61
             input_address = memory_address[program_counter];
             offset_address = input_address + x_register;
-            flag_bit = is_flag_set(computer, CARRY);
+            flag_bit = is_flag_set(CARRY, status_register);
             word_address = M6502_get_word(computer, offset_address, increment_true);
             short_result = accumulator + memory_address[word_address] + flag_bit;
             accumulator = accumulator + memory_address[word_address] + flag_bit;
@@ -113,7 +113,7 @@ void ADC(struct M6502* computer, uchar8_t mode){
             input_address = M6502_get_byte(computer, program_counter);
             word_address = M6502_get_word(computer, input_address, increment_true);
             offset_address = word_address + y_register;
-            flag_bit = is_flag_set(computer, CARRY);
+            flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator + memory_address[offset_address] + flag_bit;
             accumulator = accumulator + memory_address[offset_address] + flag_bit;
             
@@ -205,8 +205,7 @@ void AND(struct M6502* computer, uchar8_t mode){
 
 // Arithmetic shift left
 void ASL(struct M6502* computer, uchar8_t mode){
-    // should probably test these work
-    // * need to work on carry flag 
+
     ushort16_t input_address;
     ushort16_t offset_address;
     ushort16_t m_result;
@@ -214,23 +213,28 @@ void ASL(struct M6502* computer, uchar8_t mode){
     switch(mode)
     {
         case ACCUMULATOR: // 0x0A
-            // note using flag negative bit just the check 7th bit
-            //accumulator ;
             // shift accumulator 1 bit to the left
+            // ifs returns 0 or 1 based on 7th bit - based on result either set or clear carry flag
+            is_flag_set(NEGATIVE, accumulator) ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
             accumulator <<= 1;
             check_flag_ZN(computer, accumulator);
             cycle_push(2);
             break;
         case ZERO_PAGE: // 0x06
             // shift the value provided at current location 1 bit to the left 
-            m_result = memory_address[program_counter] <<= 1;
+            m_result = memory_address[program_counter];
+            // another note, this should be checked before shifting left 
+            is_flag_set(NEGATIVE, m_result) ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
+            m_result <<= 1;
             check_flag_ZN(computer, m_result);
             cycle_push(5);
             break;
         case ZERO_PAGE_X: // 0x16
             offset_address = memory_address[program_counter] + x_register;
             // shift the value provided at this location 1 bit to the left 
-            m_result = memory_address[offset_address] <<= 1;
+            m_result = memory_address[offset_address];
+            is_flag_set(NEGATIVE, m_result) ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
+            m_result <<= 1;
             check_flag_ZN(computer, m_result);
             cycle_push(6);
             break;
@@ -238,14 +242,18 @@ void ASL(struct M6502* computer, uchar8_t mode){
             // provides a 16 bit address to work from
             input_address = M6502_get_word(computer, program_counter, increment_true);
             // shift the value provided at this location 1 bit to the left 
-            m_result = memory_address[input_address] <<= 1;
+            m_result = memory_address[input_address];
+            is_flag_set(NEGATIVE, m_result) ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
+            m_result <<= 1;
             check_flag_ZN(computer, m_result);
             cycle_push(6);
             break;
         case ABSOLUTE_X: // 0x1E
             input_address = M6502_get_word(computer, program_counter, increment_true);
             offset_address = input_address + x_register;
-            m_result = memory_address[offset_address] <<= 1;
+            m_result = memory_address[offset_address];
+            is_flag_set(NEGATIVE, m_result) ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
+            m_result <<= 1;
             check_flag_ZN(computer, m_result);
             cycle_push(7);
             break;
@@ -257,48 +265,68 @@ void ASL(struct M6502* computer, uchar8_t mode){
 
 // Branch if carry clear
 void BCC(struct M6502* computer){ // 0x90
-    // if carry bit not set to 1, do branch to PC
-    if(!(status_register & flag_carry_bit)){
+    // if carry bit not set to 1, do branch to PC 
+    if(!is_flag_set(CARRY, status_register)){
         //PC += relative_displacement;
-        cycle_push(1);
+
     }
-    cycle_push(2); // +1 if branch succeeds, +2 if to a new page
+
+    //cycle_push(2); // +1 if branch succeeds, +2 if to a new page
     //check_page(computer, )
 }
 
 // Branch if carry set
 void BCS(struct M6502* computer){ // 0xB0
     // if carry bit is set to 1, do branch to PC
-    if(status_register & flag_carry_bit){
+    if(is_flag_set(CARRY, status_register)){
         //PC += relative_displacement;
-        cycle_push(1);
+
     }
-    cycle_push(2); // +1 if branch succeeds, +2 if to a new page
+    //cycle_push(2); // +1 if branch succeeds, +2 if to a new page
     //check_page(computer, )
 }
 
 // Branch if equal
 void BEQ(struct M6502* computer){ // 0xF0
     // if zero flag is set to 1, do branch to PC
-    if(status_register & flag_zero_bit){
+    if(is_flag_set(ZERO, status_register)){
         //PC += relative_displacement;
-        cycle_push(1);
+
     }
-    cycle_push(2); // +1 if branch succeeds, +2 if to a new page
+    //cycle_push(2); // +1 if branch succeeds, +2 if to a new page
     //check_page(computer, )
 }
 
 // Bit test, bitwise operation stuff tbd
 void BIT(struct M6502* computer, uchar8_t mode){
 
+    ushort16_t input_address;
+    uchar8_t address_value;
     switch(mode)
     {
         case ZERO_PAGE: // 0x24
-            
+            // get the zero page address and the value there
+            input_address = memory_address[program_counter];
+            address_value = memory_address[input_address];
+
+            (accumulator & address_value) == 0 ? set_flag(computer, ZERO):clear_flag(computer, ZERO);
+
+            // Checking bit 6/7 of provided value, set overflow/negative flag based on the result
+            is_flag_set(OVERFLOW, address_value) ? set_flag(computer, OVERFLOW):clear_flag(computer, OVERFLOW);
+            is_flag_set(NEGATIVE, address_value) ? set_flag(computer, NEGATIVE):clear_flag(computer, NEGATIVE);
+
             cycle_push(3);
             break;
         case ABSOLUTE: // 0x2C
-            
+            // get the absolute address and the value there
+            input_address = M6502_get_word(computer, program_counter, increment_true);
+            address_value = memory_address[input_address];
+
+            (accumulator & address_value) == 0 ? set_flag(computer, ZERO):clear_flag(computer, ZERO);
+
+            is_flag_set(OVERFLOW, address_value) ? set_flag(computer, OVERFLOW):clear_flag(computer, OVERFLOW);
+            is_flag_set(NEGATIVE, address_value) ? set_flag(computer, NEGATIVE):clear_flag(computer, NEGATIVE);
+
             cycle_push(4);
             break;
         default:
@@ -307,36 +335,36 @@ void BIT(struct M6502* computer, uchar8_t mode){
     }
 }
 
-// Branch if negative
+// Branch if negative (minus)
 void BMI(struct M6502* computer){ // 0x30
     // if negative flag is set, do branch to PC
-    if(status_register & flag_negative_bit){
+    if(is_flag_set(NEGATIVE, status_register)){
         //PC += relative_displacement;
-        cycle_push(1);
+
     }
-    cycle_push(2); // +1 if branch succeeds, +2 if to a new page
+    //cycle_push(2); // +1 if branch succeeds, +2 if to a new page
     //check_page(computer, )
 }
 
 // Branch if not equal
 void BNE(struct M6502* computer){ // 0xD0
     // if zero flag is clear, do branch to PC
-    if(!(status_register & flag_zero_bit)){
+    if(!is_flag_set(ZERO, status_register)){
         //PC += relative_displacement;
-        cycle_push(1);
+
     }
-    cycle_push(2); // +1 if branch succeeds, +2 if to a new page
+    //cycle_push(2); // +1 if branch succeeds, +2 if to a new page
     //check_page(computer, )
 }
 
 // Branch if positive
 void BPL(struct M6502* computer){ // 0x10
     // if negative flag is clear, do branch to PC
-    if(!(status_register & flag_negative_bit)){
+    if(!is_flag_set(NEGATIVE, status_register)){
         //PC += relative_displacement;
-        cycle_push(1);
+
     }
-    cycle_push(2); // +1 if branch succeeds, +2 if to a new page
+    //cycle_push(2); // +1 if branch succeeds, +2 if to a new page
     //check_page(computer, )
 }
 
@@ -363,22 +391,22 @@ void BRK(struct M6502* computer){ // 0x00
 // Branch if overflow clear
 void BVC(struct M6502* computer){ // 0x50
     // if overflow flag is clear, do branch to PC
-    if(!(status_register & flag_overflow_bit)){
+    if(!is_flag_set(OVERFLOW, status_register)){
         //PC += relative_displacement;
-        cycle_push(1);
+
     }
-    cycle_push(2); // +1 if branch succeeds, +2 if to a new page
+    //cycle_push(2); // +1 if branch succeeds, +2 if to a new page
     //check_page(computer, )
 }
 
 // Branch if overflow set
 void BVS(struct M6502* computer){ // 0x70
     // if overflow flag is set, do branch to PC
-    if(status_register & flag_overflow_bit){
+    if(is_flag_set(OVERFLOW, status_register)){
         //PC += relative_displacement;
-        cycle_push(1);
+
     }
-    cycle_push(2); // +1 if branch succeeds, +2 if to a new page
+    //cycle_push(2); // +1 if branch succeeds, +2 if to a new page
     //check_page(computer, )
 }
 
@@ -413,13 +441,16 @@ void CMP(struct M6502* computer, uchar8_t mode){
     ushort16_t result;
     ushort16_t input_address;
     ushort16_t offset_address;
+    ushort16_t word_address;
     switch(mode)
     {
         case IMMEDIATE: // 0xC9
             result = accumulator - memory_address[program_counter];
-            //  set flags 
+            // Compare the accumulator against the value at memory address - set flags 
             if(accumulator >= memory_address[program_counter]) set_flag(computer, CARRY);
             if(accumulator == memory_address[program_counter]) set_flag(computer, ZERO);
+
+            // Compare the result against negative flag
             check_flag_N(computer, result);
             cycle_push(2);
             break;
@@ -474,14 +505,33 @@ void CMP(struct M6502* computer, uchar8_t mode){
 
             check_flag_N(computer, result);
             cycle_push(4); // +1 if page crossed
+            check_page(computer, input_address, y_register, 1);
             break;
         case INDIRECT_X: // 0xC1
-            
+            input_address = memory_address[program_counter];
+            offset_address = input_address + x_register;
+            word_address = M6502_get_word(computer, offset_address, increment_false);
+            result = accumulator - memory_address[word_address];
+
+            // Again compare the value at address against accumulator set flag based on this
+            if(accumulator >= memory_address[word_address]) set_flag(computer, CARRY);
+            if(accumulator == memory_address[word_address]) set_flag(computer, ZERO);
+
+            check_flag_N(computer, result);
             cycle_push(6);
             break;
         case INDIRECT_Y: // 0xD1
-            
+            input_address = memory_address[program_counter];
+            word_address = M6502_get_word(computer, input_address, increment_false);
+            offset_address = word_address + y_register;
+            result = accumulator - memory_address[offset_address];
+
+            if(accumulator >= memory_address[offset_address]) set_flag(computer, CARRY);
+            if(accumulator == memory_address[offset_address]) set_flag(computer, ZERO);
+
+            check_flag_N(computer, result);
             cycle_push(5); // +1 if page crossed
+            check_page(computer, word_address, y_register, 1);
             break;
         default:
             puts("Error: Please specify addressing mode");
@@ -1043,7 +1093,6 @@ void ORA(struct M6502* computer, uchar8_t mode){
             check_flag_ZN(computer, accumulator);
             check_flag_Carry(computer, accumulator);
             cycle_push(2);
-            cycle_push(2);
             break;
         case ZERO_PAGE: // 0x05
             input_address = memory_address[program_counter];
@@ -1135,32 +1184,103 @@ void PLA(struct M6502* computer){ // 0x68
 
 // Pop stack into the status register, sets all flags with this value
 void PLP(struct M6502* computer){ // 0x28
+    // flags should be naturally set by num pulled here
     status_register = M6502_stack_pop(computer);
-    // set all flags works here because we are already dealing with status register
-    set_flags_all(computer);
     cycle_push(4);
 }
 
-// Rotate bits left fill bit 1 with current value of carry flag
+// Rotate bits right fill bit 0 with current carry flag and set carry flag with old bit 7
 void ROL(struct M6502* computer, uchar8_t mode){
+
+    ushort16_t input_address;
+    ushort16_t offset_address;
+    uchar8_t memory_value;
+    uchar8_t flag_value;
     switch(mode)
     {
         case ACCUMULATOR: // 0x2A
+            // returns current value of carry flag bit 
+            flag_value = is_flag_set(CARRY, status_register);
+
+            // returns old bit 7 of accumulator - sets carry flag if 1 else set carry to 0
+            is_flag_set(NEGATIVE, accumulator) == 1 ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
+
+            accumulator <<= 1;
+
+            // Uses the value from old carry flag to set bit 0 of accumulator
+            flag_value == 1 ? set_bit(0, accumulator) : clear_bit(0, accumulator);
+
+            // check flags for result
+            check_flag_ZN(computer, accumulator);
             cycle_push(2);
             break;
         case ZERO_PAGE: // 0x26
+            flag_value = is_flag_set(CARRY, status_register);
+            input_address = memory_address[program_counter];
+            memory_value = memory_address[input_address];
+
+            // returns bit 7 of provide value - sets carry flag if 1 else set carry to 0
+            is_flag_set(NEGATIVE, memory_value) == 1 ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
+
+            memory_value <<=1;
+
+            // Uses the value from old carry flag to set bit 0 of memory value
+            flag_value == 1 ? set_bit(0, memory_value) : clear_bit(0, memory_value);
+
+            check_flag_ZN(computer, memory_value);
             
             cycle_push(5);
             break;
         case ZERO_PAGE_X: // 0x36
+            flag_value = is_flag_set(CARRY, status_register);
+            input_address = memory_address[program_counter];
+            offset_address = input_address + x_register;
+            memory_value = memory_address[offset_address];
+
+            // returns bit 7 of provide value - sets carry flag if 1 else set carry to 0
+            is_flag_set(NEGATIVE, memory_value) == 1 ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
+
+            memory_value >>=1;
+
+            // Uses the value from old carry flag to set bit 0 of memory value
+            flag_value == 1 ? set_bit(0, memory_value) : clear_bit(0, memory_value);
+
+            check_flag_ZN(computer, memory_value);
             
             cycle_push(6);
             break;
         case ABSOLUTE: // 0x2E
+            flag_value = is_flag_set(CARRY, status_register);
+            input_address = M6502_get_word(computer, program_counter, increment_true);
+            memory_value = memory_address[input_address];
+
+            // returns bit 7 of provide value - sets carry flag if 1 else set carry to 0
+            is_flag_set(NEGATIVE, memory_value) == 1 ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
+
+            memory_value >>=1;
+
+            // Uses the value from old carry flag to set bit 0 of memory value
+            flag_value == 1 ? set_bit(0, memory_value) : clear_bit(0, memory_value);
+
+            check_flag_ZN(computer, memory_value);
             
             cycle_push(6);
             break;
         case ABSOLUTE_X: // 0x3E
+            flag_value = is_flag_set(CARRY, status_register);
+            input_address = M6502_get_word(computer, program_counter, increment_true);
+            offset_address = input_address + x_register;
+            memory_value = memory_address[offset_address];
+
+            // returns bit 7 of provide value - sets carry flag if 1 else set carry to 0
+            is_flag_set(NEGATIVE, memory_value) == 1 ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
+
+            memory_value >>=1;
+
+            // Uses the value from old carry flag to set bit 0 of memory value
+            flag_value == 1 ? set_bit(0, memory_value) : clear_bit(0, memory_value);
+
+            check_flag_ZN(computer, memory_value);
             
             cycle_push(7);
             break;
@@ -1170,37 +1290,97 @@ void ROL(struct M6502* computer, uchar8_t mode){
     }
 }
 
-// Rotate bits right fill bit 7 with current value of carry flag
+// Rotate bits right fill bit 7 with current carry flag and set carry flag with old bit 0
 void ROR(struct M6502* computer, uchar8_t mode){
-    // ushort16_t input_address;
-    // ushort16_t offset_address;
-    ushort16_t m_result;
-    ushort16_t carry_result;
+
+    ushort16_t input_address;
+    ushort16_t offset_address;
+    uchar8_t memory_value;
+    uchar8_t flag_value;
     switch(mode)
     {
         case ACCUMULATOR: // 0x6A
+            // returns current value of carry flag bit 
+            flag_value = is_flag_set(CARRY, status_register);
+
+            // returns old bit 0 of accumulator - sets carry flag if 1 else set carry to 0
+            is_flag_set(CARRY, accumulator) == 1 ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
+
             accumulator >>= 1;
-            // wrong just need to compare against current carry bit
-            accumulator = accumulator | status_register;
+
+            // Uses the value from old carry flag to set bit 7 of accumulator
+            flag_value == 1 ? set_bit(7, accumulator) : clear_bit(7, accumulator);
+
+            // check flags for result
+            check_flag_ZN(computer, accumulator);
             cycle_push(2);
             break;
         case ZERO_PAGE: // 0x66
-            // first shift the value at memory addres 1 bit right
-            m_result = memory_address[program_counter] >>= 1;
-            // wrong, we need just the carry bit of the current status register
-            carry_result = m_result | status_register;
+            flag_value = is_flag_set(CARRY, status_register);
+            input_address = memory_address[program_counter];
+            memory_value = memory_address[input_address];
 
+            // returns bit 0 of provide value - sets carry flag if 1 else set carry to 0
+            is_flag_set(CARRY, memory_value) == 1 ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
+
+            memory_value >>=1;
+
+            // Uses the value from old carry flag to set bit 7 of memory value
+            flag_value == 1 ? set_bit(7, memory_value) : clear_bit(7, memory_value);
+
+            check_flag_ZN(computer, memory_value);
             cycle_push(5);
             break;
         case ZERO_PAGE_X: // 0x76
+            flag_value = is_flag_set(CARRY, status_register);
+            input_address = memory_address[program_counter];
+            offset_address = input_address + x_register;
+            memory_value = memory_address[offset_address];
+
+            // returns bit 0 of provide value - sets carry flag if 1 else set carry to 0
+            is_flag_set(CARRY, memory_value) == 1 ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
+
+            memory_value >>=1;
+
+            // Uses the value from old carry flag to set bit 7 of memory value
+            flag_value == 1 ? set_bit(7, memory_value) : clear_bit(7, memory_value);
+
+            check_flag_ZN(computer, memory_value);
             
             cycle_push(6);
             break;
         case ABSOLUTE: // 0x6E
+            flag_value = is_flag_set(CARRY, status_register);
+            input_address = M6502_get_word(computer, program_counter, increment_true);
+            memory_value = memory_address[input_address];
+
+            // returns bit 0 of provide value - sets carry flag if 1 else set carry to 0
+            is_flag_set(CARRY, memory_value) == 1 ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
+
+            memory_value >>=1;
+
+            // Uses the value from old carry flag to set bit 7 of memory value
+            flag_value == 1 ? set_bit(7, memory_value) : clear_bit(7, memory_value);
+
+            check_flag_ZN(computer, memory_value);
             
             cycle_push(6);
             break;
         case ABSOLUTE_X: // 0x7E
+            flag_value = is_flag_set(CARRY, status_register);
+            input_address = M6502_get_word(computer, program_counter, increment_true);
+            offset_address = input_address + x_register;
+            memory_value = memory_address[offset_address];
+
+            // returns bit 0 of provide value - sets carry flag if 1 else set carry to 0
+            is_flag_set(CARRY, memory_value) == 1 ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
+
+            memory_value >>=1;
+
+            // Uses the value from old carry flag to set bit 7 of memory value
+            flag_value == 1 ? set_bit(7, memory_value) : clear_bit(7, memory_value);
+
+            check_flag_ZN(computer, memory_value);
             
             cycle_push(7);
             break;
@@ -1243,7 +1423,7 @@ void SBC(struct M6502* computer, uchar8_t mode){
     {
         case IMMEDIATE: // 0xE9
             // returns if flag bit is set
-            flag_bit = is_flag_set(computer, CARRY);
+            flag_bit = is_flag_set(CARRY, status_register);
             // check if this is same response as adc
             short_result = accumulator - memory_address[program_counter] - flag_bit;
             accumulator = accumulator - memory_address[program_counter] - flag_bit;
@@ -1254,7 +1434,7 @@ void SBC(struct M6502* computer, uchar8_t mode){
             break;
         case ZERO_PAGE: // 0xE5
             input_address = memory_address[program_counter];
-            flag_bit = is_flag_set(computer, CARRY);
+            flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator - memory_address[input_address] - flag_bit;
             accumulator = accumulator - memory_address[input_address] - flag_bit;
 
@@ -1265,7 +1445,7 @@ void SBC(struct M6502* computer, uchar8_t mode){
         case ZERO_PAGE_X: // 0xF5
             input_address = memory_address[program_counter];
             offset_address = input_address + x_register;
-            flag_bit = is_flag_set(computer, CARRY);
+            flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator - memory_address[offset_address] - flag_bit;
             accumulator = accumulator - memory_address[offset_address] - flag_bit;
 
@@ -1275,7 +1455,7 @@ void SBC(struct M6502* computer, uchar8_t mode){
             break;
         case ABSOLUTE: // 0xED
             input_address = M6502_get_word(computer, program_counter, increment_true);
-            flag_bit = is_flag_set(computer, CARRY);
+            flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator - memory_address[input_address] - flag_bit;
             accumulator = accumulator - memory_address[input_address] - flag_bit;
 
@@ -1286,7 +1466,7 @@ void SBC(struct M6502* computer, uchar8_t mode){
         case ABSOLUTE_X: // 0xFD
             input_address = M6502_get_word(computer, program_counter, increment_true);
             offset_address = input_address + x_register;
-            flag_bit = is_flag_set(computer, CARRY);
+            flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator - memory_address[offset_address] - flag_bit;
             accumulator = accumulator - memory_address[offset_address] - flag_bit;
 
@@ -1298,7 +1478,7 @@ void SBC(struct M6502* computer, uchar8_t mode){
         case ABSOLUTE_Y: // 0xF9
             input_address = M6502_get_word(computer, program_counter, increment_true);
             offset_address = input_address + y_register;
-            flag_bit = is_flag_set(computer, CARRY);
+            flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator - memory_address[offset_address] - flag_bit;
             accumulator = accumulator - memory_address[offset_address] - flag_bit;
 
@@ -1311,7 +1491,7 @@ void SBC(struct M6502* computer, uchar8_t mode){
             input_address = memory_address[program_counter];
             offset_address = input_address + x_register;
             word_address = M6502_get_word(computer, offset_address, increment_true);
-            flag_bit = is_flag_set(computer, CARRY);
+            flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator - memory_address[word_address] - flag_bit;
             accumulator = accumulator - memory_address[word_address] - flag_bit;
 
@@ -1323,7 +1503,7 @@ void SBC(struct M6502* computer, uchar8_t mode){
             input_address = M6502_get_byte(computer, program_counter);
             word_address = M6502_get_word(computer, input_address, increment_true);
             offset_address = word_address + y_register;   
-            flag_bit = is_flag_set(computer, CARRY);
+            flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator - memory_address[offset_address] - flag_bit;
             accumulator = accumulator - memory_address[offset_address] - flag_bit;
             

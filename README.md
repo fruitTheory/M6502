@@ -5,8 +5,8 @@ Emulation of the Nintendo Entertainment System, written in C
 ## Features
 
 - Full emulation of the legal CPU opcodes
-- Emulation of primary system components
-- Support for basic input/output
+- Emulation of primary system components and I/O
+- Support for NROM games, non memory-mapped
 
 ### Prerequisites
 
@@ -25,11 +25,11 @@ Emulation of the Nintendo Entertainment System, written in C
 
 ## Roadmap
 
-- Implement primary opcodes
+- ~~Implement primary opcodes~~
 - Timings and Interrupts
 - Debug functions
+- Build on top, NES components 
 - Refine components
-- Build on top, other components 
 
 ## Contributing
 

@@ -46,7 +46,7 @@ void check_page(struct M6502* computer, ushort16_t input_address, uchar8_t regis
 
     float old_page = input_address/256; // this naturally truncates 
     float new_page = input_address_offset/256;
-    (old_page != new_page) ? cycle_push(n) : cycle_push(0); // if new page != old page +1 cycle
+    (old_page != new_page) ? cycle_push(n) : cycle_push(0); // if new page != old page +n cycle
     //(old_page != new_page) ? puts("cyc: 1") :puts("cyc: 0"); // if new page != old page +1 cycle
 }
 
