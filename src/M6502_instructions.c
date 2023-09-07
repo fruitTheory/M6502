@@ -275,7 +275,7 @@ void BCC(struct M6502* computer){ // 0x90
     // if value is over 127 based on bit 7, subtract the value from 127 to return a signed result
     if(is_flag_set(CARRY, current_address_value))signed_address_value = 127 - current_address_value;
 
-    // if carry bit is not set to 1, do branch to PC - branching adds a signed value to PC -128 0-127+
+    // if carry bit is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
     if(!is_flag_set(CARRY, status_register)){
         program_counter += signed_address_value;
         cycle_push(1); // +1 cycle if branch succeeds, +1 if to a new page
@@ -288,24 +288,47 @@ void BCC(struct M6502* computer){ // 0x90
 
 // Branch if carry set
 void BCS(struct M6502* computer){ // 0xB0
-    // if carry bit is set to 1, do branch to PC
-    if(is_flag_set(CARRY, status_register)){
-        //PC += relative_displacement;
+    uchar8_t current_address_value;
+    char8_t signed_address_value;
+    ushort16_t old_program_counter;
 
+    old_program_counter = program_counter;
+    current_address_value = memory_address[program_counter];
+
+    // if value is over 127 based on bit 7, subtract the value from 127 to return a signed result
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = 127 - current_address_value;
+
+    // if carry bit is set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
+    if(is_flag_set(CARRY, status_register)){
+        program_counter += signed_address_value;
+        cycle_push(1); // +1 cycle if branch succeeds, +1 if to a new page
+
+        // check if new program counter crossed a page in reference to old PC
+        check_page(computer, old_program_counter, program_counter, 1);
     }
-    //cycle_push(2); // +1 if branch succeeds, +2 if to a new page
-    //check_page(computer, )
 }
 
 // Branch if equal
 void BEQ(struct M6502* computer){ // 0xF0
-    // if zero flag is set to 1, do branch to PC
-    if(is_flag_set(ZERO, status_register)){
-        //PC += relative_displacement;
+    uchar8_t current_address_value;
+    char8_t signed_address_value;
+    ushort16_t old_program_counter;
 
+    old_program_counter = program_counter;
+    current_address_value = memory_address[program_counter];
+
+    // if value is over 127 based on bit 7, subtract the value from 127 to return a signed result
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = 127 - current_address_value;
+
+    // if zero flag is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
+    if(is_flag_set(ZERO, status_register)){
+        program_counter += signed_address_value;
+        cycle_push(1); // +1 cycle if branch succeeds, +1 if to a new page
+
+        // check if new program counter crossed a page in reference to old PC
+        check_page(computer, old_program_counter, program_counter, 1);
     }
-    //cycle_push(2); // +1 if branch succeeds, +2 if to a new page
-    //check_page(computer, )
+
 }
 
 // Bit test, bitwise operation stuff tbd
@@ -348,35 +371,71 @@ void BIT(struct M6502* computer, uchar8_t mode){
 
 // Branch if negative (minus)
 void BMI(struct M6502* computer){ // 0x30
-    // if negative flag is set, do branch to PC
-    if(is_flag_set(NEGATIVE, status_register)){
-        //PC += relative_displacement;
+    uchar8_t current_address_value;
+    char8_t signed_address_value;
+    ushort16_t old_program_counter;
 
+    old_program_counter = program_counter;
+    current_address_value = memory_address[program_counter];
+
+    // if value is over 127 based on bit 7, subtract the value from 127 to return a signed result
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = 127 - current_address_value;
+
+    // if negative bit is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
+    if(is_flag_set(NEGATIVE, status_register)){
+        program_counter += signed_address_value;
+        cycle_push(1); // +1 cycle if branch succeeds, +1 if to a new page
+
+        // check if new program counter crossed a page in reference to old PC
+        check_page(computer, old_program_counter, program_counter, 1);
     }
-    //cycle_push(2); // +1 if branch succeeds, +2 if to a new page
-    //check_page(computer, )
+
 }
 
 // Branch if not equal
 void BNE(struct M6502* computer){ // 0xD0
-    // if zero flag is clear, do branch to PC
-    if(!is_flag_set(ZERO, status_register)){
-        //PC += relative_displacement;
+    uchar8_t current_address_value;
+    char8_t signed_address_value;
+    ushort16_t old_program_counter;
 
+    old_program_counter = program_counter;
+    current_address_value = memory_address[program_counter];
+
+    // if value is over 127 based on bit 7, subtract the value from 127 to return a signed result
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = 127 - current_address_value;
+
+    // if zero flag is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
+    if(!is_flag_set(ZERO, status_register)){
+        program_counter += signed_address_value;
+        cycle_push(1); // +1 cycle if branch succeeds, +1 if to a new page
+
+        // check if new program counter crossed a page in reference to old PC
+        check_page(computer, old_program_counter, program_counter, 1);
     }
-    //cycle_push(2); // +1 if branch succeeds, +2 if to a new page
-    //check_page(computer, )
+
 }
 
 // Branch if positive
 void BPL(struct M6502* computer){ // 0x10
-    // if negative flag is clear, do branch to PC
-    if(!is_flag_set(NEGATIVE, status_register)){
-        //PC += relative_displacement;
+    uchar8_t current_address_value;
+    char8_t signed_address_value;
+    ushort16_t old_program_counter;
 
+    old_program_counter = program_counter;
+    current_address_value = memory_address[program_counter];
+
+    // if value is over 127 based on bit 7, subtract the value from 127 to return a signed result
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = 127 - current_address_value;
+
+    // if negative bit is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
+    if(!is_flag_set(NEGATIVE, status_register)){
+        program_counter += signed_address_value;
+        cycle_push(1); // +1 cycle if branch succeeds, +1 if to a new page
+
+        // check if new program counter crossed a page in reference to old PC
+        check_page(computer, old_program_counter, program_counter, 1);
     }
-    //cycle_push(2); // +1 if branch succeeds, +2 if to a new page
-    //check_page(computer, )
+
 }
 
 // Break interrupt
@@ -401,24 +460,48 @@ void BRK(struct M6502* computer){ // 0x00
 
 // Branch if overflow clear
 void BVC(struct M6502* computer){ // 0x50
-    // if overflow flag is clear, do branch to PC
-    if(!is_flag_set(OVERFLOW, status_register)){
-        //PC += relative_displacement;
+    uchar8_t current_address_value;
+    char8_t signed_address_value;
+    ushort16_t old_program_counter;
 
+    old_program_counter = program_counter;
+    current_address_value = memory_address[program_counter];
+
+    // if value is over 127 based on bit 7, subtract the value from 127 to return a signed result
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = 127 - current_address_value;
+
+    // if overflow is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
+    if(!is_flag_set(OVERFLOW, status_register)){
+        program_counter += signed_address_value;
+        cycle_push(1); // +1 cycle if branch succeeds, +1 if to a new page
+
+        // check if new program counter crossed a page in reference to old PC
+        check_page(computer, old_program_counter, program_counter, 1);
     }
-    //cycle_push(2); // +1 if branch succeeds, +2 if to a new page
-    //check_page(computer, )
+
 }
 
 // Branch if overflow set
 void BVS(struct M6502* computer){ // 0x70
-    // if overflow flag is set, do branch to PC
-    if(is_flag_set(OVERFLOW, status_register)){
-        //PC += relative_displacement;
+    uchar8_t current_address_value;
+    char8_t signed_address_value;
+    ushort16_t old_program_counter;
 
+    old_program_counter = program_counter;
+    current_address_value = memory_address[program_counter];
+
+    // if value is over 127 based on bit 7, subtract the value from 127 to return a signed result
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = 127 - current_address_value;
+
+    // if overflow bit is set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
+    if(is_flag_set(OVERFLOW, status_register)){
+        program_counter += signed_address_value;
+        cycle_push(1); // +1 cycle if branch succeeds, +1 if to a new page
+
+        // check if new program counter crossed a page in reference to old PC
+        check_page(computer, old_program_counter, program_counter, 1);
     }
-    //cycle_push(2); // +1 if branch succeeds, +2 if to a new page
-    //check_page(computer, )
+
 }
 
 // Clear carry flag
