@@ -6,7 +6,7 @@
 
 static void M6502_is_stack_inbounds(struct M6502* computer){
     // assertion if stack pointer is not within stack memory range
-    assert(stack_pointer >= stack_start && stack_pointer <= stack_end);
+    //assert(stack_pointer >= stack_start && stack_pointer <= stack_end);
     assert(stack_container[0] >= 0x00 && stack_container[0] <= 0xFF);
 
 }

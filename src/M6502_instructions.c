@@ -331,7 +331,7 @@ void BEQ(struct M6502* computer){ // 0xF0
 
 }
 
-// Bit test, bitwise operation stuff tbd
+// Bit test, bitwise operations to set certain flags based on result
 void BIT(struct M6502* computer, uchar8_t mode){
 
     ushort16_t input_address;
@@ -426,6 +426,7 @@ void BPL(struct M6502* computer){ // 0x10
 
     // if value is over 127 based on bit 7, subtract the value from 127 to return a signed result
     if(is_flag_set(CARRY, current_address_value))signed_address_value = 127 - current_address_value;
+    printf("signed addy: %i\n", signed_address_value);
 
     // if negative bit is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
     if(!is_flag_set(NEGATIVE, status_register)){
