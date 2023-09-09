@@ -29,8 +29,10 @@ uchar8_t instruction_fetch(struct M6502* computer){
 
 // executes all program instructions
 void execute_instruction(struct M6502* computer, ushort16_t program_size){
-    // for loop takes program size and subtracts as instructions happen
-    for(ushort16_t i = 0; i < (program_size - (instruction_byte_count)); i++){
+    ushort16_t initial_program_counter = program_counter;
+    // the loop continually subtracts the new PC from old until the difference reaches the program size-1
+    while((program_counter - initial_program_counter < program_size-1)){
+        printf("prog size: %i (PS-IB): %i\n", program_size, program_counter-initial_program_counter);
         uchar8_t opcode = instruction_fetch(computer);
         analyze_opcode(computer, opcode);
         program_counter += 1;

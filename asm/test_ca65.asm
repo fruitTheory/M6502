@@ -131,10 +131,11 @@ exampleLabel:
     rol            ; $2A
     ror $0200      ; $6E 00 02
 
-    brk     ;00
+    ; brk     ;00
     
-    rti
+    ; rti
 
     lda #$88    ;A9 
 
+    brk
 

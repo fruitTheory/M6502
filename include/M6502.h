@@ -21,11 +21,9 @@ void check_page(struct M6502* computer, ushort16_t input_address, uchar8_t regis
 // increment program counter by + 1
 inline void PC_increment(struct M6502* computer){
     program_counter += 1;
-    instruction_byte_count += 1;
 }
 
 // decrement program counter by - 1
 inline void PC_decrement(struct M6502* computer){
     program_counter -= 1;
-    instruction_byte_count -= 1;
 }

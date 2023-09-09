@@ -45,10 +45,11 @@ as65:
 #as65 ${ASM}6502_decimal_test.a65
 
 BASE_NAME = test_ca65
+TARGET = none
 # Use ca65 assembler
 ca65:
 	ca65 -l ${ASM}${BASE_NAME}.lst ${ASM}${BASE_NAME}.asm 
-	ld65 -t none ${ASM}${BASE_NAME}.o -o ${ASM}${BASE_NAME}.bin
+	ld65 -C ${ASM}${TARGET}.cfg ${ASM}${BASE_NAME}.o -o ${ASM}${BASE_NAME}.bin
 #none is the config used
 #rm -f ${ASM}${BASE_NAME}.o
 

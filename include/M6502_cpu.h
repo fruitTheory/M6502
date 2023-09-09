@@ -10,10 +10,6 @@ typedef struct{
     M6502_memory memory;
 }M6502_cpu;
 
-// A container used to store the amount of bytes internal instructions use
-// It is used to subtract from the total program size
-// Subtracting from this adds bytes to amount of outputted instructions
-extern ushort16_t instruction_byte_count;
 // Total number of CPU cycles
 extern ulong64_t cycles;
 
