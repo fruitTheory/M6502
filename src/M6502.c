@@ -31,11 +31,11 @@ uchar8_t instruction_fetch(struct M6502* computer){
 void execute_instruction(struct M6502* computer, ushort16_t program_size){
     ushort16_t initial_program_counter = program_counter;
     // the loop continually subtracts the new PC from old until the difference reaches the program size-1
-    while((program_counter - initial_program_counter < program_size-1)){
-        printf("prog size: %i (PS-IB): %i\n", program_size, program_counter-initial_program_counter);
+    while((program_counter - initial_program_counter < program_size)){
+        printf("prog size: %i (PS-IB): %i byteCount: %i\n", program_size, program_counter - initial_program_counter, instruction_byte_count);
         uchar8_t opcode = instruction_fetch(computer);
         analyze_opcode(computer, opcode);
-        program_counter += 1;
+        PC_increment(computer);
         // Note for this function - it goes to analyze_opcode and PC is +1 for instruction call
         // If the instruction needs to return byte, it will already be at that address
         // If the instruction needs to return word, the PC is +1 from M6502_get_word()

@@ -137,5 +137,7 @@ exampleLabel:
 
     lda #$88    ;A9 
 
-    brk
+    ora ($55, x) ;$01 
+
+    ;brk
 

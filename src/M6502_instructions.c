@@ -887,14 +887,15 @@ void JMP(struct M6502* computer, uchar8_t mode){
         case ABSOLUTE: // 0x4C
             // sets program counter to user address input
             input_address = M6502_get_word(computer, program_counter, increment_true);
-            program_counter = input_address;
+            // set program counter to address minus 1 to keep PC loop on track
+            program_counter = input_address-1;
             cycle_push(3);
             break;
         case INDIRECT: // 0x6C
             // sets program counter to an indirect adress found at a users address input
             input_address = M6502_get_word(computer, program_counter, increment_true);
             indirect_address = M6502_get_word(computer, input_address, increment_false);
-            program_counter = indirect_address;
+            program_counter = indirect_address-1;
             cycle_push(5);
             break;
         default:
