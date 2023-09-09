@@ -17,17 +17,8 @@ void M6502_init(struct M6502* computer){
     status_register = 0b01010101; // temporary SR init 0x55 - 0101 0101
 }
 
-ushort16_t instruction_byte_count;
-ulong64_t cycles;
-
 extern inline void PC_increment(struct M6502* computer);
 extern inline void PC_decrement(struct M6502* computer);
-extern inline void cycle_push(uchar8_t cycle);
-
-ulong64_t cycle_current(){
-    printf("current cycle: %li\n", cycles);
-    return cycles;
-}
 
 // returns an opcode
 uchar8_t instruction_fetch(struct M6502* computer){

@@ -24,6 +24,7 @@
         "tuple": "c",
         "utility": "c",
         "stdio.h": "c",
-        "assert.h": "c"
+        "assert.h": "c",
+        "ppu.h": "c"
     }
 }

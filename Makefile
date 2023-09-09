@@ -13,6 +13,7 @@ OBJECTS =	${BUILD}M6502.o \
 			${BUILD}load_binary.o \
 			${BUILD}M6502_instructions.o \
 			${BUILD}M6502_flags.o \
+			${BUILD}M6502_cpu.o \
 
 LIBRARY_DIR =	 -L C:\Programs\SDL\SDL2_image-2.6.3\x86_64-w64-mingw32\lib \
 				 -L C:\Programs\SDL\SDL2_mixer-2.6.3\x86_64-w64-mingw32\lib \

@@ -77,7 +77,7 @@ void clear_flag(struct M6502* computer, uchar8_t FLAG){
 }
 
 // Check if result is negative or positive, set flag accordingly, else clear flag
-void check_flag_Carry(struct M6502* computer, short test_against){
+void check_flag_Carry(struct M6502* computer, short16_t test_against){
     // this is a little sketchy, check if positive first, then force check if negative
     // if neither positive nor negative it will clear the flag which should work both cases
     if(test_against > 0xFF)set_flag(computer, CARRY), puts("Carry Positive!");

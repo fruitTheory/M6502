@@ -35,6 +35,13 @@ int main(){
     // 0101 0101
     //0b01010100 & flag_carry_bit ? puts("true"):puts("false");
 
+    int var = 88;
+    int* ptr = &var;
+
+    printf("&var: %i\n", &var);
+    printf("ptr: %i\n", ptr);
+    printf("&ptr: %i\n", &ptr);
+    printf("*ptr: %i\n", *ptr);
 
 }
 

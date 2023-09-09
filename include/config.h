@@ -12,21 +12,22 @@ typedef char char8_t;
 
 #define max_address 65535 // M6502's 16-bit address bus can only handle this much
 #define stack_max_size 256
+#define ppu_max_memory 16384
 
 #define zero_page_start 0x0000
 #define stack_start 0x0100 // decimal(byte) 256 - Start of stack
 #define stack_end 0x01FF // decimal(byte) 511 - Use as offset for programs
 #define program_initial_load 0x0200 // decimal(byte) 512 - Programs first byte
 
-#define accumulator (computer->registers.AC)
-#define program_counter (computer->registers.PC)
-#define memory_address (computer->memory.address)
-#define x_register (computer->registers.X)
-#define y_register (computer->registers.Y)
-#define status_register (computer->registers.SR)
+#define accumulator (computer->cpu.registers.AC)
+#define program_counter (computer->cpu.registers.PC)
+#define memory_address (computer->cpu.memory.address)
+#define x_register (computer->cpu.registers.X)
+#define y_register (computer->cpu.registers.Y)
+#define status_register (computer->cpu.registers.SR)
 
-#define stack_pointer (computer->registers.SP) // points to stack related memory address
-#define stack_container (computer->stack.stack)
+#define stack_pointer (computer->cpu.registers.SP) // points to stack related memory address
+#define stack_container (computer->cpu.stack.stack)
 
 #define NMI 0xFFFA // Non-maskable interrupt handler
 #define RESET 0xFFFC // Power-on/Reset

@@ -7,8 +7,8 @@
 typedef struct
 {
     // including RAM, ROM, and memory-mapped I/O
-    uchar8_t address[max_address];
     // each address can hold one byte
+    uchar8_t address[max_address];
 }M6502_memory;
 
 struct M6502; // forward declaration so compiler knows struct exists and will be defined later
@@ -22,6 +22,7 @@ uchar8_t M6502_get_byte(struct M6502* computer, ushort16_t address);
 ushort16_t M6502_get_word(struct M6502* computer, ushort16_t address, uchar8_t increment);
 
 void M6502_store_program(struct M6502* computer, uchar8_t* file, size_t program_size);
+
 
 /*
 Memory Mapping (nes):
