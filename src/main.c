@@ -1,13 +1,8 @@
 #include "config.h"
 #include "M6502.h"
 #include "load_binary.h"
-#include "M6502_stack.h"
-#include "M6502_instructions.h"
-#include "check_SDL_version.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <memory.h>
-#include <time.h>
 
 int main(int argc, char* argv[]){
 

@@ -1,7 +1,5 @@
 #pragma once
 
-void execute_instruction(struct M6502* computer, ushort16_t program_size);
-
 // Instructions
 void ADC(struct M6502* computer, uchar8_t mode);
 void AND(struct M6502* computer, uchar8_t mode);

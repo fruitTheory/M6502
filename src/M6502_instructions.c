@@ -2,24 +2,8 @@
 #include "M6502.h"
 #include "M6502_instructions.h"
 #include "M6502_flags.h"
-#include "M6502_memory.h"
 #include <stdio.h>
 
-
-// executes all program instructions
-void execute_instruction(struct M6502* computer, ushort16_t program_size){
-    // for loop takes program size and subtracts as instructions happen
-    for(ushort16_t i = 0; i < (program_size - (instruction_byte_count)); i++){
-        uchar8_t opcode = instruction_fetch(computer);
-        analyze_opcode(computer, opcode);
-        program_counter += 1;
-        // Note for this function - it goes to analyze_opcode and PC is +1 for instruction call
-        // If the instruction needs to return byte, it will already be at that address
-        // If the instruction needs to return word, the PC is +1 from M6502_get_word()
-        // When it returns from instruction the PC is +1 to prepare for next opcode
-        // Implied and Accumulator will need to decrement PC by -1 as they are only 1 byte in total
-    }
-}
 
 // Add memory to accumulator with carry value
 void ADC(struct M6502* computer, uchar8_t mode){
