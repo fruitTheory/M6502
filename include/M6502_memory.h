@@ -2,7 +2,7 @@
 
 #include "config.h"
 #include <stddef.h> // size_t
-
+#include <stdbool.h>
 
 typedef struct
 {
@@ -22,7 +22,7 @@ uchar8_t M6502_get_byte(struct M6502* computer, ushort16_t address);
 ushort16_t M6502_get_word(struct M6502* computer, ushort16_t address, uchar8_t increment);
 
 void M6502_store_program(struct M6502* computer, uchar8_t* file, size_t program_size);
-
+bool NES_header(struct M6502* computer);
 
 /*
 Memory Mapping (nes):

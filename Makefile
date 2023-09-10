@@ -35,7 +35,7 @@ ${BUILD}%.o:${SOURCES}%.c
 clean:
 	del "${BUILD}"
 
-RUN_FILE = test_ca65
+RUN_FILE = temp_01
 run:
 	${BINARIES}main ${ASM}${RUN_FILE}.bin
 	
@@ -44,7 +44,7 @@ as65:
 	as65 ${ASM}6502_functional_test.a65
 #as65 ${ASM}6502_decimal_test.a65
 
-BASE_NAME = test_ca65
+BASE_NAME = temp_01
 TARGET = none
 # Use ca65 assembler
 ca65:

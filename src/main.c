@@ -3,6 +3,7 @@
 #include "load_binary.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "M6502_stack.h"
 
 int main(int argc, char* argv[]){
 

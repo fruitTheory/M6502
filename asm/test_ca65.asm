@@ -1,4 +1,4 @@
-    .org $0200       ; set program start at memory location $8000
+    .org $8000       ; set program start at memory location $8000
 
 start:
     ; Load/Store instructions

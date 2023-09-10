@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}.exe",
-            "args": ["./asm/test_ca65.bin"],
+            "args": ["./asm/temp_01.bin"],
             "preLaunchTask": "mingw32-make",
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
