@@ -21,7 +21,7 @@ int main(int argc, char* argv[]){
     ushort16_t program_size = get_program_size(argv);
     printf("program size: %i bytes\n", program_size);
     M6502_store_program(&computer, program, program_size);
-    free(program);
+    free(program), program = NULL;
 
     execute_instruction(&computer, program_size);
 
