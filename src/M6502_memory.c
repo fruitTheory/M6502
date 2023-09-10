@@ -9,12 +9,6 @@ static void M6502_address_inbounds(ushort16_t address){
     assert(address >= 0 && address <= max_address);
 }
 
-// void memory_init(struct M6502* computer){
-//     memset(RAM, 0, sizeof(RAM));
-//     // copy stack array to stack start address
-//     memcpy(&memory_address[stack_start], &RAM, sizeof(RAM));
-// }
-
 // sets byte at memory address
 void M6502_set_memory(struct M6502* computer, ushort16_t address, uchar8_t value){
 
@@ -51,9 +45,9 @@ void M6502_store_program(struct M6502* computer, uchar8_t* file, size_t program_
     // If contains NES header offset program counter 16 bytes
     if(NES_header(computer)) program_counter += 16;
 
-    // print all bytes of file
+    // //print all bytes of file
     // for(int i = 0; i < (program_size); i++){
-    //     printf("value at memory address %04X: %02X\n", program_counter+i, memory_address[program_initial_load+i]);
+    //     printf("value at memory address %04X: %02X\n", program_counter+i, memory_address[NES_initial_load+i]);
     // }
 }
 

@@ -25,6 +25,7 @@
         "utility": "c",
         "stdio.h": "c",
         "assert.h": "c",
-        "ppu.h": "c"
+        "ppu.h": "c",
+        "sdl_events.h": "c"
     }
 }

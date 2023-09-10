@@ -1,7 +1,9 @@
 {   
     // File intellisense config 
     "env": {
-        "Default_include_path": ["${workspaceFolder}/include/"],
+        "Default_include_path": ["${workspaceFolder}/include/", 
+        "C:/Programs/SDL/SDL2-2.26.5-mingw/x86_64-w64-mingw32/include/SDL2",
+        "C:/Programs/SDL/SDL2_ttf-2.20.2/x86_64-w64-mingw32/include/SDL2"],
         "Default_gcc_path": "C:/Qt/Tools/mingw1120_64/bin/gcc.exe"
       },
     "configurations": [

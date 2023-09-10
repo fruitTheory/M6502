@@ -2,17 +2,47 @@
 
 #include "config.h"
 
-// typedef struct
-// {
-//     uchar8_t address[ppu_max_memory];
-// }NES_memory;
+// OAM (Object Attribute Memory) - internal memory that contains a list of 64 4-byte sprites
+typedef struct
+{
+    uchar8_t CTRL; // $2000 - PPU control register
+    uchar8_t MASK; // $2001 - PPU mask register
+    uchar8_t STATUS; // $2002 - PPU status register
+    uchar8_t OAM_ADDR; // $2003 - OAM address read/write
+    uchar8_t OAM_DATA; // $2004 - OAM data read/write
+    uchar8_t SCROLL; // $2005 - PPU scrolling position register
+    uchar8_t ADDR; // $2006 - PPU address register
+    uchar8_t DATA; // $2007 - PPU data port
+    uchar8_t OAM_DMA; // $4014 - DMA register (high byte)
+
+}PPU_registers;
+
+typedef struct
+{
+    uchar8_t address[ppu_max_memory]; // 16kb pattern tables, name tables, attribute tables
+    
+}PPU_memory;
 
 typedef struct{
-    uchar8_t registers;
-    uchar8_t address[ppu_max_memory]; // 16kb pattern tables, name tables, attribute tables
+    PPU_registers registers;
+    PPU_memory memory;
+    
 }NES_ppu;
 
-extern uchar8_t pattern_table[8];
+/*
+PPU CTRL: bits = VPHB SINN
+NMI enable (V), PPU master/slave (P), sprite height (H), background tile select (B),
+sprite tile select (S), increment mode (I), nametable select (NN)
+
+PPU MASK: bits = BGRs bMmG
+color emphasis (BGR), sprite enable (s), background enable (b), 
+sprite left column enable (M), background left column enable (m), greyscale (G)
+
+PPUSTATUS: bits = VSO- ----
+vblank (V), sprite 0 hit (S), sprite overflow (O); read resets write pair for $2005/$2006
+
+
+*/
 
 
 /*

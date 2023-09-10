@@ -24,6 +24,7 @@ void print_program_info(int argc, char* argv[]){
     printf("File selected: %s\n", filename);
 
     uchar8_t* program = load_program(argc, argv);
+    // Section for printing each byte in file
     printf("bytes: ");
     ushort16_t program_size = get_program_size(argv);
     for (ushort16_t index = 0; index < program_size; index++) {

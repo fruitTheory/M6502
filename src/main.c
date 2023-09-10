@@ -1,12 +1,15 @@
 #include "config.h"
 #include "M6502.h"
 #include "load_binary.h"
+#include "check_SDL_version.h"
+#include "M6502_screen.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "M6502_stack.h"
 
 int main(int argc, char* argv[]){
 
+    Check_SDL_Version();
+    func();
     // initialized M6502 variable
     struct M6502 computer;
     M6502_init(&computer);
