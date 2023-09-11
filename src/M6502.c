@@ -22,16 +22,23 @@ extern inline void PC_decrement(struct M6502* computer);
 // returns an opcode
 uchar8_t instruction_fetch(struct M6502* computer){
     uchar8_t opcode = memory_address[program_counter];
+    
     printf("PC: %04X\n", program_counter);
+    extern ushort16_t global_pc;
+    global_pc = program_counter;
+
     printf("opcode: %02X\n", opcode);
+    extern uchar8_t global_opcode;
+    global_opcode = opcode;
+
     return opcode;
 }
 
 // executes all program instructions
-void execute_instruction(struct M6502* computer, ushort16_t program_size){
+void execute_instructions(struct M6502* computer, ushort16_t program_size){
     ushort16_t initial_program_counter = program_counter;
     // the loop continually subtracts the new PC from old until the difference reaches the program size-1
-    while((program_counter - initial_program_counter < program_size)){
+    if((program_counter - initial_program_counter < program_size)){
         printf("prog size: %i (PS-IB): %i byteCount: %i\n", program_size, program_counter - initial_program_counter, instruction_byte_count);
         uchar8_t opcode = instruction_fetch(computer);
         analyze_opcode(computer, opcode);

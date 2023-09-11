@@ -1,6 +1,6 @@
 # fTNES - NES Emulator
 
-Emulation of the Nintendo Entertainment System, written in C  
+Emulation of Nintendo Entertainment System, written in C  
 Currently a 6502 microprocessor but PPU is on the way
 
 ## Features
@@ -12,7 +12,7 @@ Currently a 6502 microprocessor but PPU is on the way
 ### Prerequisites
 
 - A C 64-bit compiler (ex. GCC, Clang, MSVC)
-- Potentially other dependencies (SDL)
+- Simple DirectMedia Layer (SDL2)
 - Basic make and lib linking knowledge
 
 ### Building

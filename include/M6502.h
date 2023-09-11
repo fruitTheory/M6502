@@ -14,7 +14,7 @@ struct M6502{
 void M6502_init(struct M6502* computer);
 uchar8_t instruction_fetch(struct M6502* computer);
 void analyze_opcode(struct M6502* computer, uchar8_t opcode);
-void execute_instruction(struct M6502* computer, ushort16_t program_size);
+void execute_instructions(struct M6502* computer, ushort16_t program_size);
 void check_page(struct M6502* computer, ushort16_t input_address, uchar8_t register_n, uchar8_t cycles);
 
 

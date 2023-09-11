@@ -9,7 +9,7 @@
 int main(int argc, char* argv[]){
 
     Check_SDL_Version();
-    func();
+
     // initialized M6502 variable
     struct M6502 computer;
     M6502_init(&computer);
@@ -23,7 +23,7 @@ int main(int argc, char* argv[]){
     M6502_store_program(&computer, program, program_size);
     free(program), program = NULL;
 
-    execute_instruction(&computer, program_size);
+    draw_screen(&computer, program_size);
 
     return EXIT_SUCCESS;
 }

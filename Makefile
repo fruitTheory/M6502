@@ -16,7 +16,8 @@ OBJECTS =	${BUILD}M6502.o \
 			${BUILD}M6502_flags.o \
 			${BUILD}M6502_cpu.o \
 			${BUILD}check_SDL_version.o \
-			${BUILD}M6502_screen.o 
+			${BUILD}M6502_screen.o \
+			${BUILD}M6502_general.o 
 
 LIBRARY_DIR =	-L C:\Programs\SDL\SDL2-2.26.5-mingw\x86_64-w64-mingw32\lib \
 				-L C:\Programs\SDL\SDL2_ttf-2.20.2\x86_64-w64-mingw32\lib \
@@ -40,7 +41,7 @@ ${BUILD}%.o:${SOURCES}%.c
 clean:
 	del "${BUILD}"
 
-RUN_FILE = temp_01
+RUN_FILE = test_ca65
 run:
 	${BINARIES}main ${ASM}${RUN_FILE}.bin
 	

@@ -26,6 +26,9 @@
         "stdio.h": "c",
         "assert.h": "c",
         "ppu.h": "c",
-        "sdl_events.h": "c"
+        "sdl_events.h": "c",
+        "m6502_screen.h": "c",
+        "stdbool.h": "c",
+        "sdl_ttf.h": "c"
     }
 }
