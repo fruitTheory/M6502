@@ -25,6 +25,8 @@ Currently a 6502 microprocessor but PPU is on the way
 ./ftnes path_to_rom
 ```
 
+![Emulator Test](./img/emulator_test.gif)
+
 ## Roadmap
 
 - ~~Implement primary opcodes~~
