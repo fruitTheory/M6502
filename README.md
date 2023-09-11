@@ -1,7 +1,7 @@
-# fTNES - NES Emulator
+# fTNES - 6502 Microprocessor - NES
 
-Emulation of Nintendo Entertainment System, written in C  
-Currently a 6502 microprocessor but PPU is on the way
+Currently a 6502 microprocessor but PPU is on the way  
+Emulation of NES from Mos 6502, written in C
 
 ## Features
 
