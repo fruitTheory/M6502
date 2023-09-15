@@ -61,6 +61,7 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
         SDL_SetRenderDrawColor(renderer, 0, 100, 128, 255); // sets color
         SDL_RenderClear(renderer); // clear current target with draw color
         
+        // check on this if statement, could be while? remove inits from running loop
         if(program_counter - initial_program_counter < program_size){
             for(int i = 0; i < 6; i++){
                 // Write on a surce and convert to a texture - use rect to position each line

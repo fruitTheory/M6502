@@ -1,7 +1,7 @@
-# fTNES - 6502 Microprocessor - NES
+# M6502 Microprocessor
 
 Currently a 6502 microprocessor but PPU is on the way  
-Emulation of NES from Mos 6502, written in C
+if continue emulation of NES, written in C - fTNES  
 
 ## Features
 
@@ -22,7 +22,7 @@ Emulation of NES from Mos 6502, written in C
 ### Running
 
 ```
-./ftnes path_to_rom
+./main path_to_bin or 'mingw32-make run'
 ```
 
 ![Emulator Test](./img/emulator_test.gif)
@@ -32,18 +32,9 @@ Emulation of NES from Mos 6502, written in C
 - ~~Implement primary opcodes~~
 - Timings and Interrupts
 - Debug functions
-- Build on top, NES components 
+- Build on top, more functionality
 - Refine components
-- Release version v0.01
 - Streamline build
-
-## Contributing
-
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change
-
-## License
-
-Licensed under the MIT License - [LICENSE.md](LICENSE.md) 
 
 ## Acknowledgments
 
@@ -52,6 +43,6 @@ Licensed under the MIT License - [LICENSE.md](LICENSE.md)
 - masswerk.at - 6502 instruction set reference
 - ca65 - Assembler by Ullrich von Bassewitz, Greg King
 - hex editor - hexed.it ♡
-- NES Documentation - Patrick Diskin 2004 
+- NES Documentation - Patrick Diskin 2004
 - mcs6500 family programming manual
 

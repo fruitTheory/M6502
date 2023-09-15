@@ -41,7 +41,7 @@ ${BUILD}%.o:${SOURCES}%.c
 clean:
 	del "${BUILD}"
 
-RUN_FILE = test_ca65
+RUN_FILE = game
 run:
 	${BINARIES}main ${ASM}${RUN_FILE}.bin
 	
@@ -56,8 +56,9 @@ TARGET = none
 ca65:
 	ca65 -l ${ASM}${BASE_NAME}.lst ${ASM}${BASE_NAME}.asm 
 	ld65 -C ${ASM}${TARGET}.cfg ${ASM}${BASE_NAME}.o -o ${ASM}${BASE_NAME}.bin
-#none is the config used
-#rm -f ${ASM}${BASE_NAME}.o
+	del -f ${ASM}${BASE_NAME}.o
+#none is the config type used -C is config path
+
 
 TESTING=./_testing/
 test:
