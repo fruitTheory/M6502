@@ -1,7 +1,7 @@
-# M6502 Microprocessor
+# M6502
 
 Currently a 6502 microprocessor but PPU is on the way  
-if continue emulation of NES, written in C - fTNES  
+if continue with emulation of NES, written in C  
 
 ## Features
 
