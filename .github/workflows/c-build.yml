@@ -27,8 +27,13 @@ jobs:
       - name: Install MSYS2
         run: |
           choco install msys2
-          echo "C:\tools\msys64\usr\bin" >> $GITHUB_PATH
+          echo "C:\tools\msys64\mingw64\bin" >> $GITHUB_PATH
           
+      - name: Check MSYS2
+        run: |
+          ls C:\tools\msys64\usr\bin
+          ls C:\tools\msys64\mingw64\bin
+
       - name: Install SDL2 with Pacman
         run: |
             pacman -S mingw-w64-x86_64-SDL2 --noconfirm
