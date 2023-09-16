@@ -2,8 +2,8 @@ name: C Windows Build with MinGW
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "main" ]
+  # push:
+  #   branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
     
@@ -12,7 +12,7 @@ jobs:
     runs-on: windows-latest
       
     steps:
-      # Using actions checkout v3 to copy repo to virtual system
+      # using actions checkout v3 to copy repo to virtual system
       - name: Checkout repository
         uses: actions/checkout@v3
   
@@ -20,37 +20,42 @@ jobs:
       - name: Install MinGW
         run: |  
           choco install mingw
-          echo "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin" >> $GITHUB_PATH
+          echo "C:/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin" >> $GITHUB_PATH
           where gcc
           
+      # - name: Check directories
+      #   run: |
+      #     pwd
+      #     echo ${{ github.workspace }}
+
       # install msys2 and add to system path
       - name: Install MSYS2
         run: |
           choco install msys2
-          echo "C:\tools\msys64\mingw64\bin" >> $GITHUB_PATH
+          echo "C:/tools/msys64/mingw64/bin" >> $GITHUB_PATH
           
-      - name: Check MSYS2
-        run: |
-          ls C:\tools\msys64\usr\bin
-          ls C:\tools\msys64\mingw64\bin
+      # - name: Check MSYS2
+      #   run: |
+      #     ls C:/tools/msys64/usr/bin
 
+      # update package database and install SDL2 dependencies 
       - name: Install SDL2 with Pacman
         run: |
-            pacman -S mingw-w64-x86_64-SDL2 --noconfirm
-            find /c/tools/msys64 -name "SDL.h"
-            find /c/tools/msys64 -name "SDL_ttf.h"
-            find /c/tools/msys64 -name "libSDL2.a"
-            find /c/tools/msys64 -name "libSDL2_ttf.a"
+          C:/tools/msys64/usr/bin/pacman -Syu --noconfirm
+          C:/tools/msys64/usr/bin/pacman -S mingw-w64-x86_64-SDL2 --noconfirm
+          C:/tools/msys64/usr/bin/pacman -S mingw-w64-x86_64-SDL2_ttf --noconfirm
+
+      - name: Find SDL.h
+        run: |
+          Get-ChildItem -Path C:\tools\msys64 -Filter SDL.h -Recurse | ForEach-Object { Write-Output $_.FullName }
           
       - name: Build with MinGW
         run: |
-            mkdir -p $GITHUB_WORKSPACE/bin
-            mingw32-make LIBRARY_DIR="-L C:/tools/msys64/mingw64/lib" INCLUDES=" -I $GITHUB_WORKSPACE/include -I C:/tools/msys64/mingw64/include/SDL2"
+          mkdir build
+          mingw32-make LIBRARY_DIR="-L C:/tools/msys64/mingw64/lib" INCLUDES=" -I ./include -I C:/tools/msys64/mingw64/include/SDL2"
   
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-            name: compiled-binaries
-            path: $GITHUB_WORKSPACE/bin/main
-
-
+          name: compiled-binaries
+          path: $GITHUB_WORKSPACE/bin/main
