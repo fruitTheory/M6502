@@ -102,7 +102,7 @@ void check_flag_ZN(struct M6502* computer, uchar8_t test_against){
     check_flag_N(computer, test_against);
 }
 
-// check if a flag is set returns 1 or 0, doubles as a 'is this bit set?'
+// check if a flag is set returns 1 or 0, can double as a 'is this bit set?' for cpu
 // please use status register as default test case, otherwise specify another value
 uchar8_t is_flag_set(uchar8_t FLAG, uchar8_t test_against){
     uchar8_t ret; 
@@ -177,5 +177,51 @@ uchar8_t clear_bit(uchar8_t bit, uchar8_t test_against){
             puts("Error: use bit 0-7");
             break;
     }
+    return EXIT_FAILURE;
+}
+
+// checks if a bit is set, mainly used for PPU registers such as PPUCTRL, PPUMASK, PPUSTATUS, etc.
+uchar8_t is_bit_set(uchar8_t bit, uchar8_t test_against){
+    uchar8_t ret; 
+    switch(bit)
+    {
+        case 0:
+            // returns 1 if set or 0 if not
+            ret = test_against & flag_carry_bit;
+            return ret;
+            break;
+        case 1:
+            ret = test_against & flag_zero_bit;
+            return ret;
+            break;
+        case 2:
+            ret = test_against & flag_interrupt_bit;
+            return ret;
+            break;
+        case 3:
+            ret = test_against & flag_decimal_bit;
+            return ret;
+            break;
+        case 4:
+            ret = test_against & flag_break_bit;
+            return ret;
+            break;
+        case 5:
+            ret = test_against & flag_ignored_bit;
+            return ret;
+            break;
+        case 6:
+            ret = test_against & flag_overflow_bit;
+            return ret;
+            break;
+        case 7:
+            ret = test_against & flag_negative_bit;
+            return ret;
+            break;
+        default:
+            puts("Error: use bit 0-7");
+            break;
+    }
+
     return EXIT_FAILURE;
 }

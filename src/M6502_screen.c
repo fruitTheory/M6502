@@ -32,9 +32,14 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
     window = SDL_CreateWindow(title, display_bounds.x+1600, display_bounds.y+600, 256*2, 240*2, SDL_WINDOW_ALWAYS_ON_TOP);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); // create renderer for specific window
 
-    // Inititializes
+    // Inititializing
     ushort16_t initial_program_counter = program_counter;
     bool running = true;
+    int start_x = 75; // Start x position
+    int start_y = 75; // Start y position
+    int spacing = 25; // Space between lines
+    char cpu_register_info[6][20]; // 6 lines that can have up to 20 characters - 2D string array
+    SDL_SetRenderDrawColor(renderer, 0, 100, 128, 255); // sets color
 
     // event loop while program running
     while(running){
@@ -43,11 +48,6 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
         
         // Convert status to binary
         char8_t* binary_status_register = convert_to_binary(status_register);
-
-        int start_x = 75; // Start x position
-        int start_y = 75; // Start y position
-        int spacing = 25; // Space between lines
-        char cpu_register_info[6][20]; // 6 lines that can have up to 20 characters - 2D string array
 
         // setting each line or index to a different cpu info
         sprintf(cpu_register_info[0], "PC: $%04X", global_pc);
@@ -58,7 +58,6 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
         sprintf(cpu_register_info[5], "SR: %s", binary_status_register);
         free(binary_status_register), binary_status_register = NULL;
 
-        SDL_SetRenderDrawColor(renderer, 0, 100, 128, 255); // sets color
         SDL_RenderClear(renderer); // clear current target with draw color
         
         // check on this if statement, could be while? remove inits from running loop
@@ -80,7 +79,7 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
             SDL_RenderPresent(renderer); // presents render
             execute_instructions(computer, program_size);
         }
-        SDL_Delay(100); // .11 seconds (n milliseconds)
+        SDL_Delay(100); // .10 seconds (n milliseconds)
     }
 
     // cleanup

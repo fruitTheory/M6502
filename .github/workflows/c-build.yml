@@ -2,8 +2,8 @@ name: C Windows Build with MinGW
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "main" ]
+  # push:
+  #   branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
     
@@ -21,7 +21,6 @@ jobs:
         run: |  
           choco install mingw
           echo "C:/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin" >> $GITHUB_PATH
-          where gcc
           
       # - name: Check directories
       #   run: |

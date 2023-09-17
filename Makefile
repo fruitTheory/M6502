@@ -5,8 +5,6 @@ BUILD = ./build/
 SOURCES = ./src/
 BINARIES = ./bin/
 FLAGS = -g -Wall -fdiagnostics-color=always #-fsanitize=address
-ASM = ./asm/
-TESTING = ./testing/
 CC = gcc
 
 OBJECTS =	${BUILD}M6502.o \
@@ -41,25 +39,32 @@ clean:
 	del "${BUILD}"
 
 RUN_FILE = game
+EXT = nes
+PATH_OVERRIDE = 
+EXTRA_DIR = ./asm/nes_hello/
 run:
-	${BINARIES}main ${ASM}${RUN_FILE}.bin
-	
-# Use as65 assembler
-as65:
-	as65 ${ASM}6502_functional_test.a65
-#as65 ${ASM}6502_decimal_test.a65
+	${BINARIES}main ${EXTRA_DIR}${RUN_FILE}.${EXT}
 
+# ------asm section----------
 BASE_NAME = temp_01
 TARGET = none
-# Use ca65 assembler
+CFG = ./asm/cfg/
+DEMO_DIR = ./asm/nes_demo/
+TESTING=./_testing/
+ASM = ./asm/
+EXTRA_NAME = demo
+
+
 ca65:
 	ca65 -l ${ASM}${BASE_NAME}.lst ${ASM}${BASE_NAME}.asm 
-	ld65 -C ${ASM}${TARGET}.cfg ${ASM}${BASE_NAME}.o -o ${ASM}${BASE_NAME}.bin
-	del -f ${ASM}${BASE_NAME}.o
-#none is the config type used -C is config path
+	ld65 -C ${CFG}${TARGET}.cfg ${ASM}${BASE_NAME}.o -o ${ASM}${BASE_NAME}.bin -Ln ${ASM}${BASE_NAME}_labels.txt
+	del "${ASM}\${BASE_NAME}.o"
 
+demo:
+	ca65 -l ${DEMO_DIR}${EXTRA_NAME}.lst ${DEMO_DIR}${EXTRA_NAME}.s
+	ld65 -C ${CFG}nes.cfg ${DEMO_DIR}${EXTRA_NAME}.o -o ${DEMO_DIR}${EXTRA_NAME}.bin -Ln ${DEMO_DIR}${EXTRA_NAME}_labels.txt
+	del "${DEMO_DIR}\${EXTRA_NAME}.o"
 
-TESTING=./_testing/
 test:
 	gcc ${INCLUDES} ${TESTING}test.c -o ${TESTING}test
 	${TESTING}test

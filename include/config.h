@@ -44,6 +44,15 @@ typedef char char8_t;
 
 #define PPU (computer->NES_ppu.ppu)
 
+#define PPU_ctrl (computer->ppu.registers.CTRL)
+#define PPU_mask (computer->ppu.registers.MASK)
+#define PPU_status (computer->ppu.registers.STATUS)
+#define PPU_oam_addr (computer->ppu.registers.OAM_ADDR)
+#define PPU_oam_data (computer->ppu.registers.OAM_DATA)
+#define PPU_scroll (computer->ppu.registers.SCROLL)
+#define PPU_addr (computer->ppu.registers.ADDR)
+#define PPU_data (computer->ppu.registers.DATA)
+
 // NES secton close
 
 // enumeration to represent addressing modes

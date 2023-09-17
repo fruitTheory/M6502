@@ -748,7 +748,7 @@ void DEY(struct M6502* computer){ // 0x88
     cycle_push(2);
 }
 
-// Exclusive OR against byte of memory and accumulator
+// Exclusive OR against byte of memory or accumulator
 void EOR(struct M6502* computer, uchar8_t mode){
 
     uchar8_t input_value;
@@ -1036,7 +1036,7 @@ void LDX(struct M6502* computer, uchar8_t mode){
         case ZERO_PAGE_Y: // 0xB6
             input_address = memory_address[program_counter];
             offset_address = input_address + y_register;
-            y_register = memory_address[offset_address];
+            x_register = memory_address[offset_address];
             check_flag_ZN(computer, x_register);
             cycle_push(4);
             break;

@@ -29,6 +29,16 @@ typedef struct{
     
 }NES_ppu;
 
+void PPU_CTRL(struct M6502* computer);
+
+// // just to note tiles and pixels need to be at different scales, realistically, but can abstract it probably
+// uchar8_t tile[8][8]; // tile size in pixels  - pixels
+// uchar8_t screen_tiles[32][30]; // tiles on screen - tiles
+// uchar8_t screen_pixels[256][240]; // pixels on screen - pixels
+// uchar8_t nametable[960]; // tiles(bytes) - total screen - 960 bytes
+// uchar8_t attribute_table[8][8]; // One byte for 4 tiles - holds palette data - 64 bytes
+// // palette + background = 1024 bytes needed in VRAM - 2k vram so can hold 2 screens in total - 2048 bytes
+
 /*
 PPU CTRL: bits = VPHB SINN
 NMI enable (V), PPU master/slave (P), sprite height (H), background tile select (B),
