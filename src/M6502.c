@@ -13,6 +13,7 @@ void M6502_init(struct M6502* computer){
     // set everything in memory to 0
     memset(computer, 0, sizeof(&computer));
     M6502_stack_init(computer);
+    //PPU_init(computer);
     //status_register = 0b01010101; // temporary SR init 0x55 - 0101 0101
 }
 

@@ -5,15 +5,15 @@
 // OAM (Object Attribute Memory) - internal memory that contains a list of 64 4-byte sprites
 typedef struct
 {
-    uchar8_t CTRL; // $2000 - PPU control register
-    uchar8_t MASK; // $2001 - PPU mask register
-    uchar8_t STATUS; // $2002 - PPU status register
-    uchar8_t OAM_ADDR; // $2003 - OAM address read/write
-    uchar8_t OAM_DATA; // $2004 - OAM data read/write
+    uchar8_t CTRL; // $2000 - PPU control register - write
+    uchar8_t MASK; // $2001 - PPU mask register - write
+    uchar8_t STATUS; // $2002 - PPU status register - write
+    uchar8_t OAM_ADDR; // $2003 - OAM address - read/write
+    uchar8_t OAM_DATA; // $2004 - OAM data read/write - read/write
     uchar8_t SCROLL; // $2005 - PPU scrolling position register
-    uchar8_t ADDR; // $2006 - PPU address register
-    uchar8_t DATA; // $2007 - PPU data port
-    uchar8_t OAM_DMA; // $4014 - DMA register (high byte)
+    uchar8_t ADDR; // $2006 - PPU address register - write x2
+    uchar8_t DATA; // $2007 - PPU data port - read/write
+    uchar8_t OAM_DMA; // $4014 - DMA register (high byte) - write
 
 }PPU_registers;
 
@@ -40,6 +40,54 @@ void PPU_CTRL(struct M6502* computer);
 // // palette + background = 1024 bytes needed in VRAM - 2k vram so can hold 2 screens in total - 2048 bytes
 
 /*
+
+OAM is a space of memory of 256 bytes and can store 64 sprite(attributes) - 4 bytes is cost of each sprite
+In OAM memory each sprite has 4 attributes(bytes) - x & y position, tile index, and other info(palette, priority, etc.)
+
+The Sprite itself is not stored in OAM memory region, they're stored in a Pattern Tables within VRAM
+And a Sprite is 16 bytes of data, 8x8 bytes
+
+*/
+
+/*
+    Finding CHR data in ROM - vary based on header mapping, address is $8010 if 2 16k prg-rom banks + 16byte header
+    Finding Nametables/Palettes - The programmer makes a routine to store the table data in the ppu VRAM
+*/
+
+/*
+Pattern Tables: (Sprites) (CHR)
+
+$0000-$0FFF (0-4095): Pattern Table 0 (4KB)
+$1000-$1FFF (4096-8191): Pattern Table 1 (4KB)
+
+Name Tables: (Backgrounds) (VRAM)
+Horizontal Mirroring:
+
+$2000-$23FF (8192-9215): Name Table 0 (960 bytes) - Attribute Table 0 (64 bytes)
+$2400-$27FF (9216-10239): Name Table 0 (m) (960 bytes) - Attribute Table 0 (m) (64 bytes)
+$2800-$2BFF (10240-11263): Name Table 1 (960 bytes) - Attribute Table 1 (64 bytes)
+$2C00-$2FFF (11264-12287): Name Table 1 (m) (960 bytes) - Attribute Table 1 (m) (64 bytes)
+$3000-$3EFF (12288-16127): Mirrors of $2000-$2EFF - negligible (3kB)
+
+Vertical Mirroring:
+
+$2000-$23FF (8192-9215): Name Table 0 (960 bytes) - Attribute Table 0 (64 bytes)
+$2400-$27FF (9216-10239): Name Table 1 (960 bytes) - Attribute Table 1 (64 bytes)
+$2800-$2BFF (10240-11263): Name Table 0 (m) (960 bytes) - Attribute Table 0 (m) (64 bytes)
+$2C00-$2FFF (11264-12287): Name Table 1 (m) (960 bytes) - Attribute Table 1 (m) (64 bytes)
+$3000-$3EFF (12288-16127): Mirrors of $2000-$2EFF - negligible (3kB)
+
+Palettes:
+
+$3F00-$3F0F (16128-16143): Image Palette - 16 bytes
+$3F10-$3F1F (16144-16159): Sprite Palette - 16 bytes
+$3F20-$3FFF (16160-16383): Mirrors of $3F00-$3F1F
+
+*/
+
+/*
+FLAGS:
+
 PPU CTRL: bits = VPHB SINN
 NMI enable (V), PPU master/slave (P), sprite height (H), background tile select (B),
 sprite tile select (S), increment mode (I), nametable select (NN)
@@ -53,43 +101,10 @@ vblank (V), sprite 0 hit (S), sprite overflow (O); read resets write pair for $2
 */
 
 /*
-PPU can address 64kb memory like cpu
-Only has 16kb RAM (14-bit) address space
-Only accessed by PPU or by CPU through $2006-$2007 registers
-
-PPU internally contains 256 bytes of memory known as Object Attribute Memory which determines how sprites are rendered
-The CPU can manipulate this memory through memory mapped registers at..
-OAMADDR ($2003), OAMDATA ($2004), and OAMDMA ($4014)
-
-OAM can be viewed as an array with 64 entries
-Each entry has 4 bytes: the sprite Y coordinate, the sprite tile number,
-the sprite attribute, and the sprite X coordinate
-
-Pattern Tables: (Sprites) - Normally mapped by the cartridge to CHR-ROM or CHR-RAM, often with bank switching
-$0000-$0FFF (0-4095): Pattern Table 0 (4KB)
-$1000-$1FFF (4096-8191): Pattern Table 1 (4KB)
-
-Name Tables and Attributes: (Background Layout) - 2kB NES internal VRAM, nametables mirroring controlled by cartridge
-Name table mirroring affects what is shown past the right and bottom edges of current nametable
-$2000-$23BF (8192-9151): Name Table 0 
-$23C0-$23FF (9152-9215): Attribute Table 0
-$2400-$27BF (9216-10175): Name Table 1 (mirrors)
-$27C0-$27FF (10176-10239): Attribute Table 1
-$2800-$2BBF (10240-11199): Name Table 2 
-$2BC0-$2BFF (11200-11263): Attribute Table 2 
-$2C00-$2FBF (11264-12223): Name Table 3 
-$2FC0-$2FFF (12224-12287): Attribute Table 3
-
-$3000-$3EFF (12288-16127): Mirror of $2000-$2EFF - negligible 
-
-Palettes: (Colours) - not configurable, always mapped to the internal palette control
-$3F00-$3F0F (16128-16143): Image Palette - 15 bytes
-$3F10-$3F1F (16144-16159): Sprite Palette - 15 bytes
-$3F20-$3FFF (16160-16383): Mirrors of $3F00-$3F1F
+ADDITIONAL:
 
 Note: In a basic NES without additional cartridge hardware, there's 2KB of VRAM for nametables
-4 nametables are typically mirrored (Table 2 and 3 might mirror Table 0 and 1)
-
+nametables are typically mirrored
 
 More on palettes:
 $3F00	Universal background color

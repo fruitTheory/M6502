@@ -1,0 +1,8 @@
+Log from a after a nmi in demo.s/demo.bin
+
+A:00 X:1B Y:00 S:FC P:NvUbdIzc    $8066: BD 72 80  LDA $8072,X @ $808D = #$94
+A:94 X:1B Y:00 S:FC P:NvUbdIzc    $8069: 8D 04 20  STA $2004 = #$94
+A:94 X:1B Y:00 S:FC P:NvUbdIzc    $806C: E8        INX
+A:94 X:1C Y:00 S:FC P:nvUbdIzc    $806D: E0 1C     CPX #$1C
+A:94 X:1C Y:00 S:FC P:nvUbdIZC    $806F: D0 F5     BNE $8066
+A:94 X:1C Y:00 S:FC P:nvUbdIZC    $8071: 40        RTI
