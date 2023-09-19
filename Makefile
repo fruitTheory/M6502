@@ -28,7 +28,8 @@ LINKED_LIBRARIES = -lSDL2  -lSDL2main -lsdl2_ttf #-lSDL2_mixer -lSDL2_image
 
 
 all: ${OBJECTS} # Include objects program relies on
-	${CC} ${FLAGS} ${INCLUDES} ${OBJECTS} ${LIBRARY_DIR} ${LINKED_LIBRARIES} ${SOURCES}main.c -o ${BINARIES}main 
+	${CC} ${FLAGS} ${INCLUDES} ${OBJECTS} ${LIBRARY_DIR} ${LINKED_LIBRARIES} ${SOURCES}main.c -o ${BINARIES}main
+	mingw32-make run
 
 # Build all - wildcards
 ${BUILD}%.o:${SOURCES}%.c
@@ -38,12 +39,12 @@ ${BUILD}%.o:${SOURCES}%.c
 clean:
 	del "${BUILD}"
 
-RUN_FILE = game
-EXT = nes
+RUN_FILE = temp_01
+EXT = bin
 PATH_OVERRIDE = 
 EXTRA_DIR = ./asm/nes_hello/
 run:
-	${BINARIES}main ${EXTRA_DIR}${RUN_FILE}.${EXT}
+	${BINARIES}main ${ASM}${RUN_FILE}.${EXT}
 
 # ------asm section----------
 BASE_NAME = temp_01
