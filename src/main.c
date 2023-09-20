@@ -20,7 +20,7 @@ int main(int argc, char* argv[]){
     print_program_info(argc, argv);
     ushort16_t program_size = get_program_size(argv);
     printf("program size: %i bytes\n", program_size);
-    M6502_store_program(&computer, program, program_size);
+    cpu_store_program(&computer, program, program_size);
     free(program), program = NULL;
 
     draw_screen(&computer, program_size);

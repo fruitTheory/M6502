@@ -40,18 +40,16 @@ void PPU_CTRL(struct M6502* computer);
 // // palette + background = 1024 bytes needed in VRAM - 2k vram so can hold 2 screens in total - 2048 bytes
 
 /*
-
 OAM is a space of memory of 256 bytes and can store 64 sprite(attributes) - 4 bytes is cost of each sprite
 In OAM memory each sprite has 4 attributes(bytes) - x & y position, tile index, and other info(palette, priority, etc.)
 
 The Sprite itself is not stored in OAM memory region, they're stored in a Pattern Tables within VRAM
 And a Sprite is 16 bytes of data, 8x8 bytes
-
 */
 
 /*
-    Finding CHR data in ROM - vary based on header mapping, address is $8010 if 2 16k prg-rom banks + 16byte header
-    Finding Nametables/Palettes - The programmer makes a routine to store the table data in the ppu VRAM
+Finding CHR data in ROM - vary based on header mapping, address is $8010 if 2 16k prg-rom banks + 16byte header
+Finding Nametables/Palettes - The programmer makes a routine to store the table data in the ppu VRAM
 */
 
 /*
@@ -88,16 +86,29 @@ $3F20-$3FFF (16160-16383): Mirrors of $3F00-$3F1F
 /*
 FLAGS:
 
-PPU CTRL: bits = VPHB SINN
+PPU CTRL: bits = VPHB SINN | $2000
 NMI enable (V), PPU master/slave (P), sprite height (H), background tile select (B),
 sprite tile select (S), increment mode (I), nametable select (NN)
 
-PPU MASK: bits = BGRs bMmG
+PPU MASK: bits = BGRs bMmG | $2001
 color emphasis (BGR), sprite enable (s), background enable (b), 
 sprite left column enable (M), background left column enable (m), greyscale (G)
 
-PPUSTATUS: bits = VSO- ----
-vblank (V), sprite 0 hit (S), sprite overflow (O); read resets write pair for $2005/$2006
+PPUSTATUS: bits = VSO- ---- | $2002 | bits 7 - 0
+vblank (V), sprite 0 hit (S), sprite overflow (O); read/lda resets write pair for $2005/$2006
+
+
+$2000 - PPUCTRL: Controls various PPU parameters like nametable selection, VRAM address increment, 
+sprite size, and interrupt generation
+$2001 - PPUMASK: Controls rendering features, enabling or disabling the rendering of sprites, 
+backgrounds, and color
+$2002 - PPUSTATUS: Provides the vertical blank and sprite hit flags, and reflects the state of the PPU
+$2003 - OAMADDR: Specifies the address in OAM (Object Attribute Memory) where data will be written or read
+$2004 - OAMDATA: Used to read from or write data to the address specified in OAMADDR
+$2005 - PPUSCROLL: Sets the initial horizontal and vertical scroll positions for rendering
+$2006 - PPUADDR: Sets the address in VRAM for subsequent reads/writes using PPU_DATA
+$2007 - PPU_DATA: Reads from or writes data to the address previously specified in PPUADDR
+
 */
 
 /*

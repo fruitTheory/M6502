@@ -63,9 +63,9 @@ reset:
 	stx PPU_MASK	; disable rendering
 ;	stx $4010	; disable DMC IRQs
 
-	lda PPU_STATUS	; PPU warm up
-vblankwait1:	; First wait for vblank to make sure PPU is ready
-	bit PPU_STATUS	; PPU status register
+	lda PPU_STATUS	; Load value at ppu status into accumulator
+vblankwait1:	; Wait for vblank to make sure PPU is ready
+	bit PPU_STATUS	; bit testing 7(v) and 6(s) of ppus tatus value, also compares accum to this value
 	bpl vblankwait1
 
 vblankwait2:
@@ -94,20 +94,20 @@ clear_memory:
 	sta PPU_ADDR
 	lda #$00
 	sta PPU_ADDR
-	lda #<background_nametable	; saving nametable in RAM
-	sta $0000
-	lda #>background_nametable
-	sta $0001
+	lda #<background_nametable	; reads low byte of address that nametable is at
+	sta $0000	; stores the low byte
+	lda #>background_nametable ; reads high byte of address that nametable is at
+	sta $0001	; stores the high byte
 	ldx #$00
 	ldy #$00
 
 nametable_loop:
-	lda ($00), Y
-	sta PPU_DATA
-	iny
-	cpy #$00
+	lda ($00), Y	; does getword at address $00 - so gets nametable address stored $nnnn
+	sta PPU_DATA	; store the value acquired into PPU memory at PPU addr which was nametable address 
+	iny				; increment y 256 times until it wraps around to 0 indicating next nametable page
+	cpy #$00		; compare y to 0 continue if not zero, else keep looping
 	bne nametable_loop
-	inc $0001
+	inc $0001		; if finished increment high byte 
 	inx
 	cpx #$04	; size of nametable 0: 0x0400
 	bne nametable_loop

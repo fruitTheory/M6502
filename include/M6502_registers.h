@@ -11,4 +11,4 @@ typedef struct
     uchar8_t SR;   // status register - 8 bit - stores status flags
     ushort16_t SP;   // stack pointer - 8 bit - holds the low 8 bits of the next free location on the stack - (changed to 16 bit but clamped at 8 bit)
 
-}M6502_registers;
+}CPU_registers;

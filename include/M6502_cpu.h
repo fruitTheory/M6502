@@ -5,9 +5,9 @@
 #include "M6502_memory.h"
 
 typedef struct{
-    M6502_registers registers;
-    M6502_stack stack;
-    M6502_memory memory;
+    CPU_registers registers;
+    CPU_stack stack;
+    CPU_memory memory;
 }M6502_cpu;
 
 // A container used to store the amount of bytes internal instructions use

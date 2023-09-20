@@ -140,18 +140,33 @@ uchar8_t is_flag_set(uchar8_t FLAG, uchar8_t test_against){
     return EXIT_FAILURE;
 }
 
-// set specific bit of specified input - only accepting 0 and 7 for now
-uchar8_t set_bit(uchar8_t bit, uchar8_t test_against){
+// set specific bit of input value - needs pointer to modify original value
+uchar8_t set_bit(uchar8_t bit, uchar8_t* test_against){
         switch(bit)
     {
         case 0:
-            test_against |= flag_zero_bit;
-            return test_against;
+            *test_against |= flag_carry_bit;
             break;
-
+        case 1:
+            *test_against |= flag_zero_bit;
+            break;
+        case 2:
+            *test_against |= flag_interrupt_bit;
+            break;
+        case 3:
+            *test_against |= flag_decimal_bit;
+            break;
+        case 4:
+            *test_against |= flag_break_bit;
+            break;
+        case 5:
+            *test_against |= flag_ignored_bit;
+            break;
+        case 6:
+            *test_against |= flag_overflow_bit;
+            break;
         case 7:
-            test_against |= flag_negative_bit;
-            return test_against;
+            *test_against |= flag_negative_bit;
             break;
         default:
             puts("Error: use bit 0-7");
@@ -160,18 +175,33 @@ uchar8_t set_bit(uchar8_t bit, uchar8_t test_against){
     return EXIT_FAILURE;
 }
 
-// clear specific bit of specified input - only accepting 0 and 7 for now
-uchar8_t clear_bit(uchar8_t bit, uchar8_t test_against){
+// clear specific bit of input value - needs pointer to modify original value
+uchar8_t clear_bit(uchar8_t bit, uchar8_t* test_against){
     switch(bit)
     {
         case 0:
-            test_against &= ~flag_zero_bit;
-            return test_against;
+            *test_against &= ~flag_carry_bit;
             break;
-
+        case 1:
+            *test_against &= ~flag_zero_bit;
+            break;
+        case 2:
+            *test_against &= ~flag_interrupt_bit;
+            break;
+        case 3:
+            *test_against &= ~flag_decimal_bit;
+            break;
+        case 4:
+            *test_against &= ~flag_break_bit;
+            break;
+        case 5:
+            *test_against &= ~flag_ignored_bit;
+            break;
+        case 6:
+            *test_against &= ~flag_overflow_bit;
+            break;
         case 7:
-            test_against &= ~flag_negative_bit;
-            return test_against;
+            *test_against &= ~flag_negative_bit;
             break;
         default:
             puts("Error: use bit 0-7");

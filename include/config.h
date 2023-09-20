@@ -10,7 +10,7 @@ typedef char char8_t;
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE -1
 
-#define cpu_max_address 65535 // M6502's 16-bit address bus can only handle this much
+#define cpu_max_address 65535 // CPU's 16-bit address bus
 #define stack_max_size 256
 #define ppu_max_address 16384
 
@@ -39,16 +39,16 @@ typedef char char8_t;
 
 // NES section open
 
-#define PPU (computer->NES_ppu.ppu)
-#define PPU_address (computer->ppu.memory.address)
-#define PPU_ctrl (computer->ppu.registers.CTRL)
-#define PPU_mask (computer->ppu.registers.MASK)
-#define PPU_status (computer->ppu.registers.STATUS)
-#define PPU_oam_addr (computer->ppu.registers.OAM_ADDR)
-#define PPU_oam_data (computer->ppu.registers.OAM_DATA)
-#define PPU_scroll (computer->ppu.registers.SCROLL)
-#define PPU_addr (computer->ppu.registers.ADDR)
-#define PPU_data (computer->ppu.registers.DATA)
+#define PPU (computer->NES_ppu.ppu) // access to PPU
+#define PPU_address (computer->ppu.memory.address) // address from PPU
+#define PPU_ctrl (computer->ppu.registers.CTRL) // $2000
+#define PPU_mask (computer->ppu.registers.MASK) // $2001
+#define PPU_status (computer->ppu.registers.STATUS) // $2002
+#define PPU_oam_addr (computer->ppu.registers.OAM_ADDR) // $2003
+#define PPU_oam_data (computer->ppu.registers.OAM_DATA) // $2004
+#define PPU_scroll (computer->ppu.registers.SCROLL) // $2005
+#define PPU_addr (computer->ppu.registers.ADDR) // $2006
+#define PPU_data (computer->ppu.registers.DATA) // $2007
 
 // NES secton close
 

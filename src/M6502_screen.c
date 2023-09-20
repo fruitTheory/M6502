@@ -1,6 +1,7 @@
 #include "M6502.h"
 #include "M6502_screen.h"
 #include "M6502_general.h"
+#include "M6502_flags.h"
 #include "SDL.h"
 #include "SDL_ttf.h"
 #include <stdbool.h>
@@ -132,8 +133,16 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
         // note that vblank is 241 - 260 so need to extend y and catch if past 240
         // x- 512/8=64 || y - 520/8=65 480/8=60
         for(int y = 0; y < 65; y++){
-            if(y < 60) printf("line %i\n", y);
-            if(y >= 60) puts("vblanky");
+            if(y < 60){
+                clear_bit(7, &PPU_status); // clear status bit 7 if not in vblank range 
+                printf("line %i\n", y);
+                //printf("ppu status before: %02X\n", PPU_status);
+            }
+            if(y >= 60){
+                puts("vblanky");
+                set_bit(7, &PPU_status); // set status bit 7 if in vblank range 
+                //printf("ppu status after: %02X\n", PPU_status);
+            }
             for(int x = 0; x < 65; x++){
                 SDL_RenderPresent(renderer); // presents render
                 SDL_RenderDrawRect(renderer, &pixel);

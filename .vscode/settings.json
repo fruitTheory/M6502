@@ -29,6 +29,7 @@
         "sdl_events.h": "c",
         "m6502_screen.h": "c",
         "stdbool.h": "c",
-        "sdl_ttf.h": "c"
+        "sdl_ttf.h": "c",
+        "m6502_flags.h": "c"
     }
 }

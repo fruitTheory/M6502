@@ -12,7 +12,7 @@
 void M6502_init(struct M6502* computer){
     // set everything in memory to 0
     memset(computer, 0, sizeof(&computer));
-    M6502_stack_init(computer);
+    cpu_stack_init(computer);
     //PPU_init(computer);
     //status_register = 0b01010101; // temporary SR init 0x55 - 0101 0101
 }
@@ -46,7 +46,7 @@ void execute_instructions(struct M6502* computer, ushort16_t program_size){
         PC_increment(computer);
         // Note for this function - it goes to analyze_opcode and PC is +1 for instruction call
         // If the instruction needs to return byte, it will already be at that address
-        // If the instruction needs to return word, the PC is +1 from M6502_get_word()
+        // If the instruction needs to return word, the PC is +1 from cpu_get_word()
         // When it returns from instruction the PC is +1 to prepare for next opcode
         // Implied and Accumulator will need to decrement PC by -1 as they are only 1 byte in total
     }

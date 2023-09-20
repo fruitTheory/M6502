@@ -48,7 +48,7 @@ void ADC(struct M6502* computer, uchar8_t mode){
             cycle_push(4);
             break;
         case ABSOLUTE: // 0x6D
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator + CPU_address[input_address] + flag_bit;
             accumulator = accumulator + CPU_address[input_address] + flag_bit;
@@ -58,7 +58,7 @@ void ADC(struct M6502* computer, uchar8_t mode){
             cycle_push(4);
             break;
         case ABSOLUTE_X: // 0x7D
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + x_register;
             flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator + CPU_address[offset_address] + flag_bit;
@@ -70,7 +70,7 @@ void ADC(struct M6502* computer, uchar8_t mode){
             check_page(computer, input_address, x_register, 1);
             break;
         case ABSOLUTE_Y: // 0x79
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + y_register;
             flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator + CPU_address[offset_address] + flag_bit;
@@ -85,7 +85,7 @@ void ADC(struct M6502* computer, uchar8_t mode){
             input_address = CPU_address[program_counter];
             offset_address = input_address + x_register;
             flag_bit = is_flag_set(CARRY, status_register);
-            word_address = M6502_get_word(computer, offset_address, increment_true);
+            word_address = cpu_get_word(computer, offset_address, increment_true);
             short_result = accumulator + CPU_address[word_address] + flag_bit;
             accumulator = accumulator + CPU_address[word_address] + flag_bit;
 
@@ -94,8 +94,8 @@ void ADC(struct M6502* computer, uchar8_t mode){
             cycle_push(6);
             break;
         case INDIRECT_Y: // 0x71
-            input_address = M6502_get_byte(computer, program_counter);
-            word_address = M6502_get_word(computer, input_address, increment_true);
+            input_address = cpu_get_byte(computer, program_counter);
+            word_address = cpu_get_word(computer, input_address, increment_true);
             offset_address = word_address + y_register;
             flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator + CPU_address[offset_address] + flag_bit;
@@ -140,13 +140,13 @@ void AND(struct M6502* computer, uchar8_t mode){
             cycle_push(4);
             break;
         case ABSOLUTE: // 0x2D
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             accumulator = accumulator & CPU_address[input_address];
             check_flag_ZN(computer, accumulator);
             cycle_push(4);
             break;
         case ABSOLUTE_X: // 0x3D
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + x_register;
             accumulator = accumulator & CPU_address[offset_address];
             check_flag_ZN(computer, accumulator);
@@ -154,7 +154,7 @@ void AND(struct M6502* computer, uchar8_t mode){
             check_page(computer, input_address, x_register, 1);
             break;
         case ABSOLUTE_Y: // 0x39
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + y_register;
             accumulator = accumulator & CPU_address[offset_address];
             check_flag_ZN(computer, accumulator);
@@ -163,17 +163,17 @@ void AND(struct M6502* computer, uchar8_t mode){
             break;
         case INDIRECT_X: // 0x21
             // this one just takes a byte as an address
-            input_address = M6502_get_byte(computer, program_counter);
+            input_address = cpu_get_byte(computer, program_counter);
             offset_address = input_address + x_register;
-            word_address = M6502_get_word(computer, offset_address, increment_false);
+            word_address = cpu_get_word(computer, offset_address, increment_false);
             // AND operation against whats at the word address
             accumulator = accumulator & CPU_address[offset_address];
             check_flag_ZN(computer, accumulator);
             cycle_push(6);
             break;
         case INDIRECT_Y: // 0x31
-            input_address = M6502_get_byte(computer, program_counter);
-            word_address = M6502_get_word(computer, input_address, increment_true);
+            input_address = cpu_get_byte(computer, program_counter);
+            word_address = cpu_get_word(computer, input_address, increment_true);
             offset_address = word_address + y_register;
             // AND operation against whats at the offset address
             accumulator = accumulator & offset_address;
@@ -224,7 +224,7 @@ void ASL(struct M6502* computer, uchar8_t mode){
             break;
         case ABSOLUTE: // 0x0E
             // provides a 16 bit address to work from
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             // shift the value provided at this location 1 bit to the left 
             m_result = CPU_address[input_address];
             is_flag_set(NEGATIVE, m_result) ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
@@ -233,7 +233,7 @@ void ASL(struct M6502* computer, uchar8_t mode){
             cycle_push(6);
             break;
         case ABSOLUTE_X: // 0x1E
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + x_register;
             m_result = CPU_address[offset_address];
             is_flag_set(NEGATIVE, m_result) ? set_flag(computer, CARRY):clear_flag(computer, CARRY);
@@ -337,11 +337,12 @@ void BIT(struct M6502* computer, uchar8_t mode){
             break;
         case ABSOLUTE: // 0x2C
             // get the absolute address and the value there
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             address_value = CPU_address[input_address];
 
             (accumulator & address_value) == 0 ? set_flag(computer, ZERO):clear_flag(computer, ZERO);
 
+            // Checking bit 6/7 of provided value, set overflow/negative flag based on the result
             is_flag_set(OVERFLOW, address_value) ? set_flag(computer, OVERFLOW):clear_flag(computer, OVERFLOW);
             is_flag_set(NEGATIVE, address_value) ? set_flag(computer, NEGATIVE):clear_flag(computer, NEGATIVE);
 
@@ -428,14 +429,14 @@ void BRK(struct M6502* computer){ // 0x00
     // push program coutner to stack
     uchar8_t extract_msb = program_counter>>8;
     uchar8_t extract_lsb = (char)program_counter;
-    M6502_stack_push(computer, extract_msb); // push most significant byte
-    M6502_stack_push(computer, extract_lsb); // push least significant byte
+    cpu_stack_push(computer, extract_msb); // push most significant byte
+    cpu_stack_push(computer, extract_lsb); // push least significant byte
 
     // push status register to stack
-    M6502_stack_push(computer, status_register);
+    cpu_stack_push(computer, status_register);
     
     // set program coutner to request handler address
-    program_counter = M6502_get_word(computer, IRQ, increment_false);
+    program_counter = cpu_get_word(computer, IRQ, increment_false);
     printf("PC: %04X", program_counter);
 
     // break flag set to 1
@@ -554,7 +555,7 @@ void CMP(struct M6502* computer, uchar8_t mode){
             cycle_push(4);
             break;
         case ABSOLUTE: // 0xCD
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             result = accumulator - CPU_address[input_address];
 
             if(accumulator >= CPU_address[input_address]) set_flag(computer, CARRY);
@@ -564,7 +565,7 @@ void CMP(struct M6502* computer, uchar8_t mode){
             cycle_push(4);
             break;
         case ABSOLUTE_X: // 0xDD
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + x_register;
             result = accumulator - CPU_address[offset_address];
 
@@ -575,7 +576,7 @@ void CMP(struct M6502* computer, uchar8_t mode){
             cycle_push(4); // +1 if page crossed
             break;
         case ABSOLUTE_Y: // 0xD9
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + y_register;
             result = accumulator - CPU_address[offset_address];
 
@@ -589,7 +590,7 @@ void CMP(struct M6502* computer, uchar8_t mode){
         case INDIRECT_X: // 0xC1
             input_address = CPU_address[program_counter];
             offset_address = input_address + x_register;
-            word_address = M6502_get_word(computer, offset_address, increment_false);
+            word_address = cpu_get_word(computer, offset_address, increment_false);
             result = accumulator - CPU_address[word_address];
 
             // Again compare the value at address against accumulator set flag based on this
@@ -601,7 +602,7 @@ void CMP(struct M6502* computer, uchar8_t mode){
             break;
         case INDIRECT_Y: // 0xD1
             input_address = CPU_address[program_counter];
-            word_address = M6502_get_word(computer, input_address, increment_false);
+            word_address = cpu_get_word(computer, input_address, increment_false);
             offset_address = word_address + y_register;
             result = accumulator - CPU_address[offset_address];
 
@@ -642,7 +643,7 @@ void CPX(struct M6502* computer, uchar8_t mode){
             cycle_push(3);
             break;
         case ABSOLUTE: // 0xEC
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             result = x_register - CPU_address[input_address];
 
             if(x_register >= CPU_address[input_address]) set_flag(computer, CARRY);
@@ -680,7 +681,7 @@ void CPY(struct M6502* computer, uchar8_t mode){
             cycle_push(3);
             break;
         case ABSOLUTE: // 0xCC
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             result = y_register - CPU_address[input_address];
 
             if(y_register >= CPU_address[input_address]) set_flag(computer, CARRY);
@@ -705,27 +706,27 @@ void DEC(struct M6502* computer, uchar8_t mode){
         case ZERO_PAGE: // 0xC6
             input_address = CPU_address[program_counter];
             memory_value = CPU_address[input_address] -= 1;
-            M6502_set_memory(computer, input_address, memory_value);
+            cpu_set_memory(computer, input_address, memory_value);
             cycle_push(5);
             break;
         case ZERO_PAGE_X: // 0xD6
             input_address = CPU_address[program_counter];
             input_address_offset = input_address + x_register;
             memory_value = CPU_address[input_address_offset] -= 1;
-            M6502_set_memory(computer, input_address_offset, memory_value);
+            cpu_set_memory(computer, input_address_offset, memory_value);
             cycle_push(6);
             break;
         case ABSOLUTE: // 0xCE
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             memory_value = CPU_address[input_address] -= 1;
-            M6502_set_memory(computer, input_address, memory_value);
+            cpu_set_memory(computer, input_address, memory_value);
             cycle_push(6);
             break;
         case ABSOLUTE_X: // 0xDE
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             input_address_offset = input_address + x_register;
             memory_value = CPU_address[input_address_offset] -= 1;
-            M6502_set_memory(computer, input_address_offset, memory_value);
+            cpu_set_memory(computer, input_address_offset, memory_value);
             cycle_push(7);
             break;
         default:
@@ -778,14 +779,14 @@ void EOR(struct M6502* computer, uchar8_t mode){
             cycle_push(4);
             break;
         case ABSOLUTE: // 0x4D
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             // accumulator ORed against byte at an absolute memory address
             accumulator ^= CPU_address[input_address];
             check_flag_ZN(computer, accumulator); 
             cycle_push(4);
             break;
         case ABSOLUTE_X: // 0x5D
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             input_address_offset = input_address + x_register;
             accumulator ^= CPU_address[input_address_offset];
             check_flag_ZN(computer, accumulator); 
@@ -793,7 +794,7 @@ void EOR(struct M6502* computer, uchar8_t mode){
             check_page(computer, input_address, x_register, 1);
             break;
         case ABSOLUTE_Y: // 0x59
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             input_address_offset = input_address + y_register;
             accumulator ^= CPU_address[input_address_offset];
             check_flag_ZN(computer, accumulator); 
@@ -803,7 +804,7 @@ void EOR(struct M6502* computer, uchar8_t mode){
         case INDIRECT_X: // 0x41
             input_address = CPU_address[program_counter];
             input_address_offset = input_address + x_register;
-            word_address = M6502_get_word(computer, input_address_offset, increment_false);
+            word_address = cpu_get_word(computer, input_address_offset, increment_false);
             // accumulator equals itself ORed against the value at the word address
             accumulator ^= CPU_address[word_address];
             check_flag_ZN(computer, accumulator); 
@@ -811,7 +812,7 @@ void EOR(struct M6502* computer, uchar8_t mode){
             break;
         case INDIRECT_Y: // 0x51
             input_address = CPU_address[program_counter];
-            word_address = M6502_get_word(computer, input_address, increment_false);
+            word_address = cpu_get_word(computer, input_address, increment_false);
             input_address_offset = word_address + y_register;
             accumulator ^= CPU_address[input_address_offset];
             check_flag_ZN(computer, accumulator); 
@@ -835,7 +836,7 @@ void INC(struct M6502* computer, uchar8_t mode){
         case ZERO_PAGE: // 0xE6
             input_address = CPU_address[program_counter];
             memory_value = CPU_address[input_address] += 1;
-            M6502_set_memory(computer, input_address, memory_value);
+            cpu_set_memory(computer, input_address, memory_value);
             cycle_push(5);
             break;
         case ZERO_PAGE_X: // 0xF6
@@ -845,16 +846,16 @@ void INC(struct M6502* computer, uchar8_t mode){
             cycle_push(6);
             break;
         case ABSOLUTE: // 0xEE
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             memory_value = CPU_address[input_address] += 1;
-            M6502_set_memory(computer, input_address, memory_value);
+            cpu_set_memory(computer, input_address, memory_value);
             cycle_push(6);
             break;
         case ABSOLUTE_X: // 0xFE
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             input_address_offset = input_address + x_register;
             memory_value = CPU_address[input_address_offset] += 1;
-            M6502_set_memory(computer, input_address_offset, memory_value);
+            cpu_set_memory(computer, input_address_offset, memory_value);
             cycle_push(7);
             break;
         default:
@@ -886,15 +887,15 @@ void JMP(struct M6502* computer, uchar8_t mode){
     {
         case ABSOLUTE: // 0x4C
             // sets program counter to user address input
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             // set program counter to address minus 1 to keep PC loop on track
             program_counter = input_address-1;
             cycle_push(3);
             break;
         case INDIRECT: // 0x6C
             // sets program counter to an indirect adress found at a users address input
-            input_address = M6502_get_word(computer, program_counter, increment_true);
-            indirect_address = M6502_get_word(computer, input_address, increment_false);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
+            indirect_address = cpu_get_word(computer, input_address, increment_false);
             program_counter = indirect_address-1;
             cycle_push(5);
             break;
@@ -907,12 +908,12 @@ void JMP(struct M6502* computer, uchar8_t mode){
 // Jump to Subroutine
 void JSR(struct M6502* computer, uchar8_t mode){ // 0x20 - Absolute
     // First get subroutines address
-    ushort16_t input_address = M6502_get_word(computer, program_counter, increment_true);
+    ushort16_t input_address = cpu_get_word(computer, program_counter, increment_true);
     // Extract high bit by shifting right 8 and low bit by truncating the 16 bits to char
     uchar8_t extract_msb = program_counter>>8;
     uchar8_t extract_lsb = (char)program_counter;
-    M6502_stack_push(computer, extract_msb); // most significant byte
-    M6502_stack_push(computer, extract_lsb); // least significant byte
+    cpu_stack_push(computer, extract_msb); // most significant byte
+    cpu_stack_push(computer, extract_lsb); // least significant byte
     // set the program counter to supplied address, minus 1 keeps PC loop on track
     program_counter = input_address-1;
     cycle_push(6);
@@ -953,7 +954,7 @@ void LDA(struct M6502* computer, uchar8_t mode){
             break;
         }
         case ABSOLUTE: // 0xAD
-            accumulator = CPU_address[M6502_get_word(computer, program_counter, increment_true)];
+            accumulator = CPU_address[cpu_get_word(computer, program_counter, increment_true)];
             //printf("Accumulator: %i\n", accumulator);
             check_flag_ZN(computer, accumulator);
             cycle_push(4);
@@ -961,7 +962,7 @@ void LDA(struct M6502* computer, uchar8_t mode){
 
         case ABSOLUTE_X:{ // 0xBD
             // get 16 bit address at current PC and offset by x register, store result in accumulator
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + x_register;
             accumulator = CPU_address[offset_address];
             //printf("Accumulator: %i\n", accumulator);
@@ -971,7 +972,7 @@ void LDA(struct M6502* computer, uchar8_t mode){
             break;
         }
         case ABSOLUTE_Y:{ // 0xB9
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + y_register;
             accumulator = CPU_address[offset_address];
             //printf("Accumulator: %i\n", accumulator);
@@ -982,11 +983,11 @@ void LDA(struct M6502* computer, uchar8_t mode){
         }
         case INDIRECT_X:{ // 0xA1
             // grab byte at current location and use as an address - 0x00
-            input_address = M6502_get_byte(computer, program_counter);
+            input_address = cpu_get_byte(computer, program_counter);
             // offset it by x register
             offset_address = input_address + x_register;
             // abstractly or 'indirectly' grabbing a word sized address at the offset address
-            word_address = M6502_get_word(computer, offset_address, increment_false);
+            word_address = cpu_get_word(computer, offset_address, increment_false);
             // stores contents of the word address in the accumulator
             accumulator = CPU_address[word_address];
             //printf("Accumulator: %02X\n", accumulator);
@@ -996,9 +997,9 @@ void LDA(struct M6502* computer, uchar8_t mode){
         }
         case INDIRECT_Y:{ // 0xB1
             // grab byte at current location and use as an address - 0x00
-            input_address = M6502_get_byte(computer, program_counter);
+            input_address = cpu_get_byte(computer, program_counter);
             // get a word address at the input address + 1
-            ushort16_t word_address = M6502_get_word(computer, input_address, increment_false);
+            ushort16_t word_address = cpu_get_word(computer, input_address, increment_false);
             // offset the address by + y register
             ushort16_t offset_address = word_address + y_register;
             // store into accumlator the value at the final offset address
@@ -1041,12 +1042,12 @@ void LDX(struct M6502* computer, uchar8_t mode){
             cycle_push(4);
             break;
         case ABSOLUTE: // 0xAE
-            x_register = CPU_address[M6502_get_word(computer, program_counter, increment_true)];
+            x_register = CPU_address[cpu_get_word(computer, program_counter, increment_true)];
             check_flag_ZN(computer, x_register);
             cycle_push(4);
             break;
         case ABSOLUTE_Y: // 0xBE
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + y_register;
             x_register = CPU_address[offset_address];
             check_flag_ZN(computer, x_register);
@@ -1085,12 +1086,12 @@ void LDY(struct M6502* computer, uchar8_t mode){
             cycle_push(4);
             break;
         case ABSOLUTE: // 0xAC
-            y_register = CPU_address[M6502_get_word(computer, program_counter, increment_true)];
+            y_register = CPU_address[cpu_get_word(computer, program_counter, increment_true)];
             check_flag_ZN(computer, y_register);
             cycle_push(4);
             break;
         case ABSOLUTE_X: // 0xBC
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + x_register;
             y_register = CPU_address[offset_address];
             check_flag_ZN(computer, y_register);
@@ -1136,14 +1137,14 @@ void LSR(struct M6502* computer, uchar8_t mode){
             break;
         case ABSOLUTE: // 0x4E
             // provides a 16 bit address to work from
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             // shift the value provided at this location 1 bit to the left 
             m_result = CPU_address[input_address] >>= 1;
             check_flag_ZN(computer, m_result);
             cycle_push(6);
             break;
         case ABSOLUTE_X: // 0x5E
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + x_register;
             m_result = CPU_address[offset_address] >>= 1;
             check_flag_ZN(computer, m_result);
@@ -1190,14 +1191,14 @@ void ORA(struct M6502* computer, uchar8_t mode){
             cycle_push(4);
             break;
         case ABSOLUTE: // 0x0D
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             accumulator = accumulator | CPU_address[input_address];
             check_flag_ZN(computer, accumulator);
             check_flag_Carry(computer, accumulator);
             cycle_push(4);
             break;
         case ABSOLUTE_X: // 0x1D
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + x_register;
             accumulator = accumulator | CPU_address[offset_address];
             check_flag_ZN(computer, accumulator);
@@ -1206,7 +1207,7 @@ void ORA(struct M6502* computer, uchar8_t mode){
             check_page(computer, input_address, x_register, 1);
             break;
         case ABSOLUTE_Y: // 0x19
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + y_register;
             accumulator = accumulator | CPU_address[offset_address];
             check_flag_ZN(computer, accumulator);
@@ -1216,9 +1217,9 @@ void ORA(struct M6502* computer, uchar8_t mode){
             break;
         case INDIRECT_X: // 0x01
             // this one just takes a byte as an address
-            input_address = M6502_get_byte(computer, program_counter);
+            input_address = cpu_get_byte(computer, program_counter);
             offset_address = input_address + x_register;
-            word_address = M6502_get_word(computer, offset_address, increment_false);
+            word_address = cpu_get_word(computer, offset_address, increment_false);
             // OR operation against whats at the word address
             accumulator = accumulator | CPU_address[offset_address];
             check_flag_ZN(computer, accumulator);
@@ -1226,8 +1227,8 @@ void ORA(struct M6502* computer, uchar8_t mode){
             cycle_push(6);
             break;
         case INDIRECT_Y: // 0x11
-            input_address = M6502_get_byte(computer, program_counter);
-            word_address = M6502_get_word(computer, input_address, increment_true);
+            input_address = cpu_get_byte(computer, program_counter);
+            word_address = cpu_get_word(computer, input_address, increment_true);
             offset_address = word_address + y_register;
             // OR operation against whats at the offset address
             accumulator = accumulator | offset_address;
@@ -1244,20 +1245,20 @@ void ORA(struct M6502* computer, uchar8_t mode){
 
 // Push accumulator to stack
 void PHA(struct M6502* computer){ // 0x48
-    M6502_stack_push(computer, accumulator);
+    cpu_stack_push(computer, accumulator);
     cycle_push(3);
 }
 
 // Push status register to stack
 void PHP(struct M6502* computer){ // 0x08
     // note says something about break flag be and bit 5 set to 1
-    M6502_stack_push(computer, status_register);
+    cpu_stack_push(computer, status_register);
     cycle_push(3);
 }
 
 // Pop stack into the accumulator
 void PLA(struct M6502* computer){ // 0x68
-    accumulator = M6502_stack_pop(computer);
+    accumulator = cpu_stack_pop(computer);
     check_flag_ZN(computer, accumulator);
     cycle_push(4);
 }
@@ -1265,7 +1266,7 @@ void PLA(struct M6502* computer){ // 0x68
 // Pop stack into the status register, sets all flags with this value
 void PLP(struct M6502* computer){ // 0x28
     // flags should be naturally set by num pulled here
-    status_register = M6502_stack_pop(computer);
+    status_register = cpu_stack_pop(computer);
     cycle_push(4);
 }
 
@@ -1288,7 +1289,7 @@ void ROL(struct M6502* computer, uchar8_t mode){
             accumulator <<= 1;
 
             // Uses the value from old carry flag to set bit 0 of accumulator
-            flag_value == 1 ? set_bit(0, accumulator) : clear_bit(0, accumulator);
+            flag_value == 1 ? set_bit(0, &accumulator) : clear_bit(0, &accumulator);
 
             // check flags for result
             check_flag_ZN(computer, accumulator);
@@ -1305,7 +1306,7 @@ void ROL(struct M6502* computer, uchar8_t mode){
             memory_value <<=1;
 
             // Uses the value from old carry flag to set bit 0 of memory value
-            flag_value == 1 ? set_bit(0, memory_value) : clear_bit(0, memory_value);
+            flag_value == 1 ? set_bit(0, &memory_value) : clear_bit(0, &memory_value);
 
             check_flag_ZN(computer, memory_value);
             
@@ -1323,7 +1324,7 @@ void ROL(struct M6502* computer, uchar8_t mode){
             memory_value >>=1;
 
             // Uses the value from old carry flag to set bit 0 of memory value
-            flag_value == 1 ? set_bit(0, memory_value) : clear_bit(0, memory_value);
+            flag_value == 1 ? set_bit(0, &memory_value) : clear_bit(0, &memory_value);
 
             check_flag_ZN(computer, memory_value);
             
@@ -1331,7 +1332,7 @@ void ROL(struct M6502* computer, uchar8_t mode){
             break;
         case ABSOLUTE: // 0x2E
             flag_value = is_flag_set(CARRY, status_register);
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             memory_value = CPU_address[input_address];
 
             // returns bit 7 of provide value - sets carry flag if 1 else set carry to 0
@@ -1340,7 +1341,7 @@ void ROL(struct M6502* computer, uchar8_t mode){
             memory_value >>=1;
 
             // Uses the value from old carry flag to set bit 0 of memory value
-            flag_value == 1 ? set_bit(0, memory_value) : clear_bit(0, memory_value);
+            flag_value == 1 ? set_bit(0, &memory_value) : clear_bit(0, &memory_value);
 
             check_flag_ZN(computer, memory_value);
             
@@ -1348,7 +1349,7 @@ void ROL(struct M6502* computer, uchar8_t mode){
             break;
         case ABSOLUTE_X: // 0x3E
             flag_value = is_flag_set(CARRY, status_register);
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + x_register;
             memory_value = CPU_address[offset_address];
 
@@ -1358,7 +1359,7 @@ void ROL(struct M6502* computer, uchar8_t mode){
             memory_value >>=1;
 
             // Uses the value from old carry flag to set bit 0 of memory value
-            flag_value == 1 ? set_bit(0, memory_value) : clear_bit(0, memory_value);
+            flag_value == 1 ? set_bit(0, &memory_value) : clear_bit(0, &memory_value);
 
             check_flag_ZN(computer, memory_value);
             
@@ -1389,7 +1390,7 @@ void ROR(struct M6502* computer, uchar8_t mode){
             accumulator >>= 1;
 
             // Uses the value from old carry flag to set bit 7 of accumulator
-            flag_value == 1 ? set_bit(7, accumulator) : clear_bit(7, accumulator);
+            flag_value == 1 ? set_bit(7, &accumulator) : clear_bit(7, &accumulator);
 
             // check flags for result
             check_flag_ZN(computer, accumulator);
@@ -1406,7 +1407,7 @@ void ROR(struct M6502* computer, uchar8_t mode){
             memory_value >>=1;
 
             // Uses the value from old carry flag to set bit 7 of memory value
-            flag_value == 1 ? set_bit(7, memory_value) : clear_bit(7, memory_value);
+            flag_value == 1 ? set_bit(7, &memory_value) : clear_bit(7, &memory_value);
 
             check_flag_ZN(computer, memory_value);
             cycle_push(5);
@@ -1423,7 +1424,7 @@ void ROR(struct M6502* computer, uchar8_t mode){
             memory_value >>=1;
 
             // Uses the value from old carry flag to set bit 7 of memory value
-            flag_value == 1 ? set_bit(7, memory_value) : clear_bit(7, memory_value);
+            flag_value == 1 ? set_bit(7, &memory_value) : clear_bit(7, &memory_value);
 
             check_flag_ZN(computer, memory_value);
             
@@ -1431,7 +1432,7 @@ void ROR(struct M6502* computer, uchar8_t mode){
             break;
         case ABSOLUTE: // 0x6E
             flag_value = is_flag_set(CARRY, status_register);
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             memory_value = CPU_address[input_address];
 
             // returns bit 0 of provide value - sets carry flag if 1 else set carry to 0
@@ -1440,7 +1441,7 @@ void ROR(struct M6502* computer, uchar8_t mode){
             memory_value >>=1;
 
             // Uses the value from old carry flag to set bit 7 of memory value
-            flag_value == 1 ? set_bit(7, memory_value) : clear_bit(7, memory_value);
+            flag_value == 1 ? set_bit(7, &memory_value) : clear_bit(7, &memory_value);
 
             check_flag_ZN(computer, memory_value);
             
@@ -1448,7 +1449,7 @@ void ROR(struct M6502* computer, uchar8_t mode){
             break;
         case ABSOLUTE_X: // 0x7E
             flag_value = is_flag_set(CARRY, status_register);
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + x_register;
             memory_value = CPU_address[offset_address];
 
@@ -1458,7 +1459,7 @@ void ROR(struct M6502* computer, uchar8_t mode){
             memory_value >>=1;
 
             // Uses the value from old carry flag to set bit 7 of memory value
-            flag_value == 1 ? set_bit(7, memory_value) : clear_bit(7, memory_value);
+            flag_value == 1 ? set_bit(7, &memory_value) : clear_bit(7, &memory_value);
 
             check_flag_ZN(computer, memory_value);
             
@@ -1472,9 +1473,9 @@ void ROR(struct M6502* computer, uchar8_t mode){
 
 // Return from Interrupt
 void RTI(struct M6502* computer){ // 0x40
-    status_register = M6502_stack_pop(computer); // this should pull Status Register
-    uchar8_t lsb = M6502_stack_pop(computer); // pop least significant byte for PC
-    uchar8_t msb = M6502_stack_pop(computer); // pop most significant byte for PC
+    status_register = cpu_stack_pop(computer); // this should pull Status Register
+    uchar8_t lsb = cpu_stack_pop(computer); // pop least significant byte for PC
+    uchar8_t msb = cpu_stack_pop(computer); // pop most significant byte for PC
     ushort16_t return_address = msb << 8 | lsb; // combine to make 16 bit address
     program_counter = return_address; // set program counter to return address
     printf("Return to address: %04X\n", program_counter);
@@ -1483,8 +1484,8 @@ void RTI(struct M6502* computer){ // 0x40
 
 // Return from Subroutine
 void RTS(struct M6502* computer){ // 0x60
-    uchar8_t lsb = M6502_stack_pop(computer); // pop least significant byte
-    uchar8_t msb = M6502_stack_pop(computer); // pop most significant byte
+    uchar8_t lsb = cpu_stack_pop(computer); // pop least significant byte
+    uchar8_t msb = cpu_stack_pop(computer); // pop most significant byte
     ushort16_t return_address = msb << 8 | lsb; // combine to make 16 bit address
     program_counter = return_address; // set program counter to return address
     printf("Return to address: %04X\n", program_counter);
@@ -1534,7 +1535,7 @@ void SBC(struct M6502* computer, uchar8_t mode){
             cycle_push(4);
             break;
         case ABSOLUTE: // 0xED
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator - CPU_address[input_address] - flag_bit;
             accumulator = accumulator - CPU_address[input_address] - flag_bit;
@@ -1544,7 +1545,7 @@ void SBC(struct M6502* computer, uchar8_t mode){
             cycle_push(4);
             break;
         case ABSOLUTE_X: // 0xFD
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + x_register;
             flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator - CPU_address[offset_address] - flag_bit;
@@ -1556,7 +1557,7 @@ void SBC(struct M6502* computer, uchar8_t mode){
             check_page(computer, input_address, x_register, 1);
             break;
         case ABSOLUTE_Y: // 0xF9
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + y_register;
             flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator - CPU_address[offset_address] - flag_bit;
@@ -1570,7 +1571,7 @@ void SBC(struct M6502* computer, uchar8_t mode){
         case INDIRECT_X: // 0xE1
             input_address = CPU_address[program_counter];
             offset_address = input_address + x_register;
-            word_address = M6502_get_word(computer, offset_address, increment_true);
+            word_address = cpu_get_word(computer, offset_address, increment_true);
             flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator - CPU_address[word_address] - flag_bit;
             accumulator = accumulator - CPU_address[word_address] - flag_bit;
@@ -1580,8 +1581,8 @@ void SBC(struct M6502* computer, uchar8_t mode){
             cycle_push(6);
             break;
         case INDIRECT_Y: // 0xF1
-            input_address = M6502_get_byte(computer, program_counter);
-            word_address = M6502_get_word(computer, input_address, increment_true);
+            input_address = cpu_get_byte(computer, program_counter);
+            word_address = cpu_get_word(computer, input_address, increment_true);
             offset_address = word_address + y_register;   
             flag_bit = is_flag_set(CARRY, status_register);
             short_result = accumulator - CPU_address[offset_address] - flag_bit;
@@ -1634,32 +1635,32 @@ void STA(struct M6502* computer, uchar8_t mode){
             cycle_push(4);
             break;
         case ABSOLUTE: // 0x8D
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             CPU_address[input_address] = accumulator;
             cycle_push(4);
             break;
         case ABSOLUTE_X: // 0x9D
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + x_register;
             CPU_address[offset_address] = accumulator;
             cycle_push(5);
             break;
         case ABSOLUTE_Y: // 0x99
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + y_register;
             CPU_address[offset_address] = accumulator;
             cycle_push(5);
             break;
         case INDIRECT_X: // 0x81
-            input_address = M6502_get_byte(computer, program_counter);
+            input_address = cpu_get_byte(computer, program_counter);
             offset_address = input_address + x_register;
-            word_address = M6502_get_word(computer, offset_address, increment_true);
+            word_address = cpu_get_word(computer, offset_address, increment_true);
             CPU_address[word_address] = accumulator;
             cycle_push(6);
             break;
         case INDIRECT_Y: // 0x91
-            input_address = M6502_get_byte(computer, program_counter);
-            word_address = M6502_get_word(computer, input_address, increment_true);
+            input_address = cpu_get_byte(computer, program_counter);
+            word_address = cpu_get_word(computer, input_address, increment_true);
             offset_address = word_address + y_register;
             CPU_address[offset_address] = accumulator;
             cycle_push(6);
@@ -1689,7 +1690,7 @@ void STX(struct M6502* computer, uchar8_t mode){
             break;
         case ABSOLUTE: // 0x8E
             // store y register at user define absolute
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             CPU_address[input_address] = x_register;
             cycle_push(4);
             break;
@@ -1719,7 +1720,7 @@ void STY(struct M6502* computer, uchar8_t mode){
         }
         case ABSOLUTE:{ // 0x8C
             // store y register at user define absolute
-            input_address = M6502_get_word(computer, program_counter, increment_true);
+            input_address = cpu_get_word(computer, program_counter, increment_true);
             CPU_address[input_address] = y_register;
             cycle_push(4);
             break;

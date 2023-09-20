@@ -9,19 +9,19 @@ typedef struct
     // including RAM, ROM, and memory-mapped I/O
     // each address can hold one byte
     uchar8_t address[cpu_max_address];
-}M6502_memory;
+}CPU_memory;
 
 struct M6502; // forward declaration so compiler knows struct exists and will be defined later
 
 void memory_init(struct M6502* computer);
 
 void M6502_memory_inbounds(ushort16_t index);
-void M6502_set_memory(struct M6502* computer, ushort16_t address, uchar8_t value);
+void cpu_set_memory(struct M6502* computer, ushort16_t address, uchar8_t value);
 
-uchar8_t M6502_get_byte(struct M6502* computer, ushort16_t address);
-ushort16_t M6502_get_word(struct M6502* computer, ushort16_t address, uchar8_t increment);
+uchar8_t cpu_get_byte(struct M6502* computer, ushort16_t address);
+ushort16_t cpu_get_word(struct M6502* computer, ushort16_t address, uchar8_t increment);
 
-void M6502_store_program(struct M6502* computer, uchar8_t* file, size_t program_size);
+void cpu_store_program(struct M6502* computer, uchar8_t* file, size_t program_size);
 bool NES_header(struct M6502* computer);
 
 /*
@@ -33,7 +33,6 @@ $0000-$07FF (0-2047): General internal RAM
 $0000-$00FF (0-255): zero page - quick addressing
 $0100-$01FF (256-511): reserved for stack
 $0200-$07FF (512-2047): general purpose RAM
-
 $0800-$1FFF(2048-8191): RAM mirrors
 
 PPU and I/0: 7 KB

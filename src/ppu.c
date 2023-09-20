@@ -2,6 +2,20 @@
 #include "ppu.h"
 #include "M6502_flags.h"
 
+/*
+*Fix set_flag() it def wont work for bit test on PPU registers check other cases -_-
+
+my NES priority list to get graphics working
+- Parsing header to determine end of program ROM which is where CHR data is
+    - May as well grab CHR ROM size at well
+    - Only accept NROM for now for mapping
+- Load the background(nametable) which is input by programmer starting at PPU-$2000
+- Load the CHR data(pattern table) as stated is at end of PRG-ROM+16 byte header
+
+
+*/
+
+
 void temp(){
 
     struct M6502 computer;
@@ -66,3 +80,14 @@ void PPU_CTRL(struct M6502* computer){ // $2000
 // void PPU_STATUS(){
     
 // }
+
+
+// stores a read or write address for the ppu from the cpu
+void PPU_ADDR(struct M6502* computer){ // $2007
+
+}
+
+// stores a read or write address for the ppu from the cpu
+void PPU_DATAR(struct M6502* computer){ // $2007
+
+}
