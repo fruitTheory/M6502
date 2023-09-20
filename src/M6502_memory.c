@@ -6,21 +6,21 @@
 #include <stdio.h>
 
 static void M6502_address_inbounds(ushort16_t address){
-    assert(address >= 0 && address <= max_address);
+    assert(address >= 0 && address <= cpu_max_address);
 }
 
 // sets byte at memory address
 void M6502_set_memory(struct M6502* computer, ushort16_t address, uchar8_t value){
 
     M6502_address_inbounds(address);
-    memory_address[address] = value;
+    CPU_address[address] = value;
 }
 
 // get bytes at memory address
 uchar8_t M6502_get_byte(struct M6502* computer, ushort16_t address){
 
     M6502_address_inbounds(address);
-    return memory_address[address];
+    return CPU_address[address];
 }
 // get two bytes in little endian order - increments program counter +1
 // increment should always be true unless being used abstractly for indirect/pointers
@@ -34,10 +34,10 @@ ushort16_t M6502_get_word(struct M6502* computer, ushort16_t address, uchar8_t i
 
 // store the program into load program address 0x0200
 void M6502_store_program(struct M6502* computer, uchar8_t* file, size_t program_size){
-    assert(stack_end+program_size < max_address);
+    assert(stack_end+program_size < cpu_max_address);
     // copy file into the program load address
     // using & provides the address of the element at this position
-    memcpy(&memory_address[NES_initial_load], file, program_size);
+    memcpy(&CPU_address[NES_initial_load], file, program_size);
 
     // Set program counter to a default load address
     program_counter = NES_initial_load; // this is ok for now but need to set to reset vector init
@@ -47,7 +47,7 @@ void M6502_store_program(struct M6502* computer, uchar8_t* file, size_t program_
 
     // //print all bytes of file
     // for(int i = 0; i < (program_size); i++){
-    //     printf("value at memory address %04X: %02X\n", program_counter+i, memory_address[NES_initial_load+i]);
+    //     printf("value at memory address %04X: %02X\n", program_counter+i, CPU_address[NES_initial_load+i]);
     // }
 }
 
@@ -77,4 +77,5 @@ Bytes	Description
 10	Flags 10 – TV system, PRG-RAM presence (unofficial, rarely used extension)
 11-15	Unused padding (should be filled with zero, but some rippers put their name across bytes 7-15)
 
+Still need to parse the header for this info
 */

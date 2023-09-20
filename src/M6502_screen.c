@@ -53,7 +53,7 @@ uchar8_t global_opcode = 0;
 //         sprintf(cpu_register_info[0], "PC: $%04X", global_pc);
 //         sprintf(cpu_register_info[1], "Opcode: 0x%02X", global_opcode);
 //         sprintf(cpu_register_info[2], "Accumulator: %02X", accumulator);
-//         sprintf(cpu_register_info[3], "Stack: %02X", memory_address[stack_pointer]);
+//         sprintf(cpu_register_info[3], "Stack: %02X", CPU_address[stack_pointer]);
 //         sprintf(cpu_register_info[4], "X: $%02X Y: %02X", x_register, y_register);
 //         sprintf(cpu_register_info[5], "SR: %s", binary_status_register);
 //         free(binary_status_register), binary_status_register = NULL;
@@ -129,12 +129,11 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
         while(SDL_PollEvent(&event))
             if(event.type == SDL_QUIT) running = false;
 
-        // 32 for x and 30 for y if size is 16 - logic annoying but x needs < 33
         // note that vblank is 241 - 260 so need to extend y and catch if past 240
         // x- 512/8=64 || y - 520/8=65 480/8=60
         for(int y = 0; y < 65; y++){
             if(y < 60) printf("line %i\n", y);
-            if(y >= 60) puts("vlanky");
+            if(y >= 60) puts("vblanky");
             for(int x = 0; x < 65; x++){
                 SDL_RenderPresent(renderer); // presents render
                 SDL_RenderDrawRect(renderer, &pixel);
@@ -145,7 +144,6 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
                     pixel.y += pixel_size;
                     pixel.x = 0;
                 }
-
             }
         }
         puts("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");

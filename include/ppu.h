@@ -19,7 +19,7 @@ typedef struct
 
 typedef struct
 {
-    uchar8_t address[ppu_max_memory]; // 16kb pattern tables, name tables, attribute tables
+    uchar8_t address[ppu_max_address]; // 16kb pattern tables, name tables, attribute tables
     
 }PPU_memory;
 

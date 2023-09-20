@@ -8,7 +8,7 @@ typedef struct
 {
     // including RAM, ROM, and memory-mapped I/O
     // each address can hold one byte
-    uchar8_t address[max_address];
+    uchar8_t address[cpu_max_address];
 }M6502_memory;
 
 struct M6502; // forward declaration so compiler knows struct exists and will be defined later

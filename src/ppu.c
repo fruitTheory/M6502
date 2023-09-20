@@ -13,7 +13,7 @@ void temp(){
 void PPU_CTRL(struct M6502* computer){ // $2000
     
     PPU_ctrl; // $2000 computer->cpu.memory.adress[0x2000] - memory mapped
-    
+    PPU_address[0x00];
     /*
     7 bit 0
     VPHB SINN

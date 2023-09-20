@@ -10,9 +10,9 @@ typedef char char8_t;
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE -1
 
-#define max_address 65535 // M6502's 16-bit address bus can only handle this much
+#define cpu_max_address 65535 // M6502's 16-bit address bus can only handle this much
 #define stack_max_size 256
-#define ppu_max_memory 16384
+#define ppu_max_address 16384
 
 #define zero_page_start 0x0000
 #define stack_start 0x0100 // decimal(byte) 256 - Start of stack
@@ -22,7 +22,7 @@ typedef char char8_t;
 
 #define accumulator (computer->cpu.registers.AC)
 #define program_counter (computer->cpu.registers.PC)
-#define memory_address (computer->cpu.memory.address)
+#define CPU_address (computer->cpu.memory.address)
 #define x_register (computer->cpu.registers.X)
 #define y_register (computer->cpu.registers.Y)
 #define status_register (computer->cpu.registers.SR)
@@ -37,13 +37,10 @@ typedef char char8_t;
 #define increment_true 0 // used with get_memory_word function to determine if PC should be incremented
 #define increment_false -1 // used with get_memory_word function to determine if PC should be incremented
 
-#define memory_type_byte 1
-#define memory_type_word 2
-
 // NES section open
 
 #define PPU (computer->NES_ppu.ppu)
-
+#define PPU_address (computer->ppu.memory.address)
 #define PPU_ctrl (computer->ppu.registers.CTRL)
 #define PPU_mask (computer->ppu.registers.MASK)
 #define PPU_status (computer->ppu.registers.STATUS)

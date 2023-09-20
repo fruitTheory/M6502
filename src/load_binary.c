@@ -12,7 +12,7 @@ ushort16_t get_program_size(char* argv[]){
     if (!program_file)
         puts("File was not able to be opened");
     fseek(program_file, 0, SEEK_END);
-    ushort16_t file_size = ftell(program_file); if(file_size > max_address) puts("file too big");
+    ushort16_t file_size = ftell(program_file); if(file_size > cpu_max_address) puts("file too big");
     fseek(program_file, 0, SEEK_SET);
     return file_size;
 }
@@ -48,7 +48,7 @@ uchar8_t* load_program(int argc, char* argv[]){
 
     // ftells the current position, since we're at end of file this can represent the size
     fseek(program_file, 0, SEEK_END);
-    ushort16_t file_size = ftell(program_file); if(file_size > max_address) puts("file too big");
+    ushort16_t file_size = ftell(program_file); if(file_size > cpu_max_address) puts("file too big");
     fseek(program_file, 0, SEEK_SET);
 
     // allocate memory for the file
