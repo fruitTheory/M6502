@@ -9,9 +9,18 @@ my NES priority list to get graphics working
 - Parsing header to determine end of program ROM which is where CHR data is
     - May as well grab CHR ROM size at well
     - Only accept NROM for now for mapping
-- Load the background(nametable) which is input by programmer starting at PPU-$2000
-- Load the CHR data(pattern table) as stated is at end of PRG-ROM+16 byte header
+- Load the background(nametable) which is input by programmer starting at PPU-$2000 via PPU registers
+- Load the CHR data(pattern table) as stated is at end of PRG-ROM+16 byte header - put into PPU-$0000
 
+The PPU takes CHR data 2 bytes at a time and ORs them to represent an 8 pixel row defining shape
+It groups the bits to determine color index for example:
+0x11 - 0001 0001
+0x01 - 0000 1001
+                 - color indx  - 00 00 00 01 10 00 00 11
+                 - palette     - 0  0  0  1  2  0  0  3   - palette index 0-3 per shape pixel 
+0x19 - 0001 1001 - shape
+
+Nametable points to address of a pattern start so each byte on nametable represents an address
 
 */
 

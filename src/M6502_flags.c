@@ -211,7 +211,7 @@ uchar8_t clear_bit(uchar8_t bit, uchar8_t* test_against){
 }
 
 // checks if a bit is set, mainly used for PPU registers such as PPUCTRL, PPUMASK, PPUSTATUS, etc.
-uchar8_t is_bit_set(uchar8_t bit, uchar8_t test_against){
+uchar8_t check_bit(uchar8_t bit, uchar8_t test_against){
     uchar8_t ret; 
     switch(bit)
     {
