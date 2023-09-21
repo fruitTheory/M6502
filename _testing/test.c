@@ -42,6 +42,10 @@ int main(){
     printf("ptr: %i\n", ptr);
     printf("&ptr: %i\n", &ptr);
     printf("*ptr: %i\n", *ptr);
+    
+    printf("*bin result: %i\n", 0b01);
+    printf("*bin result: %i\n", 0b10);
+    printf("*bin result: %i\n", 0b11);
 
 }
 

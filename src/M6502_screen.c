@@ -150,22 +150,7 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
                 SDL_RenderPresent(renderer); // presents render
                 // accept 2 byte input somehwere to determine the resulting number
                 // run function here return_results()
-                /*
-                Fake function(){
-                    result = address[0x0000] | address[0x0001] = 0000 0001 | 0000 0000
-                    result = 0x01 = 0000 0001 (row of 8 pixels)
-                    store_result(0x01)
-                    get_row_result = for(i<8){check_bit(result, i)}
-                    row_result = {0,0,0,0, 0,0,0,1} 
-                    store_row_result_to_matrix
-                }
-                fake_function2(){
-                    uchar8_t arr[] = NULL;
 
-                }
-
-                0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF, my pattern input (8x8 pixels)
-                */
                 // if bit = 1 draw rect, fill rect, and set to palette index  
                 SDL_RenderDrawRect(renderer, &pixel);
                 SDL_RenderFillRect(renderer, &pixel);
