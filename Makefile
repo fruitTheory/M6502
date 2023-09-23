@@ -40,12 +40,12 @@ ${BUILD}%.o:${SOURCES}%.c
 clean:
 	del "${BUILD}"
 
-RUN_FILE = temp_01
-EXT = bin
+RUN_FILE = game
+EXT = nes
 PATH_OVERRIDE = 
-EXTRA_DIR = ./asm/nes_hello/
+ETC_DIR = ./asm/nes_simple/
 run:
-	${BINARIES}main ${ASM}${RUN_FILE}.${EXT}
+	${BINARIES}main ${ETC_DIR}${RUN_FILE}.${EXT}
 
 # ------asm section----------
 BASE_NAME = temp_01

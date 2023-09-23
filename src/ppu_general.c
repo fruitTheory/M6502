@@ -1,5 +1,6 @@
 #include "ppu_general.h"
 #include "M6502_flags.h"
+#include "load_binary.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -27,6 +28,27 @@ uchar8_t get_pattern(){
 
 }
 
+void test_prog(struct M6502* computer){
+
+    const char8_t* path = "C:/Programming/vscode/C/M6502/asm/nes_hello/tiles.chr";
+    uchar8_t* program = load_program_temporary(path);
+    //print_program_info_temporary(path);
+    ushort16_t program_size = get_program_size_temporary(path);
+    printf("CHR program size: %i bytes\n", program_size);
+
+    // for(int x = 0; x < 62; x++){
+    //     for(int x = 0; x < 2; x++){
+    //         printf("byte: %02X ", program[x]);
+    //     }
+    // }
+
+    free(program), program = NULL;
+
+    // for(int j=0; j <  CHR_rom_unit; j++){
+    //     printf("PPU-value: %02X ", PPU_address[j]);
+    // }
+
+}
 
 /*
 Nametabe: 

@@ -1,6 +1,7 @@
 #include "config.h"
 #include "M6502.h"
 #include "M6502_memory.h"
+#include "ppu.h"
 #include <assert.h>
 #include <string.h>
 #include <stdio.h>
@@ -43,39 +44,65 @@ void cpu_store_program(struct M6502* computer, uchar8_t* file, size_t program_si
     program_counter = NES_initial_load; // this is ok for now but need to set to reset vector init
 
     // If contains NES header offset program counter 16 bytes
-    if(NES_header(computer)) program_counter += 16;
+    if(is_NES_header(computer)) parse_NES_header(computer);
 
-    // //print all bytes of file
-    // for(int i = 0; i < (program_size); i++){
-    //     printf("value at memory address %04X: %02X\n", program_counter+i, CPU_address[NES_initial_load+i]);
-    // }
 }
 
 // Checks for NES header
-bool NES_header(struct M6502* computer){
-    char8_t arr[4]; // +1 for null terminator
+bool is_NES_header(struct M6502* computer){
+    char8_t arr[4]; // +1 null terminator for strcmp
     for(int i = 0; i < 3; i++){
         arr[i] = cpu_get_byte(computer, NES_initial_load+i);
     }
-    // printf("bytes: %c%c%c\n", arr[0],arr[1],arr[2]);
     // compare char array to 'NES' if strings return same then NES true else false
     bool is_nes;
     is_nes = strcmp(arr, "NES") == 0 ? true:false;
     return is_nes;
+
+}
+
+// Parse NES header and input CHR data into PPU memory, also offset program counter by 16 bytes
+void parse_NES_header(struct M6502* computer){
+    char8_t header_byte[16];
+    
+    // loop through 16 header bytes
+    for(int i = 0; i < 16; i++){
+        header_byte[i] = cpu_get_byte(computer, NES_initial_load+i);
+
+        if(i == 4){} // size of PRG rom in 16KB units
+        if(i== 5){  // size of CHR rom in 8KB units
+
+            // finds chr data in cartridge.nes, which is after the PRG data + header data
+            ushort16_t CHR_cartidge_address = (PRG_rom_unit * header_byte[4]) + header_size;
+            uchar8_t CHR_data[CHR_rom_unit]; // chr data storage
+
+            // store whats at cpu addresses initial load address, offset by char address and inc by j
+            for(int j=0; j <  CHR_rom_unit; j++)
+                CHR_data[j] = CPU_address[NES_initial_load + CHR_cartidge_address + j];
+
+            // copy data directly into PPU, starting at address 0x00
+            memcpy(&PPU_address[0x0000], CHR_data, (CHR_rom_unit * header_byte[5]));
+        }
+        if(i== 6){} // ROM's mirroring type 
+        if(i== 7){} // ROM's mapper
+    }
+    // offset by 16 so counter starts at 0x8000 where program code is
+    program_counter += 16;
 }
 
 /*
 Dealing with iNES headers
 Bytes	Description
+
 0-3	Constant $4E $45 $53 $1A (ASCII "NES" followed by MS-DOS end-of-file)
 4	Size of PRG ROM in 16 KB units - ex 
 5	Size of CHR ROM in 8 KB units (value 0 means the board uses CHR RAM)
-6	Flags 6 – Mapper, mirroring, battery, trainer
-7	Flags 7 – Mapper, VS/Playchoice, NES 2.0
-8	Flags 8 – PRG-RAM size (rarely used extension)
-9	Flags 9 – TV system (rarely used extension)
-10	Flags 10 – TV system, PRG-RAM presence (unofficial, rarely used extension)
-11-15	Unused padding (should be filled with zero, but some rippers put their name across bytes 7-15)
+6	Flags 6 – Mirroring type, if use battery-backed RAM, if use trainer
+7	Flags 7 – ROMs Mapper, VS/Playchoice, NES 2.0
 
-Still need to parse the header for this info
+8	Flags 8 – PRG-RAM size (rarely used extension)
+9	Flags 9 – TV system (rarely used extension) typically 0 
+10	Flags 10 – TV system (PRG-RAM presence) typically 0 
+11-15	Unused padding (should be filled with zero)
+
 */

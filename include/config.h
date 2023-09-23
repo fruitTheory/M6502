@@ -18,7 +18,7 @@ typedef char char8_t;
 #define stack_start 0x0100 // decimal(byte) 256 - Start of stack
 #define stack_end 0x01FF // decimal(byte) 511 - Use as offset for programs
 #define program_initial_load 0x0200 // decimal(byte) 512 - Programs first byte
-#define NES_initial_load 0x8000 // default load address for cartridges
+#define NES_initial_load 0x7FEA // default load address for cartridge minus 16 for header
 
 #define accumulator (computer->cpu.registers.AC)
 #define program_counter (computer->cpu.registers.PC)
@@ -36,6 +36,10 @@ typedef char char8_t;
 
 #define increment_true 0 // used with get_memory_word function to determine if PC should be incremented
 #define increment_false -1 // used with get_memory_word function to determine if PC should be incremented
+
+#define PRG_rom_unit 0x4000 // size of memory per PRG rom unit 16k
+#define CHR_rom_unit 0x2000 // size of memory per CHR rom unit 8k
+#define header_size 16 // header size in bytes
 
 // NES section open
 
