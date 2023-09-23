@@ -36,29 +36,32 @@ ushort16_t cpu_get_word(struct M6502* computer, ushort16_t address, uchar8_t inc
 // store the program into load program address 0x0200
 void cpu_store_program(struct M6502* computer, uchar8_t* file, size_t program_size){
     assert(stack_end+program_size < cpu_max_address);
-    // copy file into the program load address
-    // using & provides the address of the element at this position
-    memcpy(&CPU_address[NES_initial_load], file, program_size);
 
-    // Set program counter to a default load address
-    program_counter = NES_initial_load; // this is ok for now but need to set to reset vector init
+    // If contains NES header, parse header, and clean that memory
+    if(is_NES_header(file)){
+        // copy file into the program load address
+        // using & provides the address of the element at this position
+        memcpy(&CPU_address[NES_initial_load], file, program_size);
 
-    // If contains NES header offset program counter 16 bytes
-    if(is_NES_header(computer)) parse_NES_header(computer);
+        // Set program counter to a default load address
+        program_counter = NES_initial_load;
 
+        // parse header and clear that memory
+        parse_NES_header(computer);
+        memset(&CPU_address[NES_initial_load], 0, header_size);
+
+    } else memcpy(&CPU_address[program_initial_load], file, program_size);
 }
 
-// Checks for NES header
-bool is_NES_header(struct M6502* computer){
+// Checks file for NES header
+bool is_NES_header(uchar8_t* file){
     char8_t arr[4]; // +1 null terminator for strcmp
-    for(int i = 0; i < 3; i++){
-        arr[i] = cpu_get_byte(computer, NES_initial_load+i);
-    }
-    // compare char array to 'NES' if strings return same then NES true else false
-    bool is_nes;
+    for(int i = 0; i < 3; i++) {arr[i] = file[i];}
+    arr[3] = '\0'; // char literal
+
+    bool is_nes; // compare cstring to 'NES' 
     is_nes = strcmp(arr, "NES") == 0 ? true:false;
     return is_nes;
-
 }
 
 // Parse NES header and input CHR data into PPU memory, also offset program counter by 16 bytes
