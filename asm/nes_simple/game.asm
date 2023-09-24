@@ -62,15 +62,15 @@ reset:
 	ldx #%00000000
 	stx PPU_MASK	; disable rendering
 ;	stx $4010	; disable DMC IRQs
-
 	lda PPU_STATUS	; Load value at ppu status into accumulator
-; vblankwait1:	; Wait for vblank to make sure PPU is ready
-; 	bit PPU_STATUS	; bit testing 7(v) and 6(s) of ppus tatus value, also compares accum to this value
-; 	bpl vblankwait1
+
+vblankwait1:	; Wait for vblank to make sure PPU is ready
+	bit PPU_STATUS	; bit testing 7(v) and 6(s) of ppus tatus value, also compares accum to this value
+	bpl vblankwait1
 
 ; vblankwait2:
-; 	bit PPU_STATUS
-; 	bpl vblankwait2
+	bit PPU_STATUS
+	bpl vblankwait2
 
 	lda #$00
 	ldx #$00

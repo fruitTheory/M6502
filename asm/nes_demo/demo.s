@@ -1,6 +1,6 @@
 .segment "HEADER"
-  ; .byte "NES", $1A      ; iNES header identifier
-  .byte $4E, $45, $53, $1A
+
+  .byte $4E, $45, $53, $1A ; iNES header identifier
   .byte 2               ; 2x 16KB PRG code
   .byte 1               ; 1x  8KB CHR data
   .byte $01, $00        ; mapper 0, vertical mirroring
@@ -80,10 +80,10 @@ forever:
 
 nmi:
   ldx #$00 	; Set SPR-RAM address to 0 $A2
-  stx $2003 ; we are here now $8E
+  stx $2003 ; $8E - OAM r/w address
 @loop:	
   lda hello, x 	; Load hello to SPR-RAM $A9
-  sta $2004 ; $8D
+  sta $2004 ; $8D - OAM r/w data - so esstentially writing bytes to oam addresses
   inx       ; $E8
   cpx #$1c  ; $E0
   bne @loop ; $F0
@@ -113,10 +113,10 @@ palettes:
 
 ; Character memory
 .segment "CHARS"
-  .byte %11000011	; H (00)
+  .byte %11000011	; H (00) $C3
   .byte %11000011
   .byte %11000011
-  .byte %11111111
+  .byte %11111111 ; $FF
   .byte %11111111
   .byte %11000011
   .byte %11000011

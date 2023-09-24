@@ -206,7 +206,7 @@ uchar8_t clear_bit(uchar8_t bit, uchar8_t* test_against){
     return EXIT_FAILURE;
 }
 
-// checks if a bit is set, mainly used for PPU registers such as PPUCTRL, PPUMASK, PPUSTATUS, etc.
+// checks if a bit is set, returns 1 if set and 0 if not
 uchar8_t check_bit(uchar8_t bit, uchar8_t test_against){
     uchar8_t ret; 
     switch(bit)
@@ -214,7 +214,7 @@ uchar8_t check_bit(uchar8_t bit, uchar8_t test_against){
         case 0:
             // returns 1 if set or 0 if not
             ret = test_against & flag_carry_bit;
-            return ret;;
+            return ret;
         case 1:
             ret = test_against & flag_zero_bit;
             return ret;

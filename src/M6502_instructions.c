@@ -340,8 +340,9 @@ void BIT(struct M6502* computer, uchar8_t mode){
             // get the absolute address and the value there
             input_address = cpu_get_word(computer, program_counter, increment_true);
             address_value = CPU_address[input_address];
-            printf("vblank %02X\n", PPU_status);
-            address_value = 0b10000000;
+            
+            address_value = 0b10000000; // temporary sets vblank flag to true(always)
+
             (accumulator & address_value) == 0 ? set_flag(computer, ZERO):clear_flag(computer, ZERO);
 
             // Checking bit 6/7 of provided value, set overflow/negative flag based on the result

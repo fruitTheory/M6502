@@ -25,6 +25,7 @@ uchar8_t cpu_get_byte(struct M6502* computer, ushort16_t address){
 }
 // get two bytes in little endian order - increments program counter +1
 // increment should always be true unless being used abstractly for indirect/pointers
+// Can use increment_true of increment_false from config
 ushort16_t cpu_get_word(struct M6502* computer, ushort16_t address, uchar8_t increment){
     uchar8_t lo_byte = cpu_get_byte(computer, address);
     uchar8_t hi_byte = cpu_get_byte(computer, address+1);
