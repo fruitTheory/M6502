@@ -96,7 +96,7 @@ clear_memory:
 	sta PPU_ADDR
 	lda #<background_nametable	; reads low byte of address that nametable is at
 	sta $0000	; stores the low byte
-	lda #>background_nametable ; reads high byte of address that nametable is at
+	lda #>background_nametable ; reads high byte of address that nametable is at - these get loaded in at like $8248
 	sta $0001	; stores the high byte
 	ldx #$00
 	ldy #$00

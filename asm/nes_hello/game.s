@@ -10,7 +10,9 @@
 	
 .segment "VECTORS"
 	.word nmi, reset, 0
-	
+
+.segment "STARTUP"
+
 .segment "RODATA"
 
 palette:

@@ -27,8 +27,22 @@ int main(int argc, char* argv[]){
 
     //draw_screen(&computer, program_size);
     test_prog(&computer);
-    for(int i = 0; i < 53; i++)
+
+    // Run below for nes_demo demo.nes
+    for(int i = 0; i < 226; i++)
         execute_instructions(&computer, program_size);
+
+    for(int i = 0; i < 64; i++)
+        printf("sprite: %02X ", computer.ppu.memory.address[0+i]);
+
+    puts("\n");
+
+    for(int i = 0; i < 32; i++)
+        printf("palettes: %02X ", computer.ppu.memory.address[0x3F00+i]);
+
+    // FILE *file = fopen("./asm/output.bin", "wb");
+    // fwrite(&computer.ppu.memory.address, sizeof(uchar8_t), sizeof(computer.ppu.memory.address), file);
+    // fclose(file);
 
     return EXIT_SUCCESS;
 }

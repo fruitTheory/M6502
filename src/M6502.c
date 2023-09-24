@@ -22,7 +22,7 @@ extern inline void PC_decrement(struct M6502* computer);
 uchar8_t instruction_fetch(struct M6502* computer){
     uchar8_t opcode = CPU_address[program_counter];
     
-    printf("accumulator: %02X\n", accumulator);
+    //printf("accumulator: %02X\n", accumulator);
 
     printf("PC: %04X\n", program_counter);
     extern ushort16_t global_pc;

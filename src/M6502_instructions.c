@@ -257,8 +257,8 @@ void BCC(struct M6502* computer){ // 0x90
     old_program_counter = program_counter;
     current_address_value = CPU_address[program_counter];
 
-    // if value is over 127 based on bit 7, subtract the value from 127 to return a signed result
-    if(is_flag_set(CARRY, current_address_value))signed_address_value = 127 - current_address_value;
+    // quick way to get signed char from unsigned is by casting it
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;;
 
     // if carry bit is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
     if(!is_flag_set(CARRY, status_register)){
@@ -280,8 +280,8 @@ void BCS(struct M6502* computer){ // 0xB0
     old_program_counter = program_counter;
     current_address_value = CPU_address[program_counter];
 
-    // if value is over 127 based on bit 7, subtract the value from 127 to return a signed result
-    if(is_flag_set(CARRY, current_address_value))signed_address_value = 127 - current_address_value;
+    // quick way to get signed char from unsigned is by casting it
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;;
 
     // if carry bit is set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
     if(is_flag_set(CARRY, status_register)){
@@ -302,8 +302,8 @@ void BEQ(struct M6502* computer){ // 0xF0
     old_program_counter = program_counter;
     current_address_value = CPU_address[program_counter];
 
-    // if value is over 127 based on bit 7, subtract the value from 127 to return a signed result
-    if(is_flag_set(CARRY, current_address_value))signed_address_value = 127 - current_address_value;
+    // quick way to get signed char from unsigned is by casting it
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;;
 
     // if zero flag is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
     if(is_flag_set(ZERO, status_register)){
@@ -340,7 +340,8 @@ void BIT(struct M6502* computer, uchar8_t mode){
             // get the absolute address and the value there
             input_address = cpu_get_word(computer, program_counter, increment_true);
             address_value = CPU_address[input_address];
-
+            printf("vblank %02X\n", PPU_status);
+            address_value = 0b10000000;
             (accumulator & address_value) == 0 ? set_flag(computer, ZERO):clear_flag(computer, ZERO);
 
             // Checking bit 6/7 of provided value, set overflow/negative flag based on the result
@@ -364,8 +365,8 @@ void BMI(struct M6502* computer){ // 0x30
     old_program_counter = program_counter;
     current_address_value = CPU_address[program_counter];
 
-    // if value is over 127 based on bit 7, subtract the value from 127 to return a signed result
-    if(is_flag_set(CARRY, current_address_value))signed_address_value = 127 - current_address_value;
+    // quick way to get signed char from unsigned is by casting it
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;;
 
     // if negative bit is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
     if(is_flag_set(NEGATIVE, status_register)){
@@ -384,31 +385,28 @@ void BNE(struct M6502* computer){ // 0xD0
     short16_t signed_address_value;
     ushort16_t old_program_counter;
 
+    printf("current X: %04X\n", x_register);
     printf("current Y: %04X\n", y_register);
-    printf("current SR: %04X\n", status_register);
 
     old_program_counter = program_counter;
     current_address_value = CPU_address[program_counter];
     
-    printf("current addy: %02X\n", current_address_value);
     printf("current addy int: %i\n", current_address_value);
-    // if value is over 127 based on bit 7, subtract the value from 127 to return a signed result
-    if(is_flag_set(CARRY, current_address_value))signed_address_value = -(256 - current_address_value);
+    // quick way to get signed char from unsigned is by casting it
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;;
     printf("signed addy: %i\n", signed_address_value);
 
     // if zero flag is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
     if(!is_flag_set(ZERO, status_register)){
-        printf("PC before: %04X\n", program_counter);
+        // printf("PC before: %04X\n", program_counter);
         program_counter += signed_address_value;
         cycle_push(1); // +1 cycle if branch succeeds, +1 if to a new page
-        puts("zero flag not set");
-        printf("PC after: %04X\n", program_counter);
+        // printf("PC after: %04X\n", program_counter);
 
         // check if new program counter crossed a page in reference to old PC
         check_page(computer, old_program_counter, program_counter, 1);
     }
 
-    printf("value zp: %02X\n", PPU_address[0x2000]);
 
 }
 
@@ -421,8 +419,8 @@ void BPL(struct M6502* computer){ // 0x10
     old_program_counter = program_counter;
     current_address_value = CPU_address[program_counter];
 
-    // if value is over 127 based on bit 7, subtract the value from 127 to return a signed result
-    if(is_flag_set(CARRY, current_address_value))signed_address_value = 127 - current_address_value;
+    // quick way to get signed char from unsigned is by casting it
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;
     printf("signed addy: %i\n", signed_address_value);
 
     // if negative bit is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
@@ -465,8 +463,8 @@ void BVC(struct M6502* computer){ // 0x50
     old_program_counter = program_counter;
     current_address_value = CPU_address[program_counter];
 
-    // if value is over 127 based on bit 7, subtract the value from 127 to return a signed result
-    if(is_flag_set(CARRY, current_address_value))signed_address_value = 127 - current_address_value;
+    // quick way to get signed char from unsigned is by casting it
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;;
 
     // if overflow is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
     if(!is_flag_set(OVERFLOW, status_register)){
@@ -488,8 +486,8 @@ void BVS(struct M6502* computer){ // 0x70
     old_program_counter = program_counter;
     current_address_value = CPU_address[program_counter];
 
-    // if value is over 127 based on bit 7, subtract the value from 127 to return a signed result
-    if(is_flag_set(CARRY, current_address_value))signed_address_value = 127 - current_address_value;
+    // quick way to get signed char from unsigned is by casting it
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;;
 
     // if overflow bit is set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
     if(is_flag_set(OVERFLOW, status_register)){
@@ -956,7 +954,6 @@ void LDA(struct M6502* computer, uchar8_t mode){
             input_address = CPU_address[program_counter];
             // load whats at the input address
             accumulator = CPU_address[input_address];
-            //printf("Accumulator: %02X\n", accumulator);
             check_flag_ZN(computer, accumulator);
             cycle_push(3);
             break;
@@ -965,14 +962,12 @@ void LDA(struct M6502* computer, uchar8_t mode){
             input_address = CPU_address[program_counter];
             offset_address = input_address + x_register;
             accumulator = CPU_address[offset_address];
-            //printf("Accumulator: %i\n", accumulator);
             check_flag_ZN(computer, accumulator);
             cycle_push(4);
             break;
         }
         case ABSOLUTE: // 0xAD
             accumulator = CPU_address[cpu_get_word(computer, program_counter, increment_true)];
-            //printf("Accumulator: %i\n", accumulator);
             check_flag_ZN(computer, accumulator);
             cycle_push(4);
             break;
@@ -982,7 +977,6 @@ void LDA(struct M6502* computer, uchar8_t mode){
             input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + x_register;
             accumulator = CPU_address[offset_address];
-            //printf("Accumulator: %i\n", accumulator);
             check_flag_ZN(computer, accumulator);
             cycle_push(4); // +1 if page crossed
             check_page(computer, input_address, x_register, 1); // will cycle if page crossed
@@ -992,7 +986,6 @@ void LDA(struct M6502* computer, uchar8_t mode){
             input_address = cpu_get_word(computer, program_counter, increment_true);
             offset_address = input_address + y_register;
             accumulator = CPU_address[offset_address];
-            //printf("Accumulator: %i\n", accumulator);
             check_flag_ZN(computer, accumulator);
             cycle_push(4); // +1 if page crossed
             check_page(computer, input_address, y_register, 1); // will cycle if page crossed
@@ -1007,7 +1000,6 @@ void LDA(struct M6502* computer, uchar8_t mode){
             word_address = cpu_get_word(computer, offset_address, increment_false);
             // stores contents of the word address in the accumulator
             accumulator = CPU_address[word_address];
-            //printf("Accumulator: %02X\n", accumulator);
             check_flag_ZN(computer, accumulator);
             cycle_push(6);
             break;
@@ -1024,7 +1016,6 @@ void LDA(struct M6502* computer, uchar8_t mode){
             printf("word address: %04X\n", input_address);
             // store into accumlator the value at the final offset address
             accumulator = CPU_address[offset_address];
-            //printf("Accumulator: %02X\n", accumulator);
             check_flag_ZN(computer, accumulator);
             cycle_push(5); // +1 if page crossed
             check_page(computer, offset_address, y_register, 1); // will cycle if page crossed
@@ -1659,7 +1650,7 @@ void STA(struct M6502* computer, uchar8_t mode){
             input_address = cpu_get_word(computer, program_counter, increment_true);
             PPU_register_handler(computer, input_address, accumulator, WRITE);
             CPU_address[input_address] = accumulator;
-            
+            printf("Acc: %02X\n", accumulator);
             cycle_push(4);
             break;
         case ABSOLUTE_X: // 0x9D

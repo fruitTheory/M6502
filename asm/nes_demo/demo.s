@@ -56,7 +56,7 @@ vblankwait2:
 
 main:
 load_palettes:
-  lda $2002
+  lda $2002 ;A9 -> 0
   lda #$3f
   sta $2006
   lda #$00
@@ -70,27 +70,28 @@ load_palettes:
   bne @loop
 
 enable_rendering:
-  lda #%10000000	; Enable NMI
-  sta $2000
-  lda #%00010000	; Enable Sprites
-  sta $2001
+  lda #%10000000	; Enable NMI $A9
+  sta $2000       ; $8D
+  lda #%00010000	; Enable Sprites $A9
+  sta $2001       ; $8D
 
 forever:
-  jmp forever
+  jmp forever ; 4C leads to here gets called forever waiting for nmi
 
 nmi:
-  ldx #$00 	; Set SPR-RAM address to 0
-  stx $2003
-@loop:	lda hello, x 	; Load the hello message into SPR-RAM
-  sta $2004
-  inx
-  cpx #$1c
-  bne @loop
-  rti
+  ldx #$00 	; Set SPR-RAM address to 0 $A2
+  stx $2003 ; we are here now $8E
+@loop:	
+  lda hello, x 	; Load hello to SPR-RAM $A9
+  sta $2004 ; $8D
+  inx       ; $E8
+  cpx #$1c  ; $E0
+  bne @loop ; $F0
+  rti       ; $40
 
 hello:
   .byte $00, $00, $00, $00 	; Why do I need these here?
-  .byte $00, $00, $00, $00
+  .byte $00, $00, $00, $00  ; guessing for nametable rep/scanlines
   .byte $6c, $00, $00, $6c
   .byte $6c, $01, $00, $76
   .byte $6c, $02, $00, $80
@@ -99,7 +100,7 @@ hello:
 
 palettes:
   ; Background Palette
-  .byte $0f, $00, $00, $00
+  .byte $0f, $00, $00, $00  ; got background and sprite palette in ppu memory 3F00
   .byte $0f, $00, $00, $00
   .byte $0f, $00, $00, $00
   .byte $0f, $00, $00, $00

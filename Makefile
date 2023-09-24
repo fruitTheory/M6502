@@ -39,15 +39,15 @@ ${BUILD}%.o:${SOURCES}%.c
 clean:
 	del "${BUILD}"
 
-RUN_FILE = game
-EXT = bin
+RUN_FILE = demo
+EXT = nes
 PATH_OVERRIDE = 
-ETC_DIR = ./asm/nes_simple/
+ETC_DIR = ./asm/nes_demo/
 run:
 	${BINARIES}main ${ETC_DIR}${RUN_FILE}.${EXT}
 
 # ------asm section----------
-BASE_NAME = game
+BASE_NAME = demo
 TARGET = nes
 CFG = ./asm/cfg/
 DEMO_DIR = ./asm/nes_demo/
@@ -57,8 +57,8 @@ EXTRA_NAME = demo
 
 
 ca65:
-	ca65 -l ${ETC_DIR}${BASE_NAME}.lst ${ETC_DIR}${BASE_NAME}.asm 
-	ld65 -C ${CFG}${TARGET}.cfg ${ETC_DIR}${BASE_NAME}.o -o ${ETC_DIR}${BASE_NAME}.bin -Ln ${ETC_DIR}${BASE_NAME}_labels.txt
+	ca65 -l ${ETC_DIR}${BASE_NAME}.lst ${ETC_DIR}${BASE_NAME}.s
+	ld65 -C ${CFG}${TARGET}.cfg ${ETC_DIR}${BASE_NAME}.o -o ${ETC_DIR}${BASE_NAME}.nes -Ln ${ETC_DIR}${BASE_NAME}_labels.txt
 	del "${ETC_DIR}\${BASE_NAME}.o"
 
 demo:

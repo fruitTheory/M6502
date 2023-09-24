@@ -9,6 +9,7 @@
 uchar8_t memory_latch = 0x00;
 uchar8_t latch_set = 0;
 ushort16_t stored_latch_address = 0x0000;
+ushort16_t offset = 0;
 
 uchar8_t get_pattern(){
 
@@ -51,17 +52,21 @@ bool PPU_register_handler(struct M6502* computer, ushort16_t address, uchar8_t v
         case 0x2005: // PPU scroll
             return true;
         case 0x2006: // PPU addr
-            //puts("from PPU $2006!");
+            // check if latch mem is not set, if already set make full adress, clear latch and PPU data offset 
             if (!(latch_set == 1)){
                 memory_latch = value;
                 latch_set = 1;
                 printf("latch value: %02X\n", memory_latch);
-            }else{ stored_latch_address = ((memory_latch << 8) | value); latch_set = 0; }
+            }else{ stored_latch_address = ((memory_latch << 8) | value); latch_set = 0; offset = 0;}
             printf("latch address: %04X\n", stored_latch_address);
             return true;
         case 0x2007: // PPU data
-            if(WRITE){ // STA
-                PPU_address[stored_latch_address] = value;
+            if(WRITE){ // STA - 8D
+                //puts("2007 call");
+                printf("WRITE: %02X\n", value);
+                PPU_address[stored_latch_address+offset] = value;
+                printf("OFFSET: %i\n", offset);
+                offset++;
             }
             return true;
         default:
@@ -85,7 +90,6 @@ void test_prog(struct M6502* computer){
 
     free(program), program = NULL;
 
-    // printf("value zp: %02X\n", CPU_address[0x2000]);
     // printf("value zp: %02X\n", PPU_address[0x2000]);
 
 }

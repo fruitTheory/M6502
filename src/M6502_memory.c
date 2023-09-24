@@ -64,7 +64,7 @@ bool is_NES_header(uchar8_t* file){
     return is_nes;
 }
 
-// Parse NES header and input CHR data into PPU memory, also offset program counter by 16 bytes
+// Parse NES header and map CHR data into PPU memory, also offset program counter by 16 bytes
 void parse_NES_header(struct M6502* computer){
     char8_t header_byte[16];
     
