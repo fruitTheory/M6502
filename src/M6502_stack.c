@@ -15,8 +15,8 @@ void cpu_stack_init(struct M6502* computer){
     // set all stack values to 0
     memset(stack_container, 0, sizeof(stack_container));
     // copy stack array to stack start address
-    memcpy(&CPU_address[stack_start], &stack_container, sizeof(stack_container));
-    // stack for the cpu starts high and decrements down
+    memcpy(&CPU_address[stack_start], stack_container, sizeof(stack_container));
+    // stack for this cpu starts high and decrements down
     stack_pointer = stack_end;
 }
 

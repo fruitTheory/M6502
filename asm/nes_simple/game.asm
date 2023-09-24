@@ -64,13 +64,13 @@ reset:
 ;	stx $4010	; disable DMC IRQs
 
 	lda PPU_STATUS	; Load value at ppu status into accumulator
-vblankwait1:	; Wait for vblank to make sure PPU is ready
-	bit PPU_STATUS	; bit testing 7(v) and 6(s) of ppus tatus value, also compares accum to this value
-	bpl vblankwait1
+; vblankwait1:	; Wait for vblank to make sure PPU is ready
+; 	bit PPU_STATUS	; bit testing 7(v) and 6(s) of ppus tatus value, also compares accum to this value
+; 	bpl vblankwait1
 
-vblankwait2:
-	bit PPU_STATUS
-	bpl vblankwait2
+; vblankwait2:
+; 	bit PPU_STATUS
+; 	bpl vblankwait2
 
 	lda #$00
 	ldx #$00
@@ -102,18 +102,18 @@ clear_memory:
 	ldy #$00
 
 nametable_loop:
-	lda ($00), Y	; does getword at address $00 - so gets nametable address stored $nnnn
-	sta PPU_DATA	; store the value acquired into PPU memory at PPU addr which was nametable address 
-	iny				; increment y 256 times until it wraps around to 0 indicating next nametable page
-	cpy #$00		; compare y to 0 continue if not zero, else keep looping
-	bne nametable_loop
-	inc $0001		; if finished increment high byte 
-	inx
-	cpx #$04	; size of nametable 0: 0x0400
-	bne nametable_loop
+	lda ($00), Y	; does getword at address $00 - nametable address $nnnn - read 1st value of nametable $B1
+	sta PPU_DATA	; store the value acquired into PPU memory at PPU addr which was nametable address $8D
+	iny				; increment y 256 times until it wraps around to 0 indicating next nametable page $C8
+	cpy #$00		; compare y to 0 continue if not zero, else keep looping $C0
+	bne nametable_loop ; $D0 --> F6
+	inc $0001		; if finished increment high byte 0FF, 1FF, 2FF, etc. $E6
+	inx			; $E8
+	cpx #$04	; need to be done 4 times for 1KB nametable $E0 --> 04
+	bne nametable_loop ; D0 --> EF
 
 ; Color setup for background
-	lda PPU_STATUS
+	lda PPU_STATUS ; $AD
 	lda #$3F	; writing 0x3F00, pallete RAM indexes
 	sta PPU_ADDR
 	lda #$00
@@ -365,10 +365,10 @@ periodTableHi:
   	.byte $00,$00,$00,$00,$00,$00,$00,$00
 
 background_nametable:
-	.incbin "backgrounds/bk1.nam"
+	.incbin "chr_nametable/bk1.nam"
 
 background_pallete:
-	.incbin "backgrounds/bag.pal"
+	.incbin "chr_nametable/bag.pal"
 
 
 ;.segment "RODATA"
@@ -379,4 +379,4 @@ background_pallete:
 	.word irq		; using external interrupt IRQ
 
 .segment "CHARS"
-	.incbin "chr/mario.chr"	; includes 8KB graphics
+	.incbin "chr_nametable/mario.chr"	; includes 8KB graphics

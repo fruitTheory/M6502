@@ -41,6 +41,10 @@ typedef char char8_t;
 #define CHR_rom_unit 0x2000 // size of memory per CHR rom unit 8k
 #define header_size 16 // header size in bytes
 
+#define READ 0
+#define WRITE 1
+#define RW 2 // read/write
+
 // NES section open
 
 #define PPU (computer->NES_ppu.ppu) // access to PPU
@@ -53,6 +57,10 @@ typedef char char8_t;
 #define PPU_scroll (computer->ppu.registers.SCROLL) // $2005
 #define PPU_addr (computer->ppu.registers.ADDR) // $2006
 #define PPU_data (computer->ppu.registers.DATA) // $2007
+
+#define PPUCTRL
+#define PPUMASK
+
 
 // NES secton close
 

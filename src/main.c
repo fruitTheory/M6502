@@ -27,6 +27,8 @@ int main(int argc, char* argv[]){
 
     //draw_screen(&computer, program_size);
     test_prog(&computer);
+    for(int i = 0; i < 53; i++)
+        execute_instructions(&computer, program_size);
 
     return EXIT_SUCCESS;
 }

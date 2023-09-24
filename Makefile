@@ -16,7 +16,6 @@ OBJECTS =	${BUILD}M6502.o \
 			${BUILD}M6502_cpu.o \
 			${BUILD}check_SDL_version.o \
 			${BUILD}M6502_screen.o \
-			${BUILD}M6502_general.o \
 			${BUILD}ppu_general.o
 
 LIBRARY_DIR ?=	-L C:\Programs\SDL\SDL2-2.26.5-mingw\x86_64-w64-mingw32\lib \
@@ -41,15 +40,15 @@ clean:
 	del "${BUILD}"
 
 RUN_FILE = game
-EXT = nes
+EXT = bin
 PATH_OVERRIDE = 
 ETC_DIR = ./asm/nes_simple/
 run:
 	${BINARIES}main ${ETC_DIR}${RUN_FILE}.${EXT}
 
 # ------asm section----------
-BASE_NAME = temp_01
-TARGET = none
+BASE_NAME = game
+TARGET = nes
 CFG = ./asm/cfg/
 DEMO_DIR = ./asm/nes_demo/
 TESTING=./_testing/
@@ -58,9 +57,9 @@ EXTRA_NAME = demo
 
 
 ca65:
-	ca65 -l ${ASM}${BASE_NAME}.lst ${ASM}${BASE_NAME}.asm 
-	ld65 -C ${CFG}${TARGET}.cfg ${ASM}${BASE_NAME}.o -o ${ASM}${BASE_NAME}.bin -Ln ${ASM}${BASE_NAME}_labels.txt
-	del "${ASM}\${BASE_NAME}.o"
+	ca65 -l ${ETC_DIR}${BASE_NAME}.lst ${ETC_DIR}${BASE_NAME}.asm 
+	ld65 -C ${CFG}${TARGET}.cfg ${ETC_DIR}${BASE_NAME}.o -o ${ETC_DIR}${BASE_NAME}.bin -Ln ${ETC_DIR}${BASE_NAME}_labels.txt
+	del "${ETC_DIR}\${BASE_NAME}.o"
 
 demo:
 	ca65 -l ${DEMO_DIR}${EXTRA_NAME}.lst ${DEMO_DIR}${EXTRA_NAME}.s

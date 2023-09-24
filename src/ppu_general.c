@@ -1,8 +1,14 @@
+// #include "M6502.h"
+// #include "ppu.h"
 #include "ppu_general.h"
 #include "M6502_flags.h"
 #include "load_binary.h"
 #include <stdlib.h>
 #include <stdio.h>
+
+uchar8_t memory_latch = 0x00;
+uchar8_t latch_set = 0;
+ushort16_t stored_latch_address = 0x0000;
 
 uchar8_t get_pattern(){
 
@@ -28,6 +34,41 @@ uchar8_t get_pattern(){
 
 }
 
+bool PPU_register_handler(struct M6502* computer, ushort16_t address, uchar8_t value, char8_t rw){
+    switch(address)
+    {
+        case 0x2000: // PPU ctrl
+            return true;
+        case 0x2001: // PPU mask
+            return true;
+        case 0x2002: // PPU status
+            clear_bit(7, &PPU_status);
+            return true;
+        case 0x2003: // PPU oam addr
+            return true;
+        case 0x2004: // PPU oam data
+            return true;
+        case 0x2005: // PPU scroll
+            return true;
+        case 0x2006: // PPU addr
+            //puts("from PPU $2006!");
+            if (!(latch_set == 1)){
+                memory_latch = value;
+                latch_set = 1;
+                printf("latch value: %02X\n", memory_latch);
+            }else{ stored_latch_address = ((memory_latch << 8) | value); latch_set = 0; }
+            printf("latch address: %04X\n", stored_latch_address);
+            return true;
+        case 0x2007: // PPU data
+            if(WRITE){ // STA
+                PPU_address[stored_latch_address] = value;
+            }
+            return true;
+        default:
+            return false;
+    }
+}
+
 void test_prog(struct M6502* computer){
 
     const char8_t* path = "C:/Programming/vscode/C/M6502/asm/nes_hello/tiles.chr";
@@ -44,9 +85,8 @@ void test_prog(struct M6502* computer){
 
     free(program), program = NULL;
 
-    // for(int j=0; j <  CHR_rom_unit; j++){
-    //     printf("PPU-value: %02X ", PPU_address[j]);
-    // }
+    // printf("value zp: %02X\n", CPU_address[0x2000]);
+    // printf("value zp: %02X\n", PPU_address[0x2000]);
 
 }
 
@@ -108,4 +148,23 @@ next two bytes compare  [0][1]
 again until [0[31] them [1][31] [2][31]
 
 
+*/
+
+/*
+Read Instructions:
+LDA (Load Accumulator)
+LDX (Load X Register)
+LDY (Load Y Register)
+EOR (Exclusive OR)
+AND (Logical AND)
+ORA (Logical OR)
+CMP (Compare)
+CPX (Compare X Register)
+CPY (Compare Y Register)
+BIT (Bit Test)
+
+Write Instructions:
+STA (Store Accumulator)
+STX (Store X Register)
+STY (Store Y Register)
 */

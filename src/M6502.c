@@ -13,8 +13,6 @@ void M6502_init(struct M6502* computer){
     // set everything in memory to 0
     memset(computer, 0, sizeof(&computer));
     cpu_stack_init(computer);
-    //PPU_init(computer);
-    //status_register = 0b01010101; // temporary SR init 0x55 - 0101 0101
 }
 
 extern inline void PC_increment(struct M6502* computer);
@@ -24,6 +22,8 @@ extern inline void PC_decrement(struct M6502* computer);
 uchar8_t instruction_fetch(struct M6502* computer){
     uchar8_t opcode = CPU_address[program_counter];
     
+    printf("accumulator: %02X\n", accumulator);
+
     printf("PC: %04X\n", program_counter);
     extern ushort16_t global_pc;
     global_pc = program_counter;

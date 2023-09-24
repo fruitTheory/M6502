@@ -24,7 +24,6 @@ Nametable points to address of a pattern start so each byte on nametable represe
 
 */
 
-
 void temp(){
 
     struct M6502 computer;
