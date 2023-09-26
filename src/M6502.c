@@ -8,11 +8,12 @@
     General M6502 functions
 */
 
-// initialize the processor
+// initialize the processors
 void M6502_init(struct M6502* computer){
-    // set everything in memory to 0
-    memset(computer, 0, sizeof(&computer));
-    cpu_stack_init(computer);
+    memset(CPU_address, 0, sizeof(CPU_address)); // CPU init
+    cpu_stack_init(computer); // CPU stack init
+    memset(PPU_address, 0, sizeof(PPU_address)); // PPU init
+    memset(OAM_address, 0, sizeof(OAM_address)); // OAM init
 }
 
 extern inline void PC_increment(struct M6502* computer);

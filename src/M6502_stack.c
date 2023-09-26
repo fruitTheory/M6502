@@ -11,6 +11,7 @@ static void cpu_is_stack_inbounds(struct M6502* computer){
 
 }
 
+// copy stack into cpu memory $0100-$01FF, set pointer to end of stack, init to 0
 void cpu_stack_init(struct M6502* computer){
     // set all stack values to 0
     memset(stack_container, 0, sizeof(stack_container));

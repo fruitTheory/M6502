@@ -26,7 +26,7 @@ int main(int argc, char* argv[]){
     // draw_screen(&computer, program_size);
     // test_prog(&computer);
 
-    // Run below for nes_demo demo.nes
+    // Run below for nes_demo demo.nes and general debugging
     for(int i = 0; i < 370; i++){
         execute_instructions(&computer, program_size);
         if(i == 198)
@@ -48,7 +48,7 @@ int main(int argc, char* argv[]){
 
     puts("\n");
 
-    for(int i = 0; i < 28; i++)
+    for(int i = 0; i < 20; i++)
         printf("OAM: %02X ", computer.ppu.oam_memory.address[0+i]);
 
     puts("\n");
@@ -57,9 +57,20 @@ int main(int argc, char* argv[]){
     // interrupt_request(&computer);
     // external_reset_button(&computer); // system reset if user chooses to
 
-    FILE *file = fopen("./asm/output.bin", "wb");
-    fwrite(&computer.ppu.oam_memory.address, sizeof(uchar8_t), sizeof(computer.ppu.oam_memory.address), file);
-    fclose(file);
+    puts("Writting CPU to file..");
+    FILE *file_cpu = fopen("./asm/output_cpu.bin", "wb");
+    fwrite(&computer.cpu.memory.address, sizeof(uchar8_t), sizeof(computer.cpu.memory.address), file_cpu);
+    fclose(file_cpu);
+
+    puts("Writting PPU to file..");
+    FILE *file_ppu = fopen("./asm/output_ppu.bin", "wb");
+    fwrite(&computer.ppu.memory.address, sizeof(uchar8_t), sizeof(computer.ppu.memory.address), file_ppu);
+    fclose(file_ppu);
+
+    puts("Writting OAM to file..");
+    FILE *file_oam = fopen("./asm/output_oam.bin", "wb");
+    fwrite(&computer.ppu.oam_memory.address, sizeof(uchar8_t), sizeof(computer.ppu.oam_memory.address), file_oam);
+    fclose(file_oam);
 
     return EXIT_SUCCESS;
 }

@@ -90,11 +90,9 @@ nmi:
   rti       ; $40
 
 hello:
-  .byte $00, $00, $00, $00 	; Why do I need these here?
-  .byte $00, $00, $00, $00  ; guessing for nametable rep/scanlines
-  .byte $6c, $00, $00, $6c
-  .byte $6c, $01, $00, $76
-  .byte $6c, $02, $00, $80
+  .byte $6c, $00, $00, $6c  ; this data represents sprite attributes
+  .byte $6c, $01, $00, $76  ; OAM info on where sprites are positioned
+  .byte $6c, $02, $00, $80  ; y position, index of tile, attribs 0-7b, x position
   .byte $6c, $02, $00, $8A
   .byte $6c, $03, $00, $94
 
