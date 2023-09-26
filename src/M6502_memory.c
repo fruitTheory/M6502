@@ -84,7 +84,7 @@ void parse_NES_header(struct M6502* computer){
             for(int j=0; j <  CHR_rom_unit; j++)
                 CHR_data[j] = CPU_address[NES_initial_load + CHR_cartidge_address + j];
 
-            // copy data directly into PPU, starting at address 0x00
+            // copy CHR data directly into PPU, starting at address 0x00
             memcpy(&PPU_address[0x0000], CHR_data, (CHR_rom_unit * header_byte[5]));
         }
         if(i== 6){} // ROM's mirroring type 

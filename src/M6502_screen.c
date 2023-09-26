@@ -160,6 +160,7 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
                     pixel.y += pixel_size;
                     pixel.x = 0;
                 }
+                //SDL_Delay(25);
             }
         }
         puts("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");

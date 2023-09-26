@@ -1638,8 +1638,8 @@ void STA(struct M6502* computer, uchar8_t mode){
     switch(mode)
     {
         case ZERO_PAGE: // 0x85
-            CPU_address[program_counter] = accumulator;
             //PPU_register_handler(computer, program_counter, accumulator, WRITE);
+            CPU_address[program_counter] = accumulator;
             cycle_push(3);
             break;
         case ZERO_PAGE_X: // 0x95
@@ -1649,8 +1649,10 @@ void STA(struct M6502* computer, uchar8_t mode){
             break;
         case ABSOLUTE: // 0x8D
             input_address = cpu_get_word(computer, program_counter, increment_true);
-            PPU_register_handler(computer, input_address, accumulator, WRITE);
-            CPU_address[input_address] = accumulator;
+            if(input_address >= 0x2000 && input_address <= 0x2007)
+                PPU_register_handler(computer, input_address, accumulator, WRITE);
+            else
+                CPU_address[input_address] = accumulator;
             printf("Acc: %02X\n", accumulator);
             cycle_push(4);
             break;

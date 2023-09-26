@@ -23,14 +23,16 @@ int main(int argc, char* argv[]){
     cpu_store_program(&computer, program, program_size);
     free(program), program = NULL;
 
-    //draw_screen(&computer, program_size);
+    // draw_screen(&computer, program_size);
     // test_prog(&computer);
 
     // Run below for nes_demo demo.nes
-    for(int i = 0; i < 226; i++)
+    for(int i = 0; i < 370; i++){
         execute_instructions(&computer, program_size);
+        if(i == 198)
+            non_maskable_interrupt(&computer);
+        }
         
-
     for(int i = 0; i < 64; i++)
         printf("sprite: %02X ", computer.ppu.memory.address[0+i]);
 
@@ -46,13 +48,18 @@ int main(int argc, char* argv[]){
 
     puts("\n");
 
-    non_maskable_interrupt(&computer);
-    interrupt_request(&computer);
-    external_reset_button(&computer); // system reset if user chooses to
+    for(int i = 0; i < 28; i++)
+        printf("OAM: %02X ", computer.ppu.oam_memory.address[0+i]);
 
-    // FILE *file = fopen("./asm/output.bin", "wb");
-    // fwrite(&computer.ppu.memory.address, sizeof(uchar8_t), sizeof(computer.ppu.memory.address), file);
-    // fclose(file);
+    puts("\n");
+
+    // non_maskable_interrupt(&computer);
+    // interrupt_request(&computer);
+    // external_reset_button(&computer); // system reset if user chooses to
+
+    FILE *file = fopen("./asm/output.bin", "wb");
+    fwrite(&computer.ppu.oam_memory.address, sizeof(uchar8_t), sizeof(computer.ppu.oam_memory.address), file);
+    fclose(file);
 
     return EXIT_SUCCESS;
 }

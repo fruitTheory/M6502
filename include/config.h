@@ -13,6 +13,7 @@ typedef char char8_t;
 #define cpu_max_address 65535 // CPU's 16-bit address bus
 #define stack_max_size 256
 #define ppu_max_address 16384
+#define oam_max_address 256
 
 #define zero_page_start 0x0000
 #define stack_start 0x0100 // decimal(byte) 256 - Start of stack
@@ -49,7 +50,7 @@ typedef char char8_t;
 
 #define PPU (computer->NES_ppu.ppu) // access to PPU
 #define PPU_address (computer->ppu.memory.address) // address from PPU
-#define PPU_ctrl (computer->cpu.memory.address[0x2000]) // Pointer to ppu register at cpu $2000
+#define PPU_ctrl (computer->cpu.memory.address[0x2000]) // ppu register at cpu $2000
 #define PPU_mask (computer->cpu.memory.address[0x2001]) // ppu register at cpu $2001
 #define PPU_status (computer->cpu.memory.address[0x2002]) // ppu register at cpu $2002
 #define PPU_oam_addr (computer->cpu.memory.address[0x2003]) // ppu register at cpu $2003
@@ -57,6 +58,8 @@ typedef char char8_t;
 #define PPU_scroll (computer->cpu.memory.address[0x2005]) // ppu register at cpu $2005
 #define PPU_addr (computer->cpu.memory.address[0x2006]) // ppu register at cpu $2006
 #define PPU_data (computer->cpu.memory.address[0x2007]) // ppu register at cpu $2007
+
+#define OAM_address (computer->ppu.oam_memory.address) // oam memory address
 
 #define PPUCTRL
 #define PPUMASK

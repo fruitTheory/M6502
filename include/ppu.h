@@ -6,11 +6,18 @@
 typedef struct
 {
     uchar8_t address[ppu_max_address]; // 16kb pattern tables, name tables, attribute tables
-    
+
 }PPU_memory;
+
+typedef struct
+{
+    uchar8_t address[oam_max_address]; // OAM structure for sprites
+    
+}PPU_OAM_memory;
 
 typedef struct{
     PPU_memory memory;
+    PPU_OAM_memory oam_memory;
 
 }NES_ppu;
 

@@ -19,9 +19,4 @@ Nametable points to address of a pattern start so each byte on nametable represe
 
 */
 
-void temp(){
-
-    struct M6502 computer;
-    computer.cpu.memory.address[0x2000]; // ctrl register
-    computer.ppu.memory.address[0x05];
-}
+uchar8_t vblank = 0;

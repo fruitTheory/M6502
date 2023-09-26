@@ -35,31 +35,35 @@ uchar8_t get_pattern(){
 
 }
 
-bool PPU_register_handler(struct M6502* computer, ushort16_t address, uchar8_t value, char8_t rw){
+void PPU_register_handler(struct M6502* computer, ushort16_t address, uchar8_t value, char8_t rw){
     switch(address)
     {
         case 0x2000: // PPU ctrl
-            return true;
+            break;
         case 0x2001: // PPU mask
-            return true;
+            break;
         case 0x2002: // PPU status
             clear_bit(7, &PPU_status);
-            return true;
+            break;
         case 0x2003: // PPU oam addr
-            return true;
+            break;
         case 0x2004: // PPU oam data
-            return true;
+            // use value stored in oam addr register to store input value
+            OAM_address[PPU_oam_addr] = value;
+            if(rw == 1) // if write
+                CPU_address[0x2003] += 1; // increment address at oam addr register
+            break;
         case 0x2005: // PPU scroll
-            return true;
+            break;
         case 0x2006: // PPU addr
-            // check if latch mem is not set, if already set make full adress, clear latch and PPU data offset 
+            // check if latch mem is not set, if already set make full adress, clear latch set and data offset 
             if (!(latch_set == 1)){
                 memory_latch = value;
                 latch_set = 1;
                 printf("latch value: %02X\n", memory_latch);
             }else{ stored_latch_address = ((memory_latch << 8) | value); latch_set = 0; offset = 0;}
             printf("latch address: %04X\n", stored_latch_address);
-            return true;
+            break;
         case 0x2007: // PPU data
             if(WRITE){ // STA - 8D
                 //puts("2007 call");
@@ -68,9 +72,9 @@ bool PPU_register_handler(struct M6502* computer, ushort16_t address, uchar8_t v
                 printf("OFFSET: %i\n", offset);
                 offset++;
             }
-            return true;
+            break;
         default:
-            return false;
+            break;
     }
 }
 

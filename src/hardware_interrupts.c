@@ -18,10 +18,9 @@ void non_maskable_interrupt(struct M6502* computer){
     // 0xFFFA; // 65530 - contains low byte
     // 0xFFFB; // 65531 - contains high byte
     ushort16_t nmi_address = cpu_get_word(computer, 0xFFFA, increment_false);
-
+    program_counter -= 1; // important
     cpu_stack_push(computer, program_counter>>8); // push high byte
     cpu_stack_push(computer, program_counter); // push low byte
-
     clear_flag(computer, BREAK);
     cpu_stack_push(computer, status_register);
 
@@ -55,12 +54,11 @@ void interrupt_request(struct M6502* computer){
     // 0xFFFE; // 65534
     // 0xFFFF; // 65535
     ushort16_t interrupt_address = cpu_get_word(computer, 0xFFFE, increment_false);
+    program_counter -= 1;
     cpu_stack_push(computer, program_counter>>8); // push high byte
     cpu_stack_push(computer, program_counter); // push low byte
-
     clear_flag(computer, BREAK);
     cpu_stack_push(computer, status_register);
-
     program_counter = interrupt_address;
 
 }
