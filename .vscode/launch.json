@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}.exe",
-            "args": ["./asm/nes_simple/game.bin"], // ./asm/temp_01.bin
+            "args": ["./asm/nes_demo/demo.nes"], // ./asm/temp_01.bin
             "preLaunchTask": "mingw32-make",
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

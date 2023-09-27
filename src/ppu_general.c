@@ -1,5 +1,3 @@
-// #include "M6502.h"
-// #include "ppu.h"
 #include "ppu_general.h"
 #include "M6502_flags.h"
 #include "load_binary.h"

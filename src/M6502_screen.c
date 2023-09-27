@@ -7,12 +7,116 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "ppu_general.h"
+#include "hardware_interrupts.h"
+//#include "ppu_general.h"
 
 
 ushort16_t global_pc = 0;
 uchar8_t global_opcode = 0;
+uchar8_t frame = 0;
 
+void draw_screen(struct M6502* computer, ushort16_t program_size){
+
+    const char* title = "M6502 Emulator";
+
+    SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
+    TTF_Init();
+
+    SDL_Event event;
+    SDL_Window* window;
+    SDL_Rect bounds;
+    SDL_Rect pixel;
+    SDL_GetDisplayBounds(1, &bounds); // Get bounds of the first or second display
+
+    //window = SDL_CreateWindow(title, display_bounds.x+300, display_bounds.y+300, 256*2, 240*2, 0); // other monitor
+    window = SDL_CreateWindow(title, bounds.x+1600, bounds.y+600, 256*2, 240*2, SDL_WINDOW_ALWAYS_ON_TOP);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); // create renderer for specific window
+
+    // Inititializing
+    bool running = true;
+    int start_x = 0; // Start x position
+    int start_y = 0; // Start y position
+    int pixel_size = 8; // pixel sqaure size
+    SDL_SetRenderDrawColor(renderer, 0, 100, 128, 255); // sets bg color
+    SDL_RenderClear(renderer); // clear current target with bg color
+    SDL_Color pixel_color = {200, 120, 40, 255};
+    SDL_SetRenderDrawColor(renderer, pixel_color.r, pixel_color.g, pixel_color.b, pixel_color.a); // set pixel color
+
+    // setup pixel start
+    pixel.x = start_x;
+    pixel.y = start_y;
+    pixel.w = pixel_size;
+    pixel.h = pixel_size;
+
+    //get_pattern();
+    // event loop while program running
+    while(running){
+        while(SDL_PollEvent(&event))
+            if(event.type == SDL_QUIT) running = false;
+
+        // note that vblank is 241 - 260 so need to extend y and catch if past 240
+        // x- 512/8=64 || y - 520/8=65 480/8=60
+        for(int y = 0; y < 65; y++){
+
+            if(y < 60){
+                clear_bit(7, &PPU_status); // clear status bit 7 if not in vblank range 
+                printf("line %i\n", y);
+            }
+            if(y == 60){
+                puts("vblanky");
+                non_maskable_interrupt(computer);
+                set_bit(7, &PPU_status); // set status bit 7 if in vblank range
+            }
+            if(y == 64){
+                frame ^= 1;
+                pixel.y = 0;
+            }
+
+            for(int x = 0; x < 65; x++){
+                SDL_RenderPresent(renderer); // presents render
+                // accept 2 byte input somehwere to determine the resulting number
+                // run function here return_results()
+                if(frame == 0)
+                    SDL_SetRenderDrawColor(renderer, 100,  200+(x*pixel_size), 50, 255);
+                if(frame == 1)
+                    SDL_SetRenderDrawColor(renderer, pixel_color.r+(x*pixel_size), pixel_color.g, pixel_color.b, pixel_color.a);
+                // if bit = 1 set to palette index, draw rect, and fill rect 
+                SDL_RenderDrawRect(renderer, &pixel);
+                SDL_RenderFillRect(renderer, &pixel);
+                pixel.x += pixel_size;
+                if(x == 64){
+                    pixel.y += pixel_size;
+                    pixel.x = 0;
+                }
+                //SDL_Delay(25);
+            }
+        }
+        puts("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+        SDL_Delay(100);
+    }
+
+    // cleanup
+    SDL_DestroyRenderer(renderer); // destroy renderer and associated textures
+    SDL_DestroyWindow(window);
+    TTF_Quit();
+    SDL_Quit();
+
+}
+
+// converts input to 8 bit binary - allocates 9 bytes of memory 
+char8_t* convert_to_binary(uchar8_t input_n){
+    char8_t* binary = (char8_t*)malloc(9); // 8 bits + null terminator
+    if(!binary) return NULL; // Check if memory created
+
+    for (char8_t i = 7; i >= 0; i--)
+        binary[7 - i] = ((input_n >> i) & 1) + '0';
+    binary[8] = '\0'; // Add Null terminator
+
+    return binary;
+}
+
+
+// // draws CPU info
 // void draw_screen(struct M6502* computer, ushort16_t program_size){
 
 //     const char* title = "M6502 Emulator";
@@ -93,97 +197,3 @@ uchar8_t global_opcode = 0;
 //     SDL_Quit();
 
 // }
-
-void draw_screen(struct M6502* computer, ushort16_t program_size){
-
-    const char* title = "M6502 Emulator";
-
-    SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
-    TTF_Init();
-
-    SDL_Event event;
-    SDL_Window* window;
-    SDL_Rect bounds;
-    SDL_Rect pixel;
-    SDL_GetDisplayBounds(1, &bounds); // Get bounds of the first or second display
-
-    //window = SDL_CreateWindow(title, display_bounds.x+300, display_bounds.y+300, 256*2, 240*2, 0); // other monitor
-    window = SDL_CreateWindow(title, bounds.x+1600, bounds.y+600, 256*2, 240*2, SDL_WINDOW_ALWAYS_ON_TOP);
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); // create renderer for specific window
-
-    // Inititializing
-    bool running = true;
-    int start_x = 0; // Start x position
-    int start_y = 0; // Start y position
-    int pixel_size = 8; // pixel sqaure size
-    SDL_SetRenderDrawColor(renderer, 0, 100, 128, 255); // sets bg color
-    SDL_RenderClear(renderer); // clear current target with bg color
-    SDL_Color pixel_color = {200, 120, 40, 255};
-    SDL_SetRenderDrawColor(renderer, pixel_color.r, pixel_color.g, pixel_color.b, pixel_color.a); // set pixel color
-
-    // setup pixel start
-    pixel.x = start_x;
-    pixel.y = start_y;
-    pixel.w = pixel_size;
-    pixel.h = pixel_size;
-
-    get_pattern();
-    // event loop while program running
-    while(running){
-        while(SDL_PollEvent(&event))
-            if(event.type == SDL_QUIT) running = false;
-
-        // note that vblank is 241 - 260 so need to extend y and catch if past 240
-        // x- 512/8=64 || y - 520/8=65 480/8=60
-        for(int y = 0; y < 65; y++){
-            if(y < 60){
-                clear_bit(7, &PPU_status); // clear status bit 7 if not in vblank range 
-                printf("line %i\n", y);
-                //printf("ppu status before: %02X\n", PPU_status);
-            }
-            if(y >= 60){
-                puts("vblanky");
-                set_bit(7, &PPU_status); // set status bit 7 if in vblank range 
-                //printf("ppu status after: %02X\n", PPU_status);
-            }
-            for(int x = 0; x < 65; x++){
-                SDL_RenderPresent(renderer); // presents render
-                // accept 2 byte input somehwere to determine the resulting number
-                // run function here return_results()
-
-                // if bit = 1 draw rect, fill rect, and set to palette index  
-                SDL_RenderDrawRect(renderer, &pixel);
-                SDL_RenderFillRect(renderer, &pixel);
-                SDL_SetRenderDrawColor(renderer, pixel_color.r+(x*pixel_size), pixel_color.g, pixel_color.b, pixel_color.a);
-                pixel.x += pixel_size;
-                if(x == 64){
-                    pixel.y += pixel_size;
-                    pixel.x = 0;
-                }
-                //SDL_Delay(25);
-            }
-        }
-        puts("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-
-        SDL_Delay(100);
-    }
-
-    // cleanup
-    SDL_DestroyRenderer(renderer); // destroy renderer and associated textures
-    SDL_DestroyWindow(window);
-    TTF_Quit();
-    SDL_Quit();
-
-}
-
-// converts input to 8 bit binary - allocates 9 bytes of memory 
-char8_t* convert_to_binary(uchar8_t input_n){
-    char8_t* binary = (char8_t*)malloc(9); // 8 bits + null terminator
-    if(!binary) return NULL; // Check if memory created
-
-    for (char8_t i = 7; i >= 0; i--)
-        binary[7 - i] = ((input_n >> i) & 1) + '0';
-    binary[8] = '\0'; // Add Null terminator
-
-    return binary;
-}
