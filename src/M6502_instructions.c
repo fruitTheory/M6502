@@ -2,10 +2,8 @@
 #include "M6502.h"
 #include "M6502_instructions.h"
 #include "M6502_flags.h"
+#include "ppu.h"
 #include <stdio.h>
-
-#include "ppu_general.h"
-
 
 // Add memory to accumulator with carry value
 void ADC(struct M6502* computer, uchar8_t mode){
@@ -258,7 +256,7 @@ void BCC(struct M6502* computer){ // 0x90
     current_address_value = CPU_address[program_counter];
 
     // quick way to get signed char from unsigned is by casting it
-    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;;
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;
 
     // if carry bit is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
     if(!is_flag_set(CARRY, status_register)){
@@ -281,7 +279,7 @@ void BCS(struct M6502* computer){ // 0xB0
     current_address_value = CPU_address[program_counter];
 
     // quick way to get signed char from unsigned is by casting it
-    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;;
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;
 
     // if carry bit is set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
     if(is_flag_set(CARRY, status_register)){
@@ -303,7 +301,7 @@ void BEQ(struct M6502* computer){ // 0xF0
     current_address_value = CPU_address[program_counter];
 
     // quick way to get signed char from unsigned is by casting it
-    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;;
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;
 
     // if zero flag is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
     if(is_flag_set(ZERO, status_register)){
@@ -367,7 +365,7 @@ void BMI(struct M6502* computer){ // 0x30
     current_address_value = CPU_address[program_counter];
 
     // quick way to get signed char from unsigned is by casting it
-    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;;
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;
 
     // if negative bit is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
     if(is_flag_set(NEGATIVE, status_register)){
@@ -394,7 +392,7 @@ void BNE(struct M6502* computer){ // 0xD0
     
     printf("current addy int: %i\n", current_address_value);
     // quick way to get signed char from unsigned is by casting it
-    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;;
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;
     printf("signed addy: %i\n", signed_address_value);
 
     // if zero flag is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
@@ -465,7 +463,7 @@ void BVC(struct M6502* computer){ // 0x50
     current_address_value = CPU_address[program_counter];
 
     // quick way to get signed char from unsigned is by casting it
-    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;;
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;
 
     // if overflow is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
     if(!is_flag_set(OVERFLOW, status_register)){
@@ -488,7 +486,7 @@ void BVS(struct M6502* computer){ // 0x70
     current_address_value = CPU_address[program_counter];
 
     // quick way to get signed char from unsigned is by casting it
-    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;;
+    if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;
 
     // if overflow bit is set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
     if(is_flag_set(OVERFLOW, status_register)){

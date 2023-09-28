@@ -7,8 +7,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "ppu.h"
 #include "hardware_interrupts.h"
-//#include "ppu_general.h"
 
 
 ushort16_t global_pc = 0;
@@ -36,11 +36,11 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
     bool running = true;
     int start_x = 0; // Start x position
     int start_y = 0; // Start y position
-    int pixel_size = 8; // pixel sqaure size
+    int pixel_size = 1; // pixel sqaure size
     SDL_SetRenderDrawColor(renderer, 0, 100, 128, 255); // sets bg color
     SDL_RenderClear(renderer); // clear current target with bg color
-    SDL_Color pixel_color = {200, 120, 40, 255};
-    SDL_SetRenderDrawColor(renderer, pixel_color.r, pixel_color.g, pixel_color.b, pixel_color.a); // set pixel color
+    SDL_Color px_color = {200, 120, 40, 255};
+    SDL_SetRenderDrawColor(renderer, px_color.r, px_color.g, px_color.b, px_color.a); // set pixel color
 
     // setup pixel start
     pixel.x = start_x;
@@ -48,60 +48,39 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
     pixel.w = pixel_size;
     pixel.h = pixel_size;
 
-    //get_pattern();
+    int y, x; // loop variables
+    int num;
     // event loop while program running
     while(running){
-        while(SDL_PollEvent(&event))
-            if(event.type == SDL_QUIT) running = false;
-
-        // note that vblank is 241 - 260 so need to extend y and catch if past 240
-        // x- 512/8=64 || y - 520/8=65 480/8=60
-        for(int y = 0; y < 65; y++){
-
-            if(y < 60){
-                clear_bit(7, &PPU_status); // clear status bit 7 if not in vblank range 
-                printf("line %i\n", y);
-            }
-            if(y == 60){
-                puts("vblanky");
-                non_maskable_interrupt(computer);
-                set_bit(7, &PPU_status); // set status bit 7 if in vblank range
-            }
-            if(y == 64){
-                frame ^= 1;
-                pixel.y = 0;
-            }
-
-            for(int x = 0; x < 65; x++){
-                SDL_RenderPresent(renderer); // presents render
-                // accept 2 byte input somehwere to determine the resulting number
-                // run function here return_results()
-                if(frame == 0)
-                    SDL_SetRenderDrawColor(renderer, 100,  200+(x*pixel_size), 50, 255);
-                if(frame == 1)
-                    SDL_SetRenderDrawColor(renderer, pixel_color.r+(x*pixel_size), pixel_color.g, pixel_color.b, pixel_color.a);
-                // if bit = 1 set to palette index, draw rect, and fill rect 
+        while(SDL_PollEvent(&event)){if(event.type == SDL_QUIT) running = false;}
+        // x- 512/8=64 || y - 520/8=65 480/8=60 - note vblank is 241-260
+        for(y = 0; y < 260*2; y++){
+            //SDL_Delay(10);
+            if(y == 0){clear_bit(7, &PPU_status);} // clear vblank bit
+            if(y == 240*2){ non_maskable_interrupt(computer); set_bit(7, &PPU_status);} // start vblank bit, call nmi
+            for(x = 0; x < 256*2; x++){
+                //if(sprite_hit[num] == 1)
+                SDL_SetRenderDrawColor(renderer, 100,  200+(x*8), 50, 255);
+                // if(frame == 1) SDL_SetRenderDrawColor(renderer, px_color.r+(x*8), px_color.g, px_color.b, px_color.a);
                 SDL_RenderDrawRect(renderer, &pixel);
                 SDL_RenderFillRect(renderer, &pixel);
                 pixel.x += pixel_size;
-                if(x == 64){
-                    pixel.y += pixel_size;
-                    pixel.x = 0;
-                }
-                //SDL_Delay(25);
+                if(x == 255*2){ pixel.y += pixel_size; pixel.x = 0;}
+                num++;
             }
         }
-        puts("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-        SDL_Delay(100);
+        SDL_RenderPresent(renderer); // presents render
+        if(y == 260*2){frame ^= 1; pixel.y = 0;} // end vblank and frame
+        //puts("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+        //SDL_Delay(100);
     }
-
     // cleanup
     SDL_DestroyRenderer(renderer); // destroy renderer and associated textures
     SDL_DestroyWindow(window);
     TTF_Quit();
     SDL_Quit();
-
 }
+
 
 // converts input to 8 bit binary - allocates 9 bytes of memory 
 char8_t* convert_to_binary(uchar8_t input_n){
@@ -116,7 +95,7 @@ char8_t* convert_to_binary(uchar8_t input_n){
 }
 
 
-// // draws CPU info
+// // below draws CPU info
 // void draw_screen(struct M6502* computer, ushort16_t program_size){
 
 //     const char* title = "M6502 Emulator";

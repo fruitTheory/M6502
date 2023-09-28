@@ -60,6 +60,7 @@ typedef char char8_t;
 #define PPU_data (computer->cpu.memory.address[0x2007]) // ppu register at cpu $2007
 
 #define OAM_address (computer->ppu.oam_memory.address) // oam memory address
+#define palette_start 0x3F00 // start of palette addresses
 
 #define PPUCTRL
 #define PPUMASK

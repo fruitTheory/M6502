@@ -5,8 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "ppu.h"
 #include "hardware_interrupts.h"
-//#include "ppu_general.h"
+
 
 int main(int argc, char* argv[]){
 
@@ -23,16 +24,19 @@ int main(int argc, char* argv[]){
     cpu_store_program(&computer, program, program_size);
     free(program), program = NULL;
 
-    draw_screen(&computer, program_size);
+    //draw_screen(&computer, program_size);
     // test_prog(&computer);
 
-    // // Run below for nes_demo demo.nes and general debugging
-    // for(int i = 0; i < 370; i++){
-    //     execute_instructions(&computer, program_size);
-    //     if(i == 198)
-    //         non_maskable_interrupt(&computer);
-    //     }
-        
+    // Run below for nes_demo demo.nes and general debugging
+    for(int i = 0; i < 370; i++){
+        execute_instructions(&computer, program_size);
+        if(i == 198)
+            non_maskable_interrupt(&computer);
+        }
+    
+    parse_oam(&computer);
+    parse_patterns(&computer);
+    parse_palettes(&computer);
     // for(int i = 0; i < 64; i++)
     //     printf("sprite: %02X ", computer.ppu.memory.address[0+i]);
 
@@ -46,10 +50,10 @@ int main(int argc, char* argv[]){
     // for(int i = 0; i < 6; i++)
     //     printf("vectors: %02X ", computer.cpu.memory.address[0xFFFA+i]);
 
-    // puts("\n");
+    puts("\n");
 
-    // for(int i = 0; i < 20; i++)
-    //     printf("OAM: %02X ", computer.ppu.oam_memory.address[0+i]);
+    for(int i = 0; i < 20; i++)
+        printf("OAM: %02X ", computer.ppu.oam_memory.address[0+i]);
 
     // puts("\n");
 

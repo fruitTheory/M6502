@@ -110,10 +110,10 @@ uchar8_t is_flag_set(uchar8_t FLAG, uchar8_t test_against){
     {
         case CARRY:
             // returns 1 if set or 0 if not
-            ret = test_against & flag_carry_bit;
+            if(test_against & flag_carry_bit) ret = 1; else ret = 0;
             return ret;
         case ZERO:
-            ret = test_against & flag_zero_bit;
+            if(test_against & flag_zero_bit) ret = 1; else ret = 0;
             return ret;
         case INTERRUPT:
             break;
@@ -122,11 +122,11 @@ uchar8_t is_flag_set(uchar8_t FLAG, uchar8_t test_against){
         case BREAK:
             break;
         case OVERFLOW:
-            ret = test_against & flag_overflow_bit;
+            if(test_against & flag_overflow_bit) ret = 1; else ret = 0;
             return ret;
         case NEGATIVE:
             // returns 1 if set or 0 if not
-            ret = test_against & flag_negative_bit;
+            if(test_against & flag_negative_bit) ret = 1; else ret = 0;
             return ret;
         default:
             puts("Error: not a valid flag");
@@ -213,28 +213,28 @@ uchar8_t check_bit(uchar8_t bit, uchar8_t test_against){
     {
         case 0:
             // returns 1 if set or 0 if not
-            ret = test_against & flag_carry_bit;
+            if(test_against & flag_carry_bit) ret = 1; else ret = 0;
             return ret;
         case 1:
-            ret = test_against & flag_zero_bit;
+            if(test_against & flag_zero_bit) ret = 1; else ret = 0;
             return ret;
         case 2:
-            ret = test_against & flag_interrupt_bit;
+            if(test_against & flag_interrupt_bit) ret = 1; else ret = 0;
             return ret;
         case 3:
-            ret = test_against & flag_decimal_bit;
+            if(test_against & flag_decimal_bit) ret = 1; else ret = 0;
             return ret;
         case 4:
-            ret = test_against & flag_break_bit;
+            if(test_against & flag_break_bit) ret = 1; else ret = 0;
             return ret;
         case 5:
-            ret = test_against & flag_ignored_bit;
+            if(test_against & flag_ignored_bit) ret = 1; else ret = 0;
             return ret;
         case 6:
-            ret = test_against & flag_overflow_bit;
+            if(test_against & flag_overflow_bit) ret = 1; else ret = 0;
             return ret;
         case 7:
-            ret = test_against & flag_negative_bit;
+            if(test_against & flag_negative_bit) ret = 1; else ret = 0;
             return ret;
         default:
             puts("Error: use bit 0-7");

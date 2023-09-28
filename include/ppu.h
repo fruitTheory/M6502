@@ -2,7 +2,6 @@
 
 #include "config.h"
 
-
 typedef struct
 {
     uchar8_t address[ppu_max_address]; // 16kb pattern tables, name tables, attribute tables
@@ -21,6 +20,12 @@ typedef struct{
 
 }NES_ppu;
 
+struct M6502;
+
+void PPU_register_handler(struct M6502* computer, ushort16_t address, uchar8_t value, char8_t rw);
+void parse_oam(struct M6502* computer);
+void parse_patterns(struct M6502* computer);
+void parse_palettes(struct M6502* computer);
 
 /*
 PPU memory layout:

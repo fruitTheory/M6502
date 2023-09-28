@@ -4,7 +4,7 @@ INCLUDES ?= -I ./include/ \
 BUILD = ./build/
 SOURCES = ./src/
 BINARIES = ./bin/
-FLAGS = -g -Wall -fdiagnostics-color=always #-fsanitize=address
+FLAGS = -O3 -Wall -fdiagnostics-color=always #-fsanitize=address -g
 CC = gcc
 
 OBJECTS =	${BUILD}M6502.o \
@@ -15,8 +15,10 @@ OBJECTS =	${BUILD}M6502.o \
 			${BUILD}M6502_flags.o \
 			${BUILD}M6502_cpu.o \
 			${BUILD}M6502_screen.o \
+			${BUILD}ppu.o \
 			${BUILD}ppu_general.o \
-			${BUILD}hardware_interrupts.o
+			${BUILD}hardware_interrupts.o 
+
 
 LIBRARY_DIR ?=	-L C:\Programs\SDL\SDL2-2.26.5-mingw\x86_64-w64-mingw32\lib \
 				-L C:\Programs\SDL\SDL2_ttf-2.20.2\x86_64-w64-mingw32\lib

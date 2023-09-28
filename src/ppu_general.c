@@ -4,10 +4,26 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-uchar8_t memory_latch = 0x00;
-uchar8_t latch_set = 0;
-ushort16_t stored_latch_address = 0x0000;
-ushort16_t offset = 0;
+
+void test_prog(struct M6502* computer){
+
+    const char8_t* path = "C:/Programming/vscode/C/M6502/asm/nes_hello/tiles.chr";
+    uchar8_t* program = load_program_temporary(path);
+    //print_program_info_temporary(path);
+    ushort16_t program_size = get_program_size_temporary(path);
+    printf("CHR program size: %i bytes\n", program_size);
+
+    // for(int x = 0; x < 62; x++){
+    //     for(int x = 0; x < 2; x++){
+    //         printf("byte: %02X ", program[x]);
+    //     }
+    // }
+
+    free(program), program = NULL;
+
+    // printf("value zp: %02X\n", PPU_address[0x2000]);
+
+}
 
 uchar8_t get_pattern(){
 
@@ -30,69 +46,6 @@ uchar8_t get_pattern(){
     puts("");
 
     return 0;
-
-}
-
-void PPU_register_handler(struct M6502* computer, ushort16_t address, uchar8_t value, char8_t rw){
-    switch(address)
-    {
-        case 0x2000: // PPU ctrl
-            break;
-        case 0x2001: // PPU mask
-            break;
-        case 0x2002: // PPU status
-            clear_bit(7, &PPU_status);
-            break;
-        case 0x2003: // PPU oam addr
-            break;
-        case 0x2004: // PPU oam data
-            // use value stored in oam addr register to store input value
-            OAM_address[PPU_oam_addr] = value;
-            if(rw == 1) // if write
-                CPU_address[0x2003] += 1; // increment address at oam addr register
-            break;
-        case 0x2005: // PPU scroll
-            break;
-        case 0x2006: // PPU addr
-            // check if latch mem is not set, if already set make full adress, clear latch set and data offset 
-            if (!(latch_set == 1)){
-                memory_latch = value;
-                latch_set = 1;
-                printf("latch value: %02X\n", memory_latch);
-            }else{ stored_latch_address = ((memory_latch << 8) | value); latch_set = 0; offset = 0;}
-            printf("latch address: %04X\n", stored_latch_address);
-            break;
-        case 0x2007: // PPU data
-            if(WRITE){ // STA - 8D
-                //puts("2007 call");
-                printf("WRITE: %02X\n", value);
-                PPU_address[stored_latch_address+offset] = value;
-                printf("OFFSET: %i\n", offset);
-                offset++;
-            }
-            break;
-        default:
-            break;
-    }
-}
-
-void test_prog(struct M6502* computer){
-
-    const char8_t* path = "C:/Programming/vscode/C/M6502/asm/nes_hello/tiles.chr";
-    uchar8_t* program = load_program_temporary(path);
-    //print_program_info_temporary(path);
-    ushort16_t program_size = get_program_size_temporary(path);
-    printf("CHR program size: %i bytes\n", program_size);
-
-    // for(int x = 0; x < 62; x++){
-    //     for(int x = 0; x < 2; x++){
-    //         printf("byte: %02X ", program[x]);
-    //     }
-    // }
-
-    free(program), program = NULL;
-
-    // printf("value zp: %02X\n", PPU_address[0x2000]);
 
 }
 
