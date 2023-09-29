@@ -40,17 +40,17 @@ uchar8_t instruction_fetch(struct M6502* computer){
 void execute_instructions(struct M6502* computer, ushort16_t program_size){
     ushort16_t initial_program_counter = program_counter;
     // the loop continually subtracts the new PC from old until the difference reaches the program size-1
-    if((program_counter - initial_program_counter < program_size)){
-        //printf("prog size: %i (PS-IB): %i byteCount: %i\n", program_size, program_counter - initial_program_counter, instruction_byte_count);
-        uchar8_t opcode = instruction_fetch(computer);
-        analyze_opcode(computer, opcode);
-        PC_increment(computer);
-        // Note for this function - it goes to analyze_opcode and PC is +1 for instruction call
-        // If the instruction needs to return byte, it will already be at that address
-        // If the instruction needs to return word, the PC is +1 from cpu_get_word()
-        // When it returns from instruction the PC is +1 to prepare for next opcode
-        // Implied and Accumulator will need to decrement PC by -1 as they are only 1 byte in total
-    }
+    //if((program_counter - initial_program_counter < program_size)){
+    //printf("prog size: %i (PS-IB): %i byteCount: %i\n", program_size, program_counter - initial_program_counter, instruction_byte_count);
+    uchar8_t opcode = instruction_fetch(computer);
+    analyze_opcode(computer, opcode);
+    PC_increment(computer);
+    // Note for this function - it goes to analyze_opcode and PC is +1 for instruction call
+    // If the instruction needs to return byte, it will already be at that address
+    // If the instruction needs to return word, the PC is +1 from cpu_get_word()
+    // When it returns from instruction the PC is +1 to prepare for next opcode
+    // Implied and Accumulator will need to decrement PC by -1 as they are only 1 byte in total
+    // }
 }
 
 // check if page was crossed when the input address offsets to a new address

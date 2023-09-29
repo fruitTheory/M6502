@@ -65,6 +65,8 @@ typedef char char8_t;
 #define PPUCTRL
 #define PPUMASK
 
+#define print(data) printf("debug print: %i\n", data);
+#define printhex(data) printf("debug print: %04X\n", data);
 
 // NES secton close
 

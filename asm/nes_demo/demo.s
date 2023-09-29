@@ -20,21 +20,21 @@
 .segment "CODE"
 
 reset:
-  sei		; disable IRQs
-  cld		; disable decimal mode
-  ldx #$40
-  stx $4017	; disable APU frame IRQ
-  ldx #$ff 	; Set up stack
-  txs		;  .
-  inx		; now X = 0
-  stx $2000	; disable NMI
+  sei		; disable IRQs 78
+  cld		; disable decimal mode D8
+  ldx #$40 ; A2
+  stx $4017	; disable APU frame IRQ *E
+  ldx #$ff 	; Set up stack A2
+  txs		;  9A
+  inx		; now X = 0 E8
+  stx $2000	; disable NMI 8E
   stx $2001 	; disable rendering
   stx $4010 	; disable DMC IRQs
 
 ;; first wait for vblank to make sure PPU is ready
 vblankwait1:
-  bit $2002
-  bpl vblankwait1
+  bit $2002 ; 2C
+  bpl vblankwait1 ; 10
 
 clear_memory:
   lda #$00

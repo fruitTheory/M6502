@@ -338,8 +338,6 @@ void BIT(struct M6502* computer, uchar8_t mode){
             // get the absolute address and the value there
             input_address = cpu_get_word(computer, program_counter, increment_true);
             address_value = CPU_address[input_address];
-            
-            address_value = 0b10000000; // temporary sets vblank flag to true(always)
 
             (accumulator & address_value) == 0 ? set_flag(computer, ZERO):clear_flag(computer, ZERO);
 
@@ -384,16 +382,11 @@ void BNE(struct M6502* computer){ // 0xD0
     short16_t signed_address_value;
     ushort16_t old_program_counter;
 
-    printf("current X: %04X\n", x_register);
-    printf("current Y: %04X\n", y_register);
-
     old_program_counter = program_counter;
     current_address_value = CPU_address[program_counter];
     
-    printf("current addy int: %i\n", current_address_value);
     // quick way to get signed char from unsigned is by casting it
     if(is_flag_set(CARRY, current_address_value))signed_address_value = (char8_t)current_address_value;
-    printf("signed addy: %i\n", signed_address_value);
 
     // if zero flag is not set to 1, do branch to PC - branching adds the signed value to PC -128 0-127+
     if(!is_flag_set(ZERO, status_register)){

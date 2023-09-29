@@ -4,7 +4,7 @@ INCLUDES ?= -I ./include/ \
 BUILD = ./build/
 SOURCES = ./src/
 BINARIES = ./bin/
-FLAGS = -O3 -Wall -fdiagnostics-color=always #-fsanitize=address -g
+FLAGS = -g -Wall -fdiagnostics-color=always #-fsanitize=address -O3
 CC = gcc
 
 OBJECTS =	${BUILD}M6502.o \
