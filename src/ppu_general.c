@@ -25,29 +25,29 @@ void test_prog(struct M6502* computer){
 
 }
 
-uchar8_t get_pattern(){
+// uchar8_t get_pattern(){
 
-    uchar8_t pixel_row[8];
+//     uchar8_t pixel_row[8];
 
-    uchar8_t input = 0x01;
-    uchar8_t bit;
-    uchar8_t i = 0;
+//     uchar8_t input = 0x01;
+//     uchar8_t bit;
+//     uchar8_t i = 0;
 
-    for(char8_t b = 7; b >= 0; b--){
-        bit = check_bit(b, input);
-        pixel_row[i] = bit;
-        i++;
-    }
+//     for(char8_t b = 7; b >= 0; b--){
+//         bit = check_bit(b, input);
+//         pixel_row[i] = bit;
+//         i++;
+//     }
 
-    for(uchar8_t b = 0; b < 8; b++){
-        printf("%i", pixel_row[b]);
-        if(b == 3) printf(" ");
-    }
-    puts("");
+//     for(uchar8_t b = 0; b < 8; b++){
+//         printf("%i", pixel_row[b]);
+//         if(b == 3) printf(" ");
+//     }
+//     puts("");
 
-    return 0;
+//     return 0;
 
-}
+// }
 
 /*
 Nametabe: 

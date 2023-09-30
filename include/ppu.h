@@ -26,6 +26,8 @@ void PPU_register_handler(struct M6502* computer, ushort16_t address, uchar8_t v
 void parse_oam(struct M6502* computer);
 void parse_patterns(struct M6502* computer);
 void parse_palettes(struct M6502* computer);
+uchar8_t get_palette(struct M6502* computer, uchar8_t attributes);
+uchar8_t* get_pattern(struct M6502* computer, uchar8_t pattern_index);
 
 /*
 PPU memory layout:

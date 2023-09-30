@@ -24,21 +24,22 @@ int main(int argc, char* argv[]){
     cpu_store_program(&computer, program, program_size);
     free(program), program = NULL;
 
-    draw_screen(&computer, program_size);
+    //draw_screen(&computer, program_size);
     // test_prog(&computer);
 
     // Run below for nes_demo demo.nes and general debugging
-    // for(int i = 0; i < 370; i++){
-    //     execute_instructions(&computer, program_size);
-    //     if(i == 198)
-    //         non_maskable_interrupt(&computer);
-    //     }
+    for(int i = 0; i < 370; i++){
+        execute_instructions(&computer, program_size);
+        if(i == 198)
+            non_maskable_interrupt(&computer);
+        }
     
     parse_oam(&computer);
     parse_patterns(&computer);
     parse_palettes(&computer);
-    // for(int i = 0; i < 64; i++)
-    //     printf("sprite: %02X ", computer.ppu.memory.address[0+i]);
+
+    for(int i = 0; i < 64; i++)
+        printf("pattern: %02X ", computer.ppu.memory.address[0+i]);
 
     // puts("\n");
 
@@ -52,7 +53,7 @@ int main(int argc, char* argv[]){
 
     puts("\n");
 
-    for(int i = 0; i < 20; i++)
+    for(int i = 0; i < 40; i++)
         printf("OAM: %02X ", computer.ppu.oam_memory.address[0+i]);
 
     // puts("\n");

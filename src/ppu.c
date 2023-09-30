@@ -58,45 +58,72 @@ void PPU_register_handler(struct M6502* computer, ushort16_t address, uchar8_t v
 
 // parse and store into 2D array 64x4 x-t-a-y - pos X & Y, tile index, attrib
 void parse_oam(struct M6502* computer){
-    uchar8_t oam_data[64][4] = {0};
+
+    // maximum of 64 sprites in oam
+    char8_t pos_y[64]; // sprite attribute byte 0
+    char8_t pattern_index[64]; // sprite attribute byte 1
+    /*
+        bit 0, 1 - Determine palette of sprite
+        bit 2, 3, 4 - Not implemented
+        bit 5 - Priority - 0 in front of background, 1 behind background
+        bit 6 - Flip sprite horizontally
+        bit 7 - Flip sprite vertically
+    */
+    char8_t attributes[64];
+    char8_t pos_x[64]; // sprite attribute byte 3
+
+    uchar8_t oam_data[64][4] = {0}; // container for each sprites attribute data
     int num = 0;
     for(int a = 0; a < 64; a++){
         for(int b = 0; b < 4; b++){
+            // cycle through address linearly, store each sprites 4 byte data 
             oam_data[a][b] = OAM_address[num];
             num++;
         }
     }
-    // loops probably needed
-    for(int x = 0; x < 64; x++);
-    for(int y = 0; y < 4; y++);
-    // solve for byte 0 and 3
-    ushort16_t y_pos = oam_data[0][0]; // sprite y position
-    ushort16_t x_pos = oam_data[0][3]; // sprite x position
-
-    // below solve byte 1 - tile index
-    ushort16_t tile_index_start = oam_data[0][1] * 16; // tile address to start at
-
-    // below solve byte 2 - palette index
-    // uchar8_t bit0 = check_bit(0, oam_data[0][2]);
-    // uchar8_t bit1 = check_bit(1, oam_data[0][2]);
-
-    uchar8_t bit0 = check_bit(0, 0x01); // could also 0x01 & 1
-    uchar8_t bit1 = check_bit(1, 0x03); // could also (0x3 >> 1) & 1
-    uchar8_t palette_result = (bit1 << 1) + bit0;
-
-    puts("");
-    printf("bit0 result: %i\n", bit0);
-    printf("bit1 result: %i\n", bit1);
-    printf("palette result: %i\n", palette_result);
-
-    // Above checks lowest bits and gets palette result 0-3 
-    /*
-    Byte 0: Y position 
-    Byte 1: Tile index
-    Byte 2: Attributes (lower 2 bits combine to pick sprite palette 00 01 10 11)(0 1 2 3)
-    Byte 3: X position
-    */
+    // loops to store correlating info from data 
+    for(int c = 0; c < 64; c++){
+        pos_y[c] = oam_data[c][0];
+        pattern_index[c] = oam_data[c][1];
+        attributes[c] = oam_data[c][2];
+        pos_x[c] = oam_data[c][3];
+    }
+    uchar8_t* pattern = get_pattern(computer, pattern_index[0]);
+    uchar8_t pattern_0[8] = {0};
+    uchar8_t pattern_1[8] = {0};
+    for(int d = 0; d < 8; d++){pattern_0[d] = pattern[d];}
+    for(int d = 0; d < 8; d++){pattern_1[d] = pattern[d+8];}
+    free(pattern);
+    uchar8_t palette = get_palette(computer, attributes);
+    
+    // note need function to OR the 
+    // color_table = get_color(computer, pattern)
+    // convert_pattern(computer, pattern); // returns pattern in binary
+    // store_pattern
+    // printf("y:%02X, t:%02X, p:%02X, x:%02X \n", pos_y, pattern_index, attributes, pos_x);
 }
+
+// returns palette index based on attribute lower 2 bits
+uchar8_t get_palette(struct M6502* computer, uchar8_t attributes){
+    uchar8_t bit0 = attributes & 1; // return bit 0
+    uchar8_t bit1 = (attributes >> 1) & 1; // return bit 1
+    uchar8_t palette_result = (bit1 << 1) + bit0; // add bit 1 and 0
+    return palette_result; // palette 0-3
+}
+
+// returns 16 byte array from ppu address range based on input index
+uchar8_t* get_pattern(struct M6502* computer, uchar8_t pattern_index){
+    uchar8_t* pattern = malloc(16);
+    if(pattern == NULL) return EXIT_FAILURE;
+    for(int p = 0; p < 16; p++) // pattern indicies are offset by 16 bytes
+        pattern[p] = PPU_address[p + (16 * pattern_index)];
+    return pattern;
+}
+
+/*
+byte 1 | byte 9 = the shape in binary, then taking least 
+significant bit or byte 1 and byte 9  say 10 = 2 so color index 2 , right
+*/
 
 // parse and store into 2D array 256x16 - 256 patterns 16 bytes each
 void parse_patterns(struct M6502* computer){
@@ -130,19 +157,15 @@ void parse_palettes(struct M6502* computer){
     }
 }
 
+/*
+Note for byte 1 of sprite oam
+For 8x8 sprites, this is the tile number of this sprite within the pattern table selected in bit 3 of PPUCTRL ($2000)
 
-/*
-4KB pattern table, two 2KB tables
-4096 bytes table
-16 bytes per pattern
-256 patterns total - 4096/16 
-*/
-/*
-  .byte $6c, $00, $00, $6c  ; this data represents sprite attributes
-  .byte $6c, $01, $00, $76  ; OAM info on where sprites are positioned
-  .byte $6c, $02, $00, $80  ; y position, index of tile, attribs 0-7b, x position
-  .byte $6c, $02, $00, $8A
-  .byte $6c, $03, $00, $94
+Each 8x8 sprite is represented by 16 bytes in the pattern table. The first 8 bytes represent the low bits of the color
+value for each pixel, and the next 8 bytes represent the high bits of the color value for each pixel
+
+The third byte of the OAM data for a sprite specifies a palette number (from 0 to 3) 
+in its lower two bits. This selects one of four palettes
 */
 
 /*
@@ -161,10 +184,24 @@ Nametable points to address of a pattern start so each byte on nametable represe
 */
 
 /*
-    // puts("");
-    // for(int a = 0; a < 4; a++){
-    //     puts("");
-    //     for(int b = 0; b < 16; b++)
-    //         printf("pattern data[%i] %02X \n", b, pattern_data[a][b]);
-    // }
+    uchar8_t virtual_screen[240][256];
+    uchar8_t palette_picker[240][256];
+
+    // select oam sprite 4 bytes
+    // select sprite index , select pattern 16 bytes at index
+    // convert to bits store 8x8 array
+    int x, y, i;
+    virtual_screen[y+i][x+i];// = sprite[i][i]
+
+    // solve for byte 0 and 3
+    ushort16_t y_pos = oam_data[0][0]; // sprite y position
+    ushort16_t x_pos = oam_data[0][3]; // sprite x position
+
+    // below solve byte 1 - tile index
+    ushort16_t tile_index_start = oam_data[0][1] * 16; // tile address to start at
+
+    // Byte 0: Y position 
+    // Byte 1: Tile index
+    // Byte 2: Attributes (lower 2 bits combine to pick sprite palette 00 01 10 11)(0 1 2 3)
+    // Byte 3: X position
 */

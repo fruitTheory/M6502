@@ -85,7 +85,7 @@ nmi:
   lda hello, x 	; Load hello to SPR-RAM $A9
   sta $2004 ; $8D - OAM r/w data - so esstentially writing bytes to oam addresses
   inx       ; $E8
-  cpx #$1c  ; $E0
+  cpx #$14  ; $E0
   bne @loop ; $F0
   rti       ; $40
 
@@ -111,14 +111,14 @@ palettes:
 
 ; Character memory
 .segment "CHARS"
-  .byte %11000011	; H (00) $C3
-  .byte %11000011
-  .byte %11000011
+  .byte %11000011	; $C3 - H (00)
+  .byte %11000011 ; $C3
+  .byte %11000011 ; $C3
   .byte %11111111 ; $FF
-  .byte %11111111
-  .byte %11000011
-  .byte %11000011
-  .byte %11000011
+  .byte %11111111 ; $FF
+  .byte %11000011 ; $C3
+  .byte %11000011 ; $C3
+  .byte %11000011 ; $C3
   .byte $00, $00, $00, $00, $00, $00, $00, $00
 
   .byte %11111111	; E (01)

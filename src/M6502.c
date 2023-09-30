@@ -13,7 +13,7 @@ void M6502_init(struct M6502* computer){
     memset(CPU_address, 0, sizeof(CPU_address)); // CPU init
     cpu_stack_init(computer); // CPU stack init
     memset(PPU_address, 0, sizeof(PPU_address)); // PPU init
-    memset(OAM_address, 0, sizeof(OAM_address)); // OAM init
+    memset(OAM_address, 0xFF, sizeof(OAM_address)); // OAM init
 }
 
 extern inline void PC_increment(struct M6502* computer);
@@ -41,7 +41,6 @@ void execute_instructions(struct M6502* computer, ushort16_t program_size){
     ushort16_t initial_program_counter = program_counter;
     // the loop continually subtracts the new PC from old until the difference reaches the program size-1
     //if((program_counter - initial_program_counter < program_size)){
-    //printf("prog size: %i (PS-IB): %i byteCount: %i\n", program_size, program_counter - initial_program_counter, instruction_byte_count);
     uchar8_t opcode = instruction_fetch(computer);
     analyze_opcode(computer, opcode);
     PC_increment(computer);
