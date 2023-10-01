@@ -17,7 +17,7 @@ uchar8_t frame = 0;
 void draw_screen(struct M6502* computer, ushort16_t program_size){
 
     // SDL window title
-    const char* title = "M6502 Emulator";
+    const char* title = "fTnes Emulator";
 
     // SDL init
     SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS);

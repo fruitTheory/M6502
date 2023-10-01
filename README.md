@@ -1,13 +1,14 @@
-# M6502
+# fTnes
 
-Currently a 6502 microprocessor but PPU is on the way  
-if continue with emulation of NES, written in C  
+Currently a 6502 microprocessor but working on PPU   
+to emulate a Nintendo Entertainment System(NES), written in C  
 
 ## Features
 
 - Full emulation of the legal CPU opcodes
 - Emulation of primary system components I/O
 - Support for NROM games, non memory-mapped
+- Rendering of Sprite and Backgrounds
 
 ### Prerequisites
 
@@ -30,9 +31,8 @@ if continue with emulation of NES, written in C
 ## Roadmap
 
 - ~~Implement primary opcodes~~
-- Timings and Interrupts
-- Debug functions
-- Build on top, more functionality
+- Timings ~~and Interrupts~~
+- Finish OAM and Nametables
 - Refine components
 - Streamline build
 

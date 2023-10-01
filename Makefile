@@ -16,7 +16,6 @@ OBJECTS =	${BUILD}M6502.o \
 			${BUILD}M6502_cpu.o \
 			${BUILD}M6502_screen.o \
 			${BUILD}ppu.o \
-			${BUILD}ppu_general.o \
 			${BUILD}hardware_interrupts.o 
 
 
