@@ -37,14 +37,13 @@ void print_program_info(int argc, char* argv[]){
 uchar8_t* load_program(int argc, char* argv[]){
 
     if(argc < 2)
-        puts("You must provide a file to load");
+        perror("You must provide a file to load");
 
     cString filename = argv[1]; // set filename to first user arguement
 
     // file open
     FILE* program_file = fopen(filename, "rb");
-    if (!program_file)
-        puts("File was not able to be opened");
+    if (!program_file){perror("File was not able to be opened"); exit(EXIT_FAILURE);}
 
     // ftells the current position, since we're at end of file this can represent the size
     fseek(program_file, 0, SEEK_END);
@@ -54,13 +53,11 @@ uchar8_t* load_program(int argc, char* argv[]){
     // allocate memory for the file
     uchar8_t *file_buffer = NULL;
     file_buffer = malloc(file_size);
-    if (file_buffer == NULL)
-        puts("Memory did not initialize");
-
+    if (!file_buffer){puts("Memory did not initialize"), exit(EXIT_FAILURE);}
+    
     // read binary file and store contents into a buffer - returns total number of elements read
     ushort16_t read_program = fread(file_buffer, sizeof(uchar8_t), file_size, program_file);
-    if(read_program != file_size)
-        puts("File may not have read bytes correctly");
+    if(read_program != file_size){perror("File may not have read bytes correctly");}
 
     fclose(program_file);
 
@@ -75,8 +72,7 @@ uchar8_t* load_program_temporary(const char8_t* path){
 
     // file open
     FILE* program_file = fopen(filename, "rb");
-    if (!program_file)
-        puts("File was not able to be opened");
+    if(!program_file){perror("File was not able to be opened"); exit(EXIT_FAILURE);}
 
     // ftells the current position, since we're at end of file this can represent the size
     fseek(program_file, 0, SEEK_END);
@@ -86,13 +82,11 @@ uchar8_t* load_program_temporary(const char8_t* path){
     // allocate memory for the file
     uchar8_t *file_buffer = NULL;
     file_buffer = malloc(file_size);
-    if (file_buffer == NULL)
-        puts("Memory did not initialize");
+    if(!file_buffer){perror("Memory did not initialize"); exit(EXIT_FAILURE);};
 
     // read binary file and store contents into a buffer - returns total number of elements read
     ushort16_t read_program = fread(file_buffer, sizeof(uchar8_t), file_size, program_file);
-    if(read_program != file_size)
-        puts("File may not have read bytes correctly");
+    if(read_program != file_size){perror("File may not have read bytes correctly");}
 
     fclose(program_file);
 
@@ -119,8 +113,7 @@ ushort16_t get_program_size_temporary(const char8_t* path){
 
     cString filename = path; // set filename to first user arguement
     FILE* program_file = fopen(filename, "rb");
-    if (!program_file)
-        puts("File was not able to be opened");
+    if (!program_file){puts("File was not able to be opened"); exit(EXIT_FAILURE);}
     fseek(program_file, 0, SEEK_END);
     ushort16_t file_size = ftell(program_file); if(file_size > cpu_max_address) puts("file too big");
     fseek(program_file, 0, SEEK_SET);

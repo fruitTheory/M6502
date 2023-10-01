@@ -38,7 +38,7 @@ uchar8_t instruction_fetch(struct M6502* computer){
 
 // executes all program instructions
 void execute_instructions(struct M6502* computer, ushort16_t program_size){
-    ushort16_t initial_program_counter = program_counter;
+    // ushort16_t initial_program_counter = program_counter;
     // the loop continually subtracts the new PC from old until the difference reaches the program size-1
     //if((program_counter - initial_program_counter < program_size)){
     uchar8_t opcode = instruction_fetch(computer);

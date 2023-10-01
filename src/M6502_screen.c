@@ -39,9 +39,9 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
     int start_x = 0; // Start x position
     int start_y = 0; // Start y position
     int pixel_size = 1; // pixel sqaure size
-    SDL_SetRenderDrawColor(renderer, 0, 100, 128, 255); // sets bg color
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // set initial bg color
     SDL_RenderClear(renderer); // clear current target with bg color
-    SDL_Color px_color = {200, 120, 40, 255};
+    SDL_Color px_color = {255, 255, 255, 255}; //set initial sprite color
     SDL_SetRenderDrawColor(renderer, px_color.r, px_color.g, px_color.b, px_color.a); // set pixel color
 
     // setup pixel start
@@ -50,35 +50,46 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
     pixel.w = pixel_size;
     pixel.h = pixel_size;
 
-    // loop inits
+    // init vars for loop
     int num = 0;
     int scanline_x = 0;
     int scanline_y = 0;
-    int ppu_cycle = 0;
+    uchar8_t** virtual_screen = NULL; // 2D array virtual screen
 
-    // event loop while program running
+    // test stuff
+    int temp = 0; // temp < 1, for one iteration of while loop
+    int v_ready = 0;
+    int first_vblank = 0;
+
+    // event loop while program running 
     while(running){
         while(SDL_PollEvent(&event)){if(event.type == SDL_QUIT) running = false;}
 
         for(int e = 0; e < 1; e++)
             execute_instructions(computer, program_size);
 
+        if(first_vblank == 1){v_ready = 1;}
+
         if(scanline_y == 0){clear_bit(7, &PPU_status);} // clear vblank bit
 
         for(scanline_x = 0; scanline_x < 256; scanline_x++){
             if(scanline_y <  240){
-                SDL_SetRenderDrawColor(renderer, 100,  200+(scanline_x*8), 50, 255);
-                if(frame == 1)SDL_SetRenderDrawColor(renderer, 0,  200+(scanline_x*8), 50, 255);
-                SDL_RenderDrawRect(renderer, &pixel);
-                SDL_RenderFillRect(renderer, &pixel);
-                pixel.x += pixel_size; }
+                //SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                if(v_ready == 1){
+                    pixel.x += pixel_size; // not sure why this works before and after rect 
+                    if(virtual_screen[scanline_y][scanline_x] == 1){ SDL_RenderFillRect(renderer, &pixel); }
+                }
+            }
             if(scanline_x == 255){ pixel.y += pixel_size; pixel.x = 0; }
         } scanline_y++;
         SDL_RenderPresent(renderer); // presents render
         if(scanline_y == 240){ non_maskable_interrupt(computer); set_bit(7, &PPU_status);} // start vblank bit, call nmi
-        if(scanline_y == 260){frame ^= 1; pixel.y = 0; scanline_y = 0;} // end vblank and frame
+        if(scanline_y == 260){
+            frame ^= 1; pixel.y = 0; scanline_y = 0; first_vblank += 1; // flop frame, reset y, unlock oam
+            virtual_screen = parse_oam(computer); temp += 1; } // end vblank and frame
     }
     // cleanup
+    free(virtual_screen);
     SDL_DestroyRenderer(renderer); // destroy renderer and associated textures
     SDL_DestroyWindow(window);
     TTF_Quit();

@@ -11,7 +11,7 @@ uchar8_t latch_set = 0;
 ushort16_t stored_latch_address = 0x0000;
 ushort16_t offset = 0;
 
-
+// handles actions on ppu registers
 void PPU_register_handler(struct M6502* computer, ushort16_t address, uchar8_t value, char8_t rw){
     switch(address)
     {
@@ -55,9 +55,8 @@ void PPU_register_handler(struct M6502* computer, ushort16_t address, uchar8_t v
     }
 }
 
-
 // parse and store into 2D array 64x4 x-t-a-y - pos X & Y, tile index, attrib
-void parse_oam(struct M6502* computer){
+uchar8_t** parse_oam(struct M6502* computer){
 
     // maximum of 64 sprites in oam
     char8_t pos_y[64]; // sprite attribute byte 0
@@ -71,8 +70,8 @@ void parse_oam(struct M6502* computer){
     */
     char8_t attributes[64];
     char8_t pos_x[64]; // sprite attribute byte 3
-
     uchar8_t oam_data[64][4] = {0}; // container for each sprites attribute data
+
     int num = 0;
     for(int a = 0; a < 64; a++){
         for(int b = 0; b < 4; b++){
@@ -81,26 +80,79 @@ void parse_oam(struct M6502* computer){
             num++;
         }
     }
-    // loops to store correlating info from data 
+
+    // loop to store sprite specific data
     for(int c = 0; c < 64; c++){
         pos_y[c] = oam_data[c][0];
         pattern_index[c] = oam_data[c][1];
         attributes[c] = oam_data[c][2];
         pos_x[c] = oam_data[c][3];
     }
+
+    // get initial singular pattern
     uchar8_t* pattern = get_pattern(computer, pattern_index[0]);
     uchar8_t pattern_0[8] = {0};
-    uchar8_t pattern_1[8] = {0};
+    uchar8_t pattern_1[8] = {0}; // note to use memcpy for larger arrays
     for(int d = 0; d < 8; d++){pattern_0[d] = pattern[d];}
     for(int d = 0; d < 8; d++){pattern_1[d] = pattern[d+8];}
+    // above stores first 8 bits and second 8 bits of pattern for later usage
     free(pattern);
-    uchar8_t palette = get_palette(computer, attributes);
+
+    // convert pattern data into shape by using OR of pattern 0 | 1
+    uchar8_t shape_bytes[8];
+    for(int d = 0; d < 8; d++){shape_bytes[d] = pattern_0[d] | pattern_1[d];}
+
+    // convert resulting shape bytes into binary 8x8 = 64 bits per shape
+    uchar8_t shape_binary[64]={0};
+    int inc = 0;
+    for(int x = 0; x < 8; x++){ // 8 rows
+        for(int d = 7; d >= 0; d--){ // 8 bits
+            shape_binary[inc] = (shape_bytes[x] >> d) & 1;
+            inc++;
+        }
+    }
+
+    // initialize virtual screen setup variables - add bits to vscreen
+    int row = 240; int column = 256;
+    //uchar8_t virtual_screen[240][256]={0};
+    int index = 0; // current sprite index
+    int bit_increment = 0;
+
+    uchar8_t** virtual_screen = create_2D_array(row, column, sizeof(uchar8_t*));
     
-    // note need function to OR the 
+    // take shape_binaries put into virtual screen, row by row, based on, x and y coord
+    for(int row = 0; row < 8; row++){
+        for(int bit = 0; bit < 8; bit++){
+            // current sprite index and the relevant value of pos y and x, offset by loop values
+            virtual_screen[(pos_y[index] + row)][(pos_x[index] + bit)] = shape_binary[bit_increment];
+            bit_increment++; // general bit increment
+        }
+    }
+
+    uchar8_t palette = get_palette(computer, attributes[0]);
     // color_table = get_color(computer, pattern)
-    // convert_pattern(computer, pattern); // returns pattern in binary
-    // store_pattern
-    // printf("y:%02X, t:%02X, p:%02X, x:%02X \n", pos_y, pattern_index, attributes, pos_x);
+    // map the color to virtual screen based on x and y from sprite data
+
+    return virtual_screen;
+
+}
+
+// returns a dynamically created 2D array of type char
+uchar8_t** create_2D_array(int row, int column, size_t type_size){
+    // amount of pointers to individual pointers
+    uchar8_t** arr = malloc(row * type_size);
+    if(arr == NULL){perror("Failed to allocate for rows"); exit(EXIT_FAILURE);}
+    for(int x = 0; x < row; x++){
+        // for each row create memory block as container for columns
+        arr[x] = malloc(column * type_size);
+        if(arr[x] == NULL){perror("Failed to allocate for columns"); exit(EXIT_FAILURE);}
+
+        for(int y = 0; y < column; y++){
+            // initialize arr
+            arr[x][y] = 0;
+        }
+    }
+    return arr;
 }
 
 // returns palette index based on attribute lower 2 bits
@@ -114,16 +166,11 @@ uchar8_t get_palette(struct M6502* computer, uchar8_t attributes){
 // returns 16 byte array from ppu address range based on input index
 uchar8_t* get_pattern(struct M6502* computer, uchar8_t pattern_index){
     uchar8_t* pattern = malloc(16);
-    if(pattern == NULL) return EXIT_FAILURE;
+    if(pattern == NULL) exit(EXIT_FAILURE);
     for(int p = 0; p < 16; p++) // pattern indicies are offset by 16 bytes
         pattern[p] = PPU_address[p + (16 * pattern_index)];
     return pattern;
 }
-
-/*
-byte 1 | byte 9 = the shape in binary, then taking least 
-significant bit or byte 1 and byte 9  say 10 = 2 so color index 2 , right
-*/
 
 // parse and store into 2D array 256x16 - 256 patterns 16 bytes each
 void parse_patterns(struct M6502* computer){
@@ -158,6 +205,11 @@ void parse_palettes(struct M6502* computer){
 }
 
 /*
+byte 1 | byte 9 = the shape in binary, then taking least 
+significant bit or byte 1 and byte 9  say 10 = 2 so color index 2
+*/
+
+/*
 Note for byte 1 of sprite oam
 For 8x8 sprites, this is the tile number of this sprite within the pattern table selected in bit 3 of PPUCTRL ($2000)
 
@@ -171,6 +223,7 @@ in its lower two bits. This selects one of four palettes
 /*
 my NES list to get graphics working
 
+nametables:
 The PPU takes CHR data 2 bytes at a time and ORs them to represent an 8 pixel row defining shape
 It groups the bits to determine color index for example:
 0x11 - 0001 0001
@@ -187,21 +240,6 @@ Nametable points to address of a pattern start so each byte on nametable represe
     uchar8_t virtual_screen[240][256];
     uchar8_t palette_picker[240][256];
 
-    // select oam sprite 4 bytes
-    // select sprite index , select pattern 16 bytes at index
-    // convert to bits store 8x8 array
     int x, y, i;
     virtual_screen[y+i][x+i];// = sprite[i][i]
-
-    // solve for byte 0 and 3
-    ushort16_t y_pos = oam_data[0][0]; // sprite y position
-    ushort16_t x_pos = oam_data[0][3]; // sprite x position
-
-    // below solve byte 1 - tile index
-    ushort16_t tile_index_start = oam_data[0][1] * 16; // tile address to start at
-
-    // Byte 0: Y position 
-    // Byte 1: Tile index
-    // Byte 2: Attributes (lower 2 bits combine to pick sprite palette 00 01 10 11)(0 1 2 3)
-    // Byte 3: X position
 */
