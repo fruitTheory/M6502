@@ -20,6 +20,11 @@
             
             "setupCommands": [
                 {
+                    "description": "Set the default output radix to hex",
+                    "text": "set output-radix 16", // without -exec
+                    "ignoreFailures": false
+                },
+                {
                     "description": "Enable pretty-printing for gdb",
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true

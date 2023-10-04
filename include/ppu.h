@@ -30,6 +30,7 @@ void parse_palettes(struct M6502* computer);
 uchar8_t get_palette(struct M6502* computer, uchar8_t attributes);
 uchar8_t* get_pattern(struct M6502* computer, uchar8_t pattern_index);
 uchar8_t** create_2D_array(int row, int column, size_t type_size);
+uchar8_t* pattern_to_shape(struct M6502* computer);
 
 /*
 PPU memory layout:

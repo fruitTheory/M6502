@@ -37,6 +37,7 @@ ${BUILD}%.o:${SOURCES}%.c
 clean:
 	del "${BUILD}"
 
+# Run with file
 RUN_FILE = demo
 EXT = nes
 PATH_OVERRIDE = 

@@ -17,7 +17,7 @@ uchar8_t frame = 0;
 void draw_screen(struct M6502* computer, ushort16_t program_size){
 
     // SDL window title
-    const char* title = "fTnes Emulator";
+    const char* title = "fTnes Emu";
 
     // SDL init
     SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
@@ -34,17 +34,18 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
     window = SDL_CreateWindow(title, bounds.x+1600, bounds.y+600, 256*2, 240*2, SDL_WINDOW_ALWAYS_ON_TOP);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED); // create renderer for specific window
 
-    // Init for drawing
     bool running = true;
-    int start_x = 0; // Start x position
-    int start_y = 0; // Start y position
-    int pixel_size = 1; // pixel sqaure size
+
+    // Init for drawing
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // set initial bg color
     SDL_RenderClear(renderer); // clear current target with bg color
     SDL_Color px_color = {255, 255, 255, 255}; //set initial sprite color
     SDL_SetRenderDrawColor(renderer, px_color.r, px_color.g, px_color.b, px_color.a); // set pixel color
 
     // setup pixel start
+    int start_x = 0; // Start x position
+    int start_y = 0; // Start y position
+    int pixel_size = 1; // pixel sqaure size
     pixel.x = start_x;
     pixel.y = start_y;
     pixel.w = pixel_size;
@@ -68,7 +69,7 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
         for(int e = 0; e < 1; e++)
             execute_instructions(computer, program_size);
 
-        if(first_vblank == 1){v_ready = 1;}
+        if(first_vblank == 2){v_ready = 1;} // giving moment to fill oam
 
         if(scanline_y == 0){clear_bit(7, &PPU_status);} // clear vblank bit
 
@@ -84,12 +85,12 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
         } scanline_y++;
         SDL_RenderPresent(renderer); // presents render
         if(scanline_y == 240){ non_maskable_interrupt(computer); set_bit(7, &PPU_status);} // start vblank bit, call nmi
-        if(scanline_y == 260){
-            frame ^= 1; pixel.y = 0; scanline_y = 0; first_vblank += 1; // flop frame, reset y, unlock oam
-            virtual_screen = parse_oam(computer); temp += 1; } // end vblank and frame
+        if(scanline_y == 260){ // end vblank and frame
+            frame ^= 1; pixel.y = 0; scanline_y = 0; first_vblank += 1; // flop frame, reset y, unlock oam v ready
+            free(virtual_screen); virtual_screen = parse_oam(computer); temp += 1; } // store oam updates into virtual screen
     }
     // cleanup
-    free(virtual_screen);
+    free(virtual_screen); // outside loop
     SDL_DestroyRenderer(renderer); // destroy renderer and associated textures
     SDL_DestroyWindow(window);
     TTF_Quit();
