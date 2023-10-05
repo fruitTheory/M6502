@@ -85,7 +85,7 @@ nmi:
   lda hello, x 	; Load hello to SPR-RAM $A9
   sta $2004 ; $8D - OAM r/w data - so esstentially writing bytes to oam addresses
   inx       ; $E8
-  cpx #$14  ; $E0
+  cpx #$28  ; $E0
   bne @loop ; $F0
   rti       ; $40
 
@@ -95,6 +95,12 @@ hello:
   .byte $6c, $02, $00, $80  ; y position, index of tile, attribs 0-7b, x position
   .byte $6c, $02, $00, $8A
   .byte $6c, $03, $00, $94
+
+  .byte $6c, $04, $00, $A3  ; W
+  .byte $6c, $05, $00, $AC  ; o
+  .byte $6c, $06, $00, $B6  ; r
+  .byte $6c, $07, $00, $C0  ; l
+  .byte $6c, $08, $00, $CA  ; d
 
 palettes:
   ; Background Palette
@@ -150,3 +156,60 @@ palettes:
   .byte %11100111
   .byte %01111110
   .byte $00, $00, $00, $00, $00, $00, $00, $00
+
+  ; W (04)
+  .byte %11000011
+  .byte %11000011
+  .byte %11000011
+  .byte %11011011
+  .byte %11011011
+  .byte %11011011
+  .byte %11111111
+  .byte %11111111
+  .byte $00, $00, $00, $00, $00, $00, $00, $00
+
+  ; o (05)
+  .byte %01111110
+  .byte %11100111
+  .byte %11000011
+  .byte %11000011
+  .byte %11000011
+  .byte %11000011
+  .byte %11100111
+  .byte %01111110
+  .byte $00, $00, $00, $00, $00, $00, $00, $00
+
+  ; R (06)
+  .byte %11111111
+  .byte %11000011
+  .byte %11000011
+  .byte %11111111
+  .byte %11000110
+  .byte %11000011
+  .byte %11000011
+  .byte %11000011
+  .byte $00, $00, $00, $00, $00, $00, $00, $00
+
+  ; L (07)
+  .byte %11000000
+  .byte %11000000
+  .byte %11000000
+  .byte %11000000
+  .byte %11000000
+  .byte %11000000
+  .byte %11111111
+  .byte %11111111
+  .byte $00, $00, $00, $00, $00, $00, $00, $00
+
+  ; D (08)
+  .byte %11111100
+  .byte %11000011
+  .byte %11000011
+  .byte %11000011
+  .byte %11000011
+  .byte %11000011
+  .byte %11000011
+  .byte %11111100
+  .byte $00, $00, $00, $00, $00, $00, $00, $00
+
+

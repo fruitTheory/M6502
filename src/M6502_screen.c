@@ -17,7 +17,7 @@ uchar8_t frame = 0;
 void draw_screen(struct M6502* computer, ushort16_t program_size){
 
     // SDL window title
-    const char* title = "fTnes Emu";
+    const char* title = "fTNES Emu";
 
     // SDL init
     SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
@@ -52,7 +52,6 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
     pixel.h = pixel_size;
 
     // init vars for loop
-    int num = 0;
     int scanline_x = 0;
     int scanline_y = 0;
     uchar8_t** virtual_screen = NULL; // 2D array virtual screen
@@ -77,8 +76,8 @@ void draw_screen(struct M6502* computer, ushort16_t program_size){
             if(scanline_y <  240){
                 //SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
                 if(v_ready == 1){
-                    pixel.x += pixel_size; // not sure why this works before and after rect 
                     if(virtual_screen[scanline_y][scanline_x] == 1){ SDL_RenderFillRect(renderer, &pixel); }
+                    pixel.x += pixel_size; // not sure why this works before and after rect 
                 }
             }
             if(scanline_x == 255){ pixel.y += pixel_size; pixel.x = 0; }

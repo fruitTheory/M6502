@@ -13,7 +13,7 @@ void M6502_init(struct M6502* computer){
     memset(CPU_address, 0, sizeof(CPU_address)); // CPU init
     cpu_stack_init(computer); // CPU stack init
     memset(PPU_address, 0, sizeof(PPU_address)); // PPU init
-    memset(OAM_address, 0xFF, sizeof(OAM_address)); // OAM init
+    memset(OAM_address, 0xE8, sizeof(OAM_address)); // OAM init - max value before out of range (in: EF, out: F0)
 }
 
 extern inline void PC_increment(struct M6502* computer);

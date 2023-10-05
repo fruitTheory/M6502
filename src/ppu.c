@@ -33,7 +33,7 @@ void PPU_register_handler(struct M6502* computer, ushort16_t address, uchar8_t v
         case 0x2005: // PPU scroll
             break;
         case 0x2006: // PPU addr
-            // check if latch mem is not set, if already set make full adress, clear latch set and data offset 
+            // check if latch mem is not set, if already set make full adress, clear latch and data offset 
             if (!(latch_set == 1)){
                 memory_latch = value;
                 latch_set = 1;
@@ -91,33 +91,24 @@ uchar8_t** parse_oam(struct M6502* computer){
 
     uchar8_t* shape_binary = pattern_to_shape(computer);
 
-    // initialize virtual screen setup variables - add bits to vscreen
     int row = 240; int column = 256;
-    int index = 0; // current sprite index
-    int bit_increment = 0;
-    int test = 0;
-
     uchar8_t** virtual_screen = create_2D_array(row, column, sizeof(uchar8_t*));
     // static can be used but may need dynamic mem if user can change screen size
-    // static uchar8_t virtual_screen[240][256] = {0};
-    uchar8_t sprite[8][8] = {0};
-    uchar8_t shape[64] = {0};
 
+    int bit_increment = 0;
     // take shape_binaries put into virtual screen, row by row, based on, x and y coord
     for(int index = 0; index < 64; index++){
         for(int row = 0; row < 8; row++){
             for(int bit = 0; bit < 8; bit++){
-                if((pos_x[index] + bit) < 0xFF){
-                    // current sprite index and the relevant value of pos y and x, offset by loop values
-                    shape[index] = shape_binary[bit_increment];
-                    virtual_screen[(pos_y[index] + row)][(pos_x[index] + bit)] = shape[index];
-                    bit_increment++; // general bit increment
+                // current sprite index and the relevant value of pos y and x, offset by loop values
+                virtual_screen[(pos_y[index] + row)][((pos_x[index]) + bit)] = 
+                            shape_binary[bit_increment+(64*pattern_index[index])];
+                bit_increment++; // general bit increment
+                if(bit_increment == 64) bit_increment = 0; // reset for index and pattern size(64)
                 }
-            }
         }
     }
 
-    
     // puts("Writting Virtual Screen to file..");
     // FILE *file_vscreen = fopen("./asm/output_vscreen.bin", "wb");
     // fwrite(virtual_screen, sizeof(uchar8_t), sizeof(virtual_screen), file_vscreen);

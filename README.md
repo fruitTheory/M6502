@@ -1,7 +1,7 @@
-# fTnes
+# fTNES
 
 Currently a 6502 microprocessor but working on PPU   
-to emulate a Nintendo Entertainment System(NES), written in C  
+to emulate Nintendo Entertainment System(NES), written in C  
 
 ## Features
 
@@ -26,7 +26,21 @@ to emulate a Nintendo Entertainment System(NES), written in C
 ./main path_to_bin or 'mingw32-make run'
 ```
 
+<table>
+<tr>
+<td>
+
 ![Emulator Test](./img/emulator_test.gif)
+
+</td>
+<td>
+
+![OAM Sprite test](./img/hello_world.png)
+
+</td>
+</tr>
+</table>
+
 
 ## Roadmap
 
