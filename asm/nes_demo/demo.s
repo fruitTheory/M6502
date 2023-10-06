@@ -37,22 +37,22 @@ vblankwait1:
   bpl vblankwait1 ; 10
 
 clear_memory:
-  lda #$00
-  sta $0000, x
-  sta $0100, x
-  sta $0200, x
-  sta $0300, x
-  sta $0400, x
-  sta $0500, x
-  sta $0600, x
-  sta $0700, x
-  inx
-  bne clear_memory
+  lda #$00  ;A9
+  sta $0000, x  ;95
+  sta $0100, x  ;9D
+  sta $0200, x  ;9D
+  sta $0300, x  ;9D
+  sta $0400, x  ;9D
+  sta $0500, x  ;9D
+  sta $0600, x  ;9D
+  sta $0700, x  ;9D
+  inx           ;E8
+  bne clear_memory  ;D0
 
 ;; second wait for vblank, PPU is ready after this
 vblankwait2:
-  bit $2002
-  bpl vblankwait2
+  bit $2002 ; 2C
+  bpl vblankwait2 ; 10
 
 main:
 load_palettes:

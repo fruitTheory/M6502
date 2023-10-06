@@ -1,8 +1,10 @@
 #include "ppu.h"
 #include "M6502_flags.h"
+#include "M6502.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "M6502.h"
+#include <string.h>
+
 
 
 //uchar8_t vblank = 0;
@@ -23,6 +25,7 @@ void PPU_register_handler(struct M6502* computer, ushort16_t address, uchar8_t v
             clear_bit(7, &PPU_status);
             break;
         case 0x2003: // PPU oam addr
+            CPU_address[address] = accumulator; // store value to register assuming address fits case
             break;
         case 0x2004: // PPU oam data
             // use value stored in oam addr register to store input value
@@ -43,12 +46,16 @@ void PPU_register_handler(struct M6502* computer, ushort16_t address, uchar8_t v
             break;
         case 0x2007: // PPU data
             if(WRITE){ // STA - 8D
-                //puts("2007 call");
                 printf("WRITE: %02X\n", value);
                 PPU_address[stored_latch_address+offset] = value;
                 printf("OFFSET: %i\n", offset);
                 offset++;
             }
+            break;
+
+        case 0x4014: // OAM DMA
+            CPU_address[address] = accumulator;
+            memcpy(OAM_address, &CPU_address[accumulator * 0x100], (256 * sizeof(uchar8_t)));
             break;
         default:
             break;

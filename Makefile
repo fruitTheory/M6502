@@ -47,17 +47,14 @@ run:
 
 # ------asm section----------
 BASE_NAME = demo
-TARGET = nes
+CFG_TARGET = nes
 CFG = ./asm/cfg/
-DEMO_DIR = ./asm/nes_demo/
 TESTING=./_testing/
 ASM = ./asm/
-EXTRA_NAME = demo
-
 
 ca65:
 	ca65 -l ${ETC_DIR}${BASE_NAME}.lst ${ETC_DIR}${BASE_NAME}.s
-	ld65 -C ${CFG}${TARGET}.cfg ${ETC_DIR}${BASE_NAME}.o -o ${ETC_DIR}${BASE_NAME}.nes -Ln ${ETC_DIR}${BASE_NAME}_labels.txt
+	ld65 -C ${CFG}${CFG_TARGET}.cfg ${ETC_DIR}${BASE_NAME}.o -o ${ETC_DIR}${BASE_NAME}.nes -Ln ${ETC_DIR}${BASE_NAME}_labels.txt
 	del "${ETC_DIR}\${BASE_NAME}.o"
 
 test:

@@ -2,13 +2,14 @@
 
 Currently a 6502 microprocessor but working on PPU   
 to emulate Nintendo Entertainment System(NES), written in C  
+Likely will remain unfinished TBH
 
 ## Features
 
 - Full emulation of the legal CPU opcodes
 - Emulation of primary system components I/O
-- Support for NROM games, non memory-mapped
-- Rendering of Sprite and Backgrounds
+- Support for NROM, non memory-mapped
+- Rendering of OAM Sprites
 
 ### Prerequisites
 
@@ -47,7 +48,7 @@ to emulate Nintendo Entertainment System(NES), written in C
 - ~~Implement primary opcodes~~
 - Timings ~~and Interrupts~~
 - Finish OAM and Nametables
-- Refine components
+- Cont. PPU Registers
 - Streamline build
 
 ## Acknowledgments

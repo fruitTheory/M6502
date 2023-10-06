@@ -2,3 +2,4 @@
 *.lst
 *.o
 *.a65
+*labels.txt

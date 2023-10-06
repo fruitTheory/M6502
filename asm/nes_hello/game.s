@@ -42,35 +42,35 @@ reset:
 	ldx #255
 	txs
 	inx 
-	stx $2000
-	stx $2001
-	stx $4010
+	stx $2000 ;$8E
+	stx $2001 ;$8E
+	stx $4010 ;$8E
 
 vblankwait1:
-	bit $2002
-	bpl vblankwait1
+	bit $2002 ;$2C
+	bpl vblankwait1	;$10
 	
 clearmemory:
-	lda #0
-	sta $0000, x
-	sta $0100, x
-	sta $0300, x
-	sta $0400, x
-	sta $0500, x
-	sta $0600, x
-	sta $0700, x
-	lda #$FE
-	sta $0200, x
+	lda #0	;A9
+	sta $0000, x ;95
+	sta $0100, x ;9D
+	sta $0300, x ;9D
+	sta $0400, x ;9D
+	sta $0500, x ;9D
+	sta $0600, x ;9D
+	sta $0700, x ;9D
+	lda #$FE	;A9
+	sta $0200, x ;9D
 	
-	inx
-	bne clearmemory
+	inx			;E8
+	bne clearmemory ;D0
 
 vblankwait2:
-	bit $2002
-	bpl vblankwait2
+	bit $2002 ;$2C
+	bpl vblankwait2 ;$10
 	
 	
-	jsr LoadPalette
+	jsr LoadPalette ;20
 	
 	lda #100
 	sta hello_Y
@@ -99,7 +99,7 @@ nmi:
 	lda #$02
 	sta $4014
 
-	jsr ReadController
+	;jsr ReadController
 	jsr UpdateHello
 
 	lda #0
@@ -116,9 +116,9 @@ nmi:
 ;------------SUBROUTINES-----------------
 LoadPalette:
 
-	lda $2002
+	lda $2002 ;AD -> $FE - 1111 1110
 	
-	lda #$3F
+	lda #$3F ;A9
 	sta $2006
 	lda #$00
 	sta $2006

@@ -1642,7 +1642,7 @@ void STA(struct M6502* computer, uchar8_t mode){
             break;
         case ABSOLUTE: // 0x8D
             input_address = cpu_get_word(computer, program_counter, increment_true);
-            if(input_address >= 0x2000 && input_address <= 0x2007)
+            if(input_address >= 0x2000 && input_address <= 0x2007 | input_address == 0x4014)
                 PPU_register_handler(computer, input_address, accumulator, WRITE);
             else
                 CPU_address[input_address] = accumulator;
